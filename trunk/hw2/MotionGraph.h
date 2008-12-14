@@ -42,6 +42,7 @@ private:
 	void	printJumpIdx(int current, int next);
 
 public:
+	const static int VELOCITY_WEIGHT = 5;
 	int		m_NumMotions;
 	int		m_EndFrames[MAX_MOTION]; // max number of segments can be added in a motion.
 	std::vector<Posture> buffer;

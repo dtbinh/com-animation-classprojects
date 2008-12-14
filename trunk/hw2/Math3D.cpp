@@ -495,6 +495,20 @@ Quaternion& Quaternion::FromEulerAngle(Vector3 &v)
 	return *this;
 }
 
+Quaternion& Quaternion::FromEulerAngle_1(Vector3 &v)
+{
+	Vector3 t = v/2;
+	double cosX = cos(t.x), cosY = cos(t.y), cosZ = cos(t.z);
+	double sinX = sin(t.x), sinY = sin(t.y), sinZ = sin(t.z);
+
+	w = cosX * cosY * cosZ + sinX * sinY * sinZ;
+	x = sinX * cosY * cosZ - cosX * sinY * sinZ;
+	y = cosX * sinY * cosZ + sinX * cosY * sinZ;
+	z = cosX * cosY * sinZ - sinX * sinY * cosZ;
+	Normalize();
+	return *this;
+}
+
 Vector3 Quaternion::ToEulerAngle() const
 {
 	double	sqr_x = x * x;
@@ -629,12 +643,13 @@ inline Quaternion Quaternion::operator *(double s) const
 Quaternion Quaternion::operator *(const Quaternion& rhs) const
 {
 	double rx, ry, rz, rw;
+	double rhsX = rhs.x, rhsY = rhs.y, rhsZ = rhs.z, rhsW = rhs.w;
 
-	rw = rhs.w*w - rhs.x*x - rhs.y*y - rhs.z*z;
+	rw = rhsW*w - rhsX*x - rhsY*y - rhsZ*z;
 
-	rx = w*rhs.x + rhs.w*x + y*rhs.z - z*rhs.y;
-	ry = w*rhs.y + rhs.w*y + z*rhs.x - x*rhs.z;
-	rz = w*rhs.z + rhs.w*z + x*rhs.y - y*rhs.x;
+	rx = w*rhsX + rhsW*x + y*rhsZ - z*rhsY;
+	ry = w*rhsY + rhsW*y + z*rhsX - x*rhsZ;
+	rz = w*rhsZ + rhsW*z + x*rhsY - y*rhsX;
 
 	return(Quaternion(rx, ry, rz, rw));
 }
