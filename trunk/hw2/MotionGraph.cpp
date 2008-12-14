@@ -28,6 +28,7 @@ MotionGraph::MotionGraph()
 	offset = 0;
 	m_NumMotions = 0;
 	m_pPostures = NULL;
+	m_LocalMinima.reserve(2000);
 }
 
 MotionGraph::MotionGraph(char *amc_filename, float scale,Skeleton * pActor2)
@@ -85,6 +86,9 @@ void MotionGraph::Construct()
 			m_PoseDifference[i][j] = -1.0f;
 
 	computePoseDifference();
+
+	//	Find local minimum in search windows
+	findLocalMinimum();
 }
 
 void MotionGraph::Transition(std::vector<Posture>& data)
@@ -283,7 +287,7 @@ void MotionGraph::computePoseDifference()
 				//	Diff of joint orientation
 				m_PoseDifference[i][j] = Posture::compareJointAngles(*p1, *p2);
 				//	Diff of joint velocity
-				//m_PoseDifference[i][j] += (double)VELOCITY_WEIGHT * Posture::compareJointVelocities(*p1, *p2);
+				m_PoseDifference[i][j] += (double)VELOCITY_WEIGHT * Posture::compareJointVelocities(*p1, *p2);
 			}
 			//cout << "dist[" << i << "][" << j << "]=" << m_PoseDifference[i][j] << endl;
 			
@@ -293,4 +297,43 @@ void MotionGraph::computePoseDifference()
 		cout << "i=" << i << endl;
 	}
 
+}
+
+/*
+ *	Find local minimum of each window in the pose difference matrix
+ */
+void MotionGraph::findLocalMinimum()
+{
+	int i, j, p, q;
+	const int winSize = 50;
+	int rowBound, colBound;
+	double localMin;
+	int minI, minJ;
+
+	for (i = 0; i < m_NumFrames; i += winSize)
+		for (j = 0; j < m_NumFrames; j += winSize)
+		{
+			if (i+winSize < m_NumFrames)
+				rowBound = i+winSize;
+			else
+				rowBound = m_NumFrames;
+
+			if (j+winSize < m_NumFrames)
+				colBound = j+winSize;
+			else
+				colBound = m_NumFrames;
+			//	Search inside a window
+			localMin = 0.0f;
+			for (p = i; p < rowBound; p++)
+				for (q = j; q < colBound; q++)
+				{
+					if (m_PoseDifference[p][q] < localMin)
+					{
+						localMin = m_PoseDifference[p][q];
+						minI = i;
+						minJ = j;
+					}
+				}
+			m_LocalMinima.push_back(pair<int, int>(minI, minJ));
+		}
 }

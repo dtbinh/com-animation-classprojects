@@ -38,6 +38,7 @@ public:
 	int		NextJump(int index);
 	void	setActor(Skeleton *pActor);
 	void	computePoseDifference();
+	void	findLocalMinimum();
 private:
 	void	printJumpIdx(int current, int next);
 
@@ -47,6 +48,7 @@ public:
 	int		m_EndFrames[MAX_MOTION]; // max number of segments can be added in a motion.
 	std::vector<Posture> buffer;
 	double**	m_PoseDifference;		 // matrix of pose difference
+	vector<std::pair<int, int>> m_LocalMinima;	//	Local minima
 };
 
 #endif
