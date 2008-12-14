@@ -4,9 +4,24 @@
 #include "Math3D.h"
 #include "types.h"
 
+// index of bones
+enum AsfPart	
+{
+	Root=0,
+	lhipjoint, lfemur, ltibia, lfoot, ltoes,
+	rhipjoint, rfemur, rtibia, rfoot, rtoes,
+	lowerback, upperback, thorax, lowerneck, upperneck, head,
+	lclavicle, lhumerus, lradius, lwrist, lhand, lfingers, lthumb,
+	rclavicle, rhumerus, rradius, rwrist, rhand, rfingers, rthumb
+};
+
 //Root position and all bone rotation angles (including root) 
 class Posture
 {
+	//static funcitons
+public:
+	static double	compareJointAngles(Posture& p1, Posture& p2);
+	static double	getJointWeight(int joint);
 	//member functions
 	public:
 		Posture(){}
@@ -15,6 +30,9 @@ class Posture
 		friend Posture Slerp(float, Posture&, Posture& );
 
 		void Rotate(float theta);
+
+		void computeJointVelocities(Posture& p, bool Forward);
+		
 
 	//member variables
 	public:
@@ -29,6 +47,8 @@ class Posture
 		Vector3 bone_rotation[MAX_BONES_IN_ASF_FILE];
 		Vector3 bone_translation[MAX_BONES_IN_ASF_FILE];
 		Vector3 bone_length[MAX_BONES_IN_ASF_FILE];
+		//	joint velocities
+		Quaternion	joint_velocity[MAX_BONES_IN_ASF_FILE];
 };
 
 #endif

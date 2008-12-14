@@ -885,6 +885,7 @@ if (argc > 2)
 						delete pSampledMotion;
 					}
 					cout << "NumMotions in MotionGraph = " << pMotionGraph->m_NumMotions << endl;
+					pMotionGraph->Construct();
 				}
 		
 
@@ -892,12 +893,15 @@ if (argc > 2)
 				pSampledMotion = new Motion(filename, MOCAP_SCALE,pActor);
 
 				//set sampled motion for display
-				displayer.loadMotion(pSampledMotion);               
+				displayer.loadMotion(pSampledMotion);            
+
+				maxFrames = (displayer.m_pMotion[displayer.numActors-1]->m_NumFrames - 1);
+				frame_slider->maximum((double)maxFrames+1);
 			
 				//Tell actor to perform the first pose ( first posture )
 				pActor->setPosture(displayer.m_pMotion[0]->m_pPostures[0]);          
 
-				frame_slider->maximum((double)displayer.m_pMotion[0]->m_NumFrames );
+				//frame_slider->maximum((double)displayer.m_pMotion[0]->m_NumFrames );
 
 				nFrameNum=0;
 				
@@ -909,11 +913,12 @@ if (argc > 2)
 Play=ON;               // Some Flags for player
 Repeat=OFF;
 Record=ON;
-Background=OFF; 
+//Background=OFF; 
 Light=OFF; // Flags indicating if the object exists
 Record_filename = "";                    // Recording file name
 recmode=1;
 	}
+
 	glwindow->redraw();
 }
 

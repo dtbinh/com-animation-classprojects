@@ -13,17 +13,17 @@
 #define TRANS_NUMS 5
 
 using namespace std;
-
+/*
 enum AsfPart	
 {
-//	root=0,
+	Root=0,
 	lhipjoint, lfemur, ltibia, lfoot, ltoes,
 	rhipjoint, rfemur, rtibia, rfoot, rtoes,
 	lowerback, upperback, thorax, lowerneck, upperneck, head,
 	lclavicle, lhumerus, lradius, lwrist, lhand, lfingers, lthumb,
 	rclavicle, rhumerus, rradius, rwrist, rhand, rfingers, rthumb
 };
-
+*/
 class MotionGraph : public Motion
 {
 public:
@@ -37,6 +37,7 @@ public:
 	void	Transition(std::vector<Posture>& data);
 	int		NextJump(int index);
 	void	setActor(Skeleton *pActor);
+	void	computePoseDifference();
 private:
 	void	printJumpIdx(int current, int next);
 
@@ -44,6 +45,7 @@ public:
 	int		m_NumMotions;
 	int		m_EndFrames[MAX_MOTION]; // max number of segments can be added in a motion.
 	std::vector<Posture> buffer;
+	double**	m_PoseDifference;		 // matrix of pose difference
 };
 
 #endif

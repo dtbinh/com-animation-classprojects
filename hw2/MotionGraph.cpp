@@ -27,6 +27,7 @@ MotionGraph::MotionGraph()
 {
 	offset = 0;
 	m_NumMotions = 0;
+	m_pPostures = NULL;
 }
 
 MotionGraph::MotionGraph(char *amc_filename, float scale,Skeleton * pActor2)
@@ -50,24 +51,36 @@ void MotionGraph::Concatenate(Motion& m1)
 {
     Posture* new_Postures; 
     new_Postures = new Posture [m_NumFrames + m1.m_NumFrames];
-  //!!!Bug here
+ 
     for(int i=0; i<m_NumFrames; i++)
 	    new_Postures[i] = m_pPostures[i];
+
     for(int i=m_NumFrames ; i < m_NumFrames + m1.m_NumFrames; i++)
 	    new_Postures[i] = m1.m_pPostures[i-m_NumFrames];
-/*
+
     delete [] m_pPostures; 
 
     m_NumFrames += m1.m_NumFrames;
     m_EndFrames[m_NumMotions] = m_NumFrames-1;
 	m_NumMotions++;
 
-    m_pPostures = new_Postures;*/
+    m_pPostures = new_Postures;
 }
-
+/*
+ *	[TODO] Compute pose difference
+ *	[TODO] Do pruning
+ */
 void MotionGraph::Construct()
 {
-	// Add your code here
+
+	int i;
+	double* pData;
+	// Allocate pose difference matrix
+	m_PoseDifference = (double**)malloc(m_NumFrames*sizeof(double*) + m_NumFrames*m_NumFrames*sizeof(double));
+	for (i=0, pData = (double*)(m_PoseDifference+m_NumFrames); i < m_NumFrames; i++, pData+=m_NumFrames)
+		m_PoseDifference[i] = pData;
+
+	computePoseDifference();
 }
 
 void MotionGraph::Transition(std::vector<Posture>& data)
@@ -222,4 +235,48 @@ void MotionGraph::printJumpIdx(int current, int next )
 void MotionGraph::setActor(Skeleton *pActor)
 {
 	this->pActor = pActor;
+}
+
+/*
+ *	Define pose difference as Dij  = d(pi, pj ) + £hd(vi, vj ).
+ *	d(pi, pj ) : weighted differences of joint angles,
+ *	d(vi, vj ) : weighted differences of joint velocities
+ */
+void MotionGraph::computePoseDifference()
+{
+	int i, j;
+	Posture *p1, *p2;
+	
+	//	Compute joint velocities
+	
+	for (i=0, j=0; i<m_NumFrames; i++)
+	{
+		if (i != m_EndFrames[j])
+		{
+			m_pPostures[i].computeJointVelocities(m_pPostures[i+1], true); 
+		}
+		else
+		{
+			m_pPostures[i].computeJointVelocities(m_pPostures[i-1], false); 
+			j++;
+		}
+	}
+
+
+	for (i=0; i < m_NumFrames; i++)
+	{
+		p1 = &m_pPostures[i];
+		for (j=0; j < m_NumFrames; j++)
+		{
+			p2 = &m_pPostures[j];
+			//	Diff of joint orientation
+			m_PoseDifference[i][j] = Posture::compareJointAngles(*p1, *p2);
+			//cout << "dist[" << i << "][" << j << "]=" << m_PoseDifference[i][j] << endl;
+			
+			//	Diff of joint velocity
+				
+		}
+		cout << "i=" << i << endl;
+	}
+
 }
