@@ -73,12 +73,16 @@ void MotionGraph::Concatenate(Motion& m1)
 void MotionGraph::Construct()
 {
 
-	int i;
+	int i, j;
 	double* pData;
 	// Allocate pose difference matrix
 	m_PoseDifference = (double**)malloc(m_NumFrames*sizeof(double*) + m_NumFrames*m_NumFrames*sizeof(double));
 	for (i=0, pData = (double*)(m_PoseDifference+m_NumFrames); i < m_NumFrames; i++, pData+=m_NumFrames)
 		m_PoseDifference[i] = pData;
+	// Initialize pose difference matrix
+	for (i=0; i<m_NumFrames; i++)
+		for(j=0; j<m_NumFrames; j++)
+			m_PoseDifference[i][j] = -1.0f;
 
 	computePoseDifference();
 }
@@ -246,6 +250,7 @@ void MotionGraph::computePoseDifference()
 {
 	int i, j;
 	Posture *p1, *p2;
+	double tmp;
 	
 	//	Compute joint velocities
 	
@@ -269,11 +274,20 @@ void MotionGraph::computePoseDifference()
 		for (j=0; j < m_NumFrames; j++)
 		{
 			p2 = &m_pPostures[j];
-			//	Diff of joint orientation
-			m_PoseDifference[i][j] = Posture::compareJointAngles(*p1, *p2);
+			
+			
+			if (m_PoseDifference[j][i] >= 0.0f)
+				m_PoseDifference[i][j] = m_PoseDifference[j][i];
+			else
+			{
+				//	Diff of joint orientation
+				m_PoseDifference[i][j] = Posture::compareJointAngles(*p1, *p2);
+				//	Diff of joint velocity
+				//m_PoseDifference[i][j] += (double)VELOCITY_WEIGHT * Posture::compareJointVelocities(*p1, *p2);
+			}
 			//cout << "dist[" << i << "][" << j << "]=" << m_PoseDifference[i][j] << endl;
 			
-			//	Diff of joint velocity
+			
 				
 		}
 		cout << "i=" << i << endl;

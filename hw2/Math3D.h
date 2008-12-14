@@ -115,6 +115,7 @@ public:
 	Quaternion& FromRotationMatrix(Matrix4 &mat);
 	Matrix4 ToRotationMatrix() const;
     Quaternion& FromEulerAngle(Vector3 &v);
+	Quaternion& FromEulerAngle_1(Vector3 &v);
 	Vector3 ToEulerAngle() const;
 	// Compute the rotation quaternion from v0 to v1
 	Quaternion& RotationArc(Vector3 v0, Vector3 v1);

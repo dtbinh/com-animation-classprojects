@@ -4,6 +4,7 @@
 #include "Math3D.h"
 #include "types.h"
 
+
 // index of bones
 enum AsfPart	
 {
@@ -20,8 +21,9 @@ class Posture
 {
 	//static funcitons
 public:
-	static double	compareJointAngles(Posture& p1, Posture& p2);
-	static double	getJointWeight(int joint);
+	static	double	compareJointAngles(Posture& p1, Posture& p2);
+	static	double	getJointWeight(int joint);
+	static	double	compareJointVelocities(Posture& p1, Posture& p2);
 	//member functions
 	public:
 		Posture(){}
@@ -34,6 +36,9 @@ public:
 		void computeJointVelocities(Posture& p, bool Forward);
 		
 
+	//static variables
+public:
+	static const int NUM_BONES = 31;
 	//member variables
 	public:
 

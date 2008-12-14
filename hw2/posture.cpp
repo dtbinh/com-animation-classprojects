@@ -59,7 +59,7 @@ void Posture::computeJointVelocities(Posture& p, bool Forward)
 
 	if(Forward)	//	p is right after this posture
 	{
-		for (i=0; i < MAX_BONES_IN_ASF_FILE; i++)
+		for (i=0; i < NUM_BONES; i++)
 		{
 			q1.FromEulerAngle(bone_rotation[i]);
 			q2.FromEulerAngle(p.bone_rotation[i]);
@@ -68,7 +68,7 @@ void Posture::computeJointVelocities(Posture& p, bool Forward)
 	}
 	else
 	{
-		for (i=0; i < MAX_BONES_IN_ASF_FILE; i++)
+		for (i=0; i < NUM_BONES; i++)
 		{
 			q2.FromEulerAngle(bone_rotation[i]);
 			q1.FromEulerAngle(p.bone_rotation[i]);
@@ -84,14 +84,30 @@ double Posture::compareJointAngles(Posture& p1, Posture& p2)
 	Quaternion q1, q2;
 	double poseDiff = 0.0;
 
-	for (i = 0; i < MAX_BONES_IN_ASF_FILE; i++)
+	for (i = 0; i < NUM_BONES; i++)
 	{
-		q1.FromEulerAngle(p1.bone_rotation[i]);
+		q1.FromEulerAngle_1(p1.bone_rotation[i]);
 		q2.FromEulerAngle(p2.bone_rotation[i]);
 		poseDiff += getJointWeight(i) * (q2.Inverse() * q1).Log().Norm();
 	}
 
 	return poseDiff;
+}
+
+double Posture::compareJointVelocities(Posture& p1, Posture& p2)
+{
+	int i;
+	double velDiff = 0.0f;
+	Quaternion *q1, *q2;
+
+
+	for (i=0; i<NUM_BONES; i++)
+	{
+		q1 = &p1.joint_velocity[i];
+		q2 = &p2.joint_velocity[i];
+		velDiff += getJointWeight(i) * (q2->Inverse() * (*q1)).Log().Norm();	
+	}
+	return velDiff;
 }
 
 
