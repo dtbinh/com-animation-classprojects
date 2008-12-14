@@ -51,3 +51,91 @@ void Posture::Rotate(float theta)
 	mr = m2 * m1;
 	bone_rotation[0] = mr.ToEulerAngle(mr)*rad2deg;
 }
+
+void Posture::computeJointVelocities(Posture& p, bool Forward)
+{
+	int i;
+	Quaternion q1, q2, q2Inverse;
+
+	if(Forward)	//	p is right after this posture
+	{
+		for (i=0; i < MAX_BONES_IN_ASF_FILE; i++)
+		{
+			q1.FromEulerAngle(bone_rotation[i]);
+			q2.FromEulerAngle(p.bone_rotation[i]);
+			joint_velocity[i] = q2.Inverse() * q1;
+		}
+	}
+	else
+	{
+		for (i=0; i < MAX_BONES_IN_ASF_FILE; i++)
+		{
+			q2.FromEulerAngle(bone_rotation[i]);
+			q1.FromEulerAngle(p.bone_rotation[i]);
+			joint_velocity[i] = q2.Inverse() * q1;
+		}
+	}
+}
+
+/************************ static functions *****************************/
+double Posture::compareJointAngles(Posture& p1, Posture& p2)
+{
+	int i;
+	Quaternion q1, q2;
+	double poseDiff = 0.0;
+
+	for (i = 0; i < MAX_BONES_IN_ASF_FILE; i++)
+	{
+		q1.FromEulerAngle(p1.bone_rotation[i]);
+		q2.FromEulerAngle(p2.bone_rotation[i]);
+		poseDiff += getJointWeight(i) * (q2.Inverse() * q1).Log().Norm();
+	}
+
+	return poseDiff;
+}
+
+
+double Posture::getJointWeight(int joint)
+{
+	switch(joint)
+	{
+	//	less impact on visible difference
+	case Root:	//	can be aligned
+	case lhipjoint:
+	case lfoot:
+	case ltoes:
+	case rhipjoint:
+	case rfoot:
+	case rtoes:
+	case lowerneck:
+	case upperneck:
+	case head:
+	case lwrist:
+	case lhand:
+	case lfingers:
+	case lthumb:
+	case rwrist:
+	case rhand:
+	case rfingers:
+	case rthumb:
+		return 0.0f;
+		break;
+	// more impact
+	case lfemur:
+	case ltibia:
+	case rfemur:
+	case rtibia:
+	case lowerback:
+	case upperback:
+	case thorax:
+	case lclavicle:
+	case lhumerus:
+	case lradius:
+	case rclavicle:
+	case rhumerus:
+	case rradius:
+		return 1.0f;
+		break;
+	}
+	return 0.0f;
+}
