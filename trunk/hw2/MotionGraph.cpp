@@ -340,10 +340,7 @@ void MotionGraph::findLocalMinimum()
 					}
 				}
 			if (localMin < Threshold)
-			{
 				m_LocalMinima.push_back(pair<int, int>(minI, minJ));
-				cout << "test" << endl;
-			}
 			/*
 			//	Gather statistics
 			if (localMin < min)
