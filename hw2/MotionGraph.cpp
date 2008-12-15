@@ -89,8 +89,14 @@ void MotionGraph::Construct()
 
 	//	Find local minimum in search windows
 	findLocalMinimum();
-}
 
+	//	Create graph structure
+	createGraphStructure();
+}
+/*
+  *	Put the pose sequence into buffer when encounter transition.
+  *	Parameter : "data" store pose vector that is pose sequence from previous transion to current transition.
+  */
 void MotionGraph::Transition(std::vector<Posture>& data)
 {
 	// for reference, you can replace with your code here
@@ -103,14 +109,16 @@ void MotionGraph::Transition(std::vector<Posture>& data)
 	else
 	{
 		Posture old_end;
-		old_end = buffer[buffer.size()-1];
 		Posture new_start;
+		Posture end;
+		double angle;	//	angle difference between old_end and new_start
+
+		old_end = buffer[buffer.size()-1];
 		new_start = data[0];
-		double angle = GetFacingAngle(old_end.bone_rotation[0]) - GetFacingAngle(new_start.bone_rotation[0]);
+		angle = GetFacingAngle(old_end.bone_rotation[0]) - GetFacingAngle(new_start.bone_rotation[0]);
 		int len = data.size();
 		if(len > TRANS_NUMS)
 			len = TRANS_NUMS;
-		Posture end;
 		end = data[len-1];
 		if(len <= 2)
 		{
@@ -121,11 +129,13 @@ void MotionGraph::Transition(std::vector<Posture>& data)
 				new_start.Rotate(angle);
 				for(int i=1;i<TRANS_NUMS;i++)
 				{					
+					// Blend front and new_start in different ratio as temp
 					Posture temp = Slerp((float)i/(TRANS_NUMS-1), front, new_start);
 					Posture source;
 					source = buffer[buffer.size()-TRANS_NUMS+i];
 					temp.root_pos.x = source.root_pos.x;
 					temp.root_pos.z = source.root_pos.z;
+					// Blend poses in buffer with temp
 					buffer[buffer.size()-TRANS_NUMS+i] = Slerp((float)i/(TRANS_NUMS-1), source, temp);
 				}
 			}
@@ -136,6 +146,7 @@ void MotionGraph::Transition(std::vector<Posture>& data)
 				for(int k=1;k<TRANS_NUMS-1;k++)
 				{
 					Posture temp;
+					//	Blend old_end and new_start in different ratio as temp
 					temp = Slerp((float)k/(len-1), old_end, new_start);
 					temp.root_pos.x = old_end.root_pos.x;
 					temp.root_pos.z = old_end.root_pos.z;
@@ -356,4 +367,33 @@ void MotionGraph::findLocalMinimum()
 	cout << "max = " << max << endl;
 	cout << "avg = " << sum / (double) cnt << endl;
 	*/
+}
+
+void MotionGraph::createGraphStructure()
+{
+	int i, j;
+	MotionVertex*	pVertex;
+
+	//	Allocate motion vertices
+	m_Vertices = new MotionVertex[m_NumFrames];
+	pVertex = m_Vertices;
+	for (i = 0, j = 0; i < m_NumFrames; i++, pVertex++)
+	{
+		pVertex->m_MotionIndex = j;
+		pVertex->m_FrameIndex = i;
+		//	Connect edges of vertex in same motion
+		if (i != m_EndFrames[j])
+			pVertex->m_AdjVertices.push_back(i+1);
+		else
+			j++;	
+	}
+
+	//	Connect edges for local minima
+	int size = (int) m_LocalMinima.size();
+	std::pair<int, int> *pLocalMin;
+	for (i = 0; i < size; i++)
+	{
+		pLocalMin = &m_LocalMinima[i];
+		m_Vertices[pLocalMin->first].m_AdjVertices.push_back(pLocalMin->second);
+	}
 }
