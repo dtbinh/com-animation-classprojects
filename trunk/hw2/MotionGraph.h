@@ -3,6 +3,7 @@
 
 #include "Posture.h"
 #include "Motion.h"
+#include "MotionVertex.h"
 #include <vector>
 
 #define Threshold	1.5f//0.03f
@@ -39,6 +40,7 @@ public:
 	void	setActor(Skeleton *pActor);
 	void	computePoseDifference();
 	void	findLocalMinimum();
+	void	createGraphStructure();
 private:
 	void	printJumpIdx(int current, int next);
 
@@ -49,6 +51,7 @@ public:
 	std::vector<Posture> buffer;
 	double**	m_PoseDifference;		 // matrix of pose difference
 	vector<std::pair<int, int>> m_LocalMinima;	//	Local minima
+	MotionVertex*	m_Vertices;
 };
 
 #endif

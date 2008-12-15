@@ -299,6 +299,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\MotionVertex.cpp"
+				>
+			</File>
+			<File
 				RelativePath="player.cxx"
 				>
 				<FileConfiguration
@@ -430,6 +434,10 @@
 			</File>
 			<File
 				RelativePath=".\MotionGraph.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MotionVertex.h"
 				>
 			</File>
 			<File

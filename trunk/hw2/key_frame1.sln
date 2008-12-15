@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "key_frame1", "key_frame1.vcproj", "{D46A4B1D-119D-43AC-B9A8-DCD281C0C10B}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fltk", "..\fltk-1.0.11\visualc\fltk.lib.vcproj", "{919A14FF-3D9E-4B16-9426-06F252864C10}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -15,10 +13,6 @@ Global
 		{D46A4B1D-119D-43AC-B9A8-DCD281C0C10B}.Debug|Win32.Build.0 = Debug|Win32
 		{D46A4B1D-119D-43AC-B9A8-DCD281C0C10B}.Release|Win32.ActiveCfg = Release|Win32
 		{D46A4B1D-119D-43AC-B9A8-DCD281C0C10B}.Release|Win32.Build.0 = Release|Win32
-		{919A14FF-3D9E-4B16-9426-06F252864C10}.Debug|Win32.ActiveCfg = Debug|Win32
-		{919A14FF-3D9E-4B16-9426-06F252864C10}.Debug|Win32.Build.0 = Debug|Win32
-		{919A14FF-3D9E-4B16-9426-06F252864C10}.Release|Win32.ActiveCfg = Release|Win32
-		{919A14FF-3D9E-4B16-9426-06F252864C10}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
