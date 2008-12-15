@@ -68,7 +68,7 @@ void MotionGraph::Concatenate(Motion& m1)
     m_pPostures = new_Postures;
 }
 /*
- *	[TODO] Compute pose difference
+ *	[DONE] Compute pose difference
  *	[TODO] Do pruning
  */
 void MotionGraph::Construct()
@@ -249,6 +249,7 @@ void MotionGraph::setActor(Skeleton *pActor)
  *	Define pose difference as Dij  = d(pi, pj ) + £hd(vi, vj ).
  *	d(pi, pj ) : weighted differences of joint angles,
  *	d(vi, vj ) : weighted differences of joint velocities
+ *	[TODO] Preserve dynamics
  */
 void MotionGraph::computePoseDifference()
 {
@@ -309,7 +310,11 @@ void MotionGraph::findLocalMinimum()
 	int rowBound, colBound;
 	double localMin;
 	int minI, minJ;
-
+	/*
+	// For statisitics
+	int cnt = 0;
+	double min = 9999.0f, max = 0.0f, sum = 0.0f;
+*/
 	for (i = 0; i < m_NumFrames; i += winSize)
 		for (j = 0; j < m_NumFrames; j += winSize)
 		{
@@ -323,7 +328,7 @@ void MotionGraph::findLocalMinimum()
 			else
 				colBound = m_NumFrames;
 			//	Search inside a window
-			localMin = 0.0f;
+			localMin = 9999.0f;
 			for (p = i; p < rowBound; p++)
 				for (q = j; q < colBound; q++)
 				{
@@ -334,6 +339,24 @@ void MotionGraph::findLocalMinimum()
 						minJ = j;
 					}
 				}
-			m_LocalMinima.push_back(pair<int, int>(minI, minJ));
+			if (localMin < Threshold)
+			{
+				m_LocalMinima.push_back(pair<int, int>(minI, minJ));
+				cout << "test" << endl;
+			}
+			/*
+			//	Gather statistics
+			if (localMin < min)
+				min = localMin;
+			if (localMin > max)
+				max = localMin;
+			sum += localMin;
+			cnt++;
+			*/
 		}
+/*
+	cout << "min = " << min << endl;
+	cout << "max = " << max << endl;
+	cout << "avg = " << sum / (double) cnt << endl;
+	*/
 }
