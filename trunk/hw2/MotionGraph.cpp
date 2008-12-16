@@ -93,6 +93,9 @@ void MotionGraph::Construct()
 
 	//	Create graph structure
 	createGraphStructure();
+
+	//Do pruning
+	findSCC();
 }
 /*
   *	Put the pose sequence into buffer when encounter transition.
@@ -378,13 +381,14 @@ void MotionGraph::createGraphStructure()
 	//	Allocate motion vertices
 	m_Vertices = new MotionVertex[m_NumFrames];
 	pVertex = m_Vertices;
-	for (i = 0, j = 0; i < m_NumFrames; i++, pVertex++)
+	for (i = 0, j = 0; i < m_NumFrames; i++)
 	{
+		pVertex = &m_Vertices[i];
 		pVertex->m_MotionIndex = j;
 		pVertex->m_FrameIndex = i;
 		//	Connect edges of vertex in same motion
 		if (i != m_EndFrames[j])
-			pVertex->m_AdjVertices.push_back(i+1);
+			pVertex->m_AdjVertices.push_back(&m_Vertices[i+1]);
 		else
 			j++;	
 	}
@@ -395,7 +399,7 @@ void MotionGraph::createGraphStructure()
 	for (i = 0; i < size; i++)
 	{
 		pLocalMin = &m_LocalMinima[i];
-		m_Vertices[pLocalMin->first].m_AdjVertices.push_back(pLocalMin->second);
+		m_Vertices[pLocalMin->first].m_AdjVertices.push_back(&m_Vertices[pLocalMin->second]);
 	}
 }
 
@@ -403,6 +407,7 @@ void MotionGraph::DFS()
 {
 	int i;
 	int time = 0;
+	MotionVertex*	pVertex;
 
 	if (m_Vertices == NULL)
 	{
@@ -410,16 +415,56 @@ void MotionGraph::DFS()
 		exit(1);
 	}
 
-	for (i=0; i<m_NumMotions; i++)
+	for (i=0; i<m_NumFrames; i++)
 	{
-		if(m_Vertices[i].m_Color == WHITE)
+		pVertex = &m_Vertices[i];
+		if(pVertex->m_Color == MotionVertex::WHITE)
 		{
-			DFS_Visit();
+			DFS_Visit(pVertex, &time);
 		}
 	}
 
 }
 
-void MotionGraph::DFS_Visit(int v)
+void MotionGraph::DFS_Visit(MotionVertex* u, int* time)
 {
+	int i, size;
+	MotionVertex* v;
+
+	u->m_Color = MotionVertex::GRAY;
+	(*time) = (*time) + 1;
+	u->m_DTime = *time;
+
+	size = u->m_AdjVertices.size();
+	for (i = 0; i < size; i++)
+	{
+		v = u->m_AdjVertices[i];
+		if (v->m_Color == MotionVertex::WHITE)
+		{
+			v->m_Pi =  u;
+			DFS_Visit(v, time);
+		}
+	}
+	u->m_Color = MotionVertex::BLACK;
+	(*time) = (*time) + 1;
+	u->m_FTime = *time;
+
+}
+
+void MotionGraph::findSCC()
+{
+	int i, j, size;
+	MotionVertex* v;
+
+	DFS();
+	// compute transpose graph
+	for	(i = 0; i < m_NumFrames; i++)
+	{
+		v = &m_Vertices[i];
+		size = v->m_AdjVertices.size();
+		for	(j = 0; j < size; j++)
+		{
+			v->m_AdjVertices[j]->m_TransposeAdjVertices.push_back(v);
+		}
+	}
 }
