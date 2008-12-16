@@ -29,6 +29,7 @@ MotionGraph::MotionGraph()
 	m_NumMotions = 0;
 	m_pPostures = NULL;
 	m_LocalMinima.reserve(2000);
+	m_Vertices = NULL;
 }
 
 MotionGraph::MotionGraph(char *amc_filename, float scale,Skeleton * pActor2)
@@ -396,4 +397,29 @@ void MotionGraph::createGraphStructure()
 		pLocalMin = &m_LocalMinima[i];
 		m_Vertices[pLocalMin->first].m_AdjVertices.push_back(pLocalMin->second);
 	}
+}
+
+void MotionGraph::DFS()
+{
+	int i;
+	int time = 0;
+
+	if (m_Vertices == NULL)
+	{
+		cout << "Exception in DFS():m_Vertices is null" << endl;
+		exit(1);
+	}
+
+	for (i=0; i<m_NumMotions; i++)
+	{
+		if(m_Vertices[i].m_Color == WHITE)
+		{
+			DFS_Visit();
+		}
+	}
+
+}
+
+void MotionGraph::DFS_Visit(int v)
+{
 }

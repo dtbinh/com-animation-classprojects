@@ -41,6 +41,8 @@ public:
 	void	computePoseDifference();
 	void	findLocalMinimum();
 	void	createGraphStructure();
+	void	DFS();	//	Depth-first search
+	void	DFS_Visit(int v);	//	Do DFS visit for vertex v
 private:
 	void	printJumpIdx(int current, int next);
 
