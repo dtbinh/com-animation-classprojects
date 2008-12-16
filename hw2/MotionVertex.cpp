@@ -3,5 +3,5 @@
 MotionVertex::MotionVertex()
 {
 	m_Color = WHITE;
-	m_Pi	= NIL;
+	m_Pi	= NULL;
 }

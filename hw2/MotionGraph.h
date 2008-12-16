@@ -41,8 +41,9 @@ public:
 	void	computePoseDifference();
 	void	findLocalMinimum();
 	void	createGraphStructure();
-	void	DFS();	//	Depth-first search
-	void	DFS_Visit(int v);	//	Do DFS visit for vertex v
+	void	DFS();																	//	Depth-first search
+	void	DFS_Visit(MotionVertex* u, int* time);	//	Do DFS visit for vertex v
+	void	findSCC();															//	Find strongly connected components
 private:
 	void	printJumpIdx(int current, int next);
 
