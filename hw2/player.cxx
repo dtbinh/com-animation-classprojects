@@ -64,6 +64,12 @@ std::vector <double*> line;
 bool path_draw = true;
 
 static MotionGraph *pMotionGraph;
+
+//	Variables for FPS calculation
+int Frames = 0;
+const int UpdateTime = 1000;
+int LastTime = 0, CurrentTime = 0;
+double FPS = 0.0f;
 /***************  Functions *******************/
 static void draw_triad() 
 {
@@ -376,7 +382,6 @@ void record_callback(Fl_Light_Button *button, void *)
 
 void idle(void*)
 {
-
 	if (displayer.m_pMotion[0] != NULL)
 	{
 		if(Rewind==ON)
@@ -417,6 +422,21 @@ void idle(void*)
 
 	frame_slider->value((double)nFrameNum+1);
 	glwindow->redraw();
+
+	//	Calculate FPS
+	Frames++;
+	if ( (GetTickCount() - LastTime) > UpdateTime )
+	{
+		FPS = ((double)Frames/(double)(GetTickCount()-LastTime)) * 1000.0f;
+		LastTime = GetTickCount();
+		Frames = 0;
+	}
+	//	Adjust to 30 fps
+	while ( (GetTickCount() - CurrentTime) < 30)
+	{}
+	CurrentTime = GetTickCount();
+
+	printf("FPS:%f\n", FPS);
 }
 
 void fslider_callback(Fl_Value_Slider *slider, long val)
