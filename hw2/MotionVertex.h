@@ -10,6 +10,7 @@ class MotionVertex
 public:
 	//----------------Member functions
 	MotionVertex();
+	void computeNumSCCAdj();
 
 public:
 	//----------------Static variables
@@ -30,6 +31,8 @@ public:
 	vector<MotionVertex*> m_TransposeAdjVertices;	//	For Transpose graph
 	int	m_SCCOrder;		//	Order for SCC computation
 	bool	m_InSCC;			//	Whether this vertex is in the largest SCC
+	int		m_NumSCCAdj;	//	Number of adjacent vertices in SCC
+	double	m_StartProb, m_EndProb;
 	
 };
 

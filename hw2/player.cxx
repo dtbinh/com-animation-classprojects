@@ -436,7 +436,7 @@ void idle(void*)
 	{}
 	CurrentTime = GetTickCount();
 
-	printf("FPS:%f\n", FPS);
+	//printf("FPS:%f\n", FPS);
 }
 
 void fslider_callback(Fl_Value_Slider *slider, long val)

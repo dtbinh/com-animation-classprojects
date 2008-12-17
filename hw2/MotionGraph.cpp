@@ -206,6 +206,31 @@ int MotionGraph::Traverse(int current, bool& jump)
 {
 	jump = false;
 	int next = 0;
+	int i, adjSize;
+	MotionVertex *curVertex, *adjVertex;
+	double	accProb = 0.0f;
+
+	//	Assign a probability for each adjVertex
+	curVertex =  &m_Vertices[current];
+	adjSize = curVertex->m_AdjVertices.size();
+	for (i = 0; i < adjSize; i++)
+	{
+		adjVertex = curVertex->m_AdjVertices[i];
+		if (adjVertex->m_InSCC)
+		{
+			adjVertex->m_StartProb = accProb;
+			if (adjVertex->m_MotionIndex == curVertex->m_MotionIndex)
+			{
+				accProb += 0.5;
+				adjVertex->m_EndProb = accProb;
+			}
+			else
+			{
+				accProb += (0.5/(double)curVertex->m_NumSCCAdj);
+				adjVertex->m_EndProb = 
+			}
+		}
+	}
 
 	return next;
 }
@@ -478,7 +503,6 @@ void MotionGraph::findSCC()
 	MotionVertex* v;
 	int order;
 	int maxInterval = 0;
-	MotionVertex* maxSCCRoot;
 
 	DFS(false);
 	// compute transpose graph
@@ -503,18 +527,18 @@ void MotionGraph::findSCC()
 			if ((v->m_FTime - v->m_DTime) > maxInterval)
 			{
 				maxInterval = (v->m_FTime - v->m_DTime);
-				maxSCCRoot = v;
+				m_MaxSCCRoot = v;
 			}
 	}
 
 	for (i=0; i<m_NumFrames; i++)
 	{
 		v = &m_Vertices[i];
-		if ( (v->m_DTime >= maxSCCRoot->m_DTime) &&
-			  (v->m_FTime <= maxSCCRoot->m_FTime) )
+		if ( (v->m_DTime >= m_MaxSCCRoot->m_DTime) &&
+			  (v->m_FTime <= m_MaxSCCRoot->m_FTime) )
 		{
 			  v->m_InSCC = true;
-			  size++;
+			  v->computeNumSCCAdj();
 		}
 	}
 

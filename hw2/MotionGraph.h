@@ -56,6 +56,7 @@ public:
 	vector<std::pair<int, int>> m_LocalMinima;		//	Local minima
 	MotionVertex*				m_Vertices;
 	vector<MotionVertex*>		m_SCCQueue;			//	Vertex order for SCC computation	
+	MotionVertex*						m_MaxSCCRoot;
 };
 
 #endif
