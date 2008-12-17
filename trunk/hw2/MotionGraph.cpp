@@ -70,7 +70,7 @@ void MotionGraph::Concatenate(Motion& m1)
 }
 /*
  *	[DONE] Compute pose difference
- *	[TODO] Do pruning
+ *	[DONE] Do pruning
  */
 void MotionGraph::Construct()
 {
@@ -201,6 +201,7 @@ int	MotionGraph::NextJump(int index)
 	return 0;
 }
 
+//	Traverse motion graph
 int MotionGraph::Traverse(int current, bool& jump)
 {
 	jump = false;
