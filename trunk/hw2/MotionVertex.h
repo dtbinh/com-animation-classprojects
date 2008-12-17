@@ -9,7 +9,7 @@ class MotionVertex
 {
 public:
 	//----------------Member functions
-	MotionVertex();
+	MotionVertex() {}
 
 public:
 	//----------------Static variables

@@ -41,9 +41,9 @@ public:
 	void	computePoseDifference();
 	void	findLocalMinimum();
 	void	createGraphStructure();
-	void	DFS();																	//	Depth-first search
-	void	DFS_Visit(MotionVertex* u, int* time);	//	Do DFS visit for vertex v
-	void	findSCC();															//	Find strongly connected components
+	void	DFS(bool SCCOrder);										//	Depth-first search
+	void	DFS_Visit(MotionVertex* u, int* time, bool SCCOrder);	//	Do DFS visit for vertex v
+	void	findSCC();												//	Find strongly connected components
 private:
 	void	printJumpIdx(int current, int next);
 
@@ -52,9 +52,10 @@ public:
 	int		m_NumMotions;
 	int		m_EndFrames[MAX_MOTION]; // max number of segments can be added in a motion.
 	std::vector<Posture> buffer;
-	double**	m_PoseDifference;		 // matrix of pose difference
-	vector<std::pair<int, int>> m_LocalMinima;	//	Local minima
-	MotionVertex*	m_Vertices;
+	double**					m_PoseDifference;	// matrix of pose difference
+	vector<std::pair<int, int>> m_LocalMinima;		//	Local minima
+	MotionVertex*				m_Vertices;
+	vector<MotionVertex*>		m_SCCQueue;			//	Vertex order for SCC computation	
 };
 
 #endif

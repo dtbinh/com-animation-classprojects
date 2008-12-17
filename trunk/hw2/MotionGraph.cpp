@@ -403,7 +403,7 @@ void MotionGraph::createGraphStructure()
 	}
 }
 
-void MotionGraph::DFS()
+void MotionGraph::DFS(bool SCCOrder)
 {
 	int i;
 	int time = 0;
@@ -418,15 +418,32 @@ void MotionGraph::DFS()
 	for (i=0; i<m_NumFrames; i++)
 	{
 		pVertex = &m_Vertices[i];
-		if(pVertex->m_Color == MotionVertex::WHITE)
-		{
-			DFS_Visit(pVertex, &time);
-		}
+		pVertex->m_Color = MotionVertex::WHITE;
+		pVertex->m_Pi = NULL;
 	}
+
+	if (!SCCOrder)
+		for (i=0; i<m_NumFrames; i++)
+		{
+			pVertex = &m_Vertices[i];
+			if(pVertex->m_Color == MotionVertex::WHITE)
+			{
+				DFS_Visit(pVertex, &time, false);
+			}
+		}
+	else
+		for (i=(int)m_SCCQueue.size()-1; i>=0; i--)
+		{
+			pVertex = &m_Vertices[i];
+			if(pVertex->m_Color == MotionVertex::WHITE)
+			{
+				DFS_Visit(pVertex, &time, true);
+			}
+		}
 
 }
 
-void MotionGraph::DFS_Visit(MotionVertex* u, int* time)
+void MotionGraph::DFS_Visit(MotionVertex* u, int* time, bool SCCOrder)
 {
 	int i, size;
 	MotionVertex* v;
@@ -442,12 +459,15 @@ void MotionGraph::DFS_Visit(MotionVertex* u, int* time)
 		if (v->m_Color == MotionVertex::WHITE)
 		{
 			v->m_Pi =  u;
-			DFS_Visit(v, time);
+			DFS_Visit(v, time, SCCOrder);
 		}
 	}
 	u->m_Color = MotionVertex::BLACK;
 	(*time) = (*time) + 1;
 	u->m_FTime = *time;
+
+	if (!SCCOrder)
+		m_SCCQueue.push_back(u);
 
 }
 
@@ -455,8 +475,11 @@ void MotionGraph::findSCC()
 {
 	int i, j, size;
 	MotionVertex* v;
+	int order;
+	int maxInterval = 0;
+	MotionVertex* maxSCCRoot;
 
-	DFS();
+	DFS(false);
 	// compute transpose graph
 	for	(i = 0; i < m_NumFrames; i++)
 	{
@@ -467,4 +490,22 @@ void MotionGraph::findSCC()
 			v->m_AdjVertices[j]->m_TransposeAdjVertices.push_back(v);
 		}
 	}
+	cout << "size=" << m_SCCQueue.size() << endl;
+	//	Do DFS on transpose graph in decreasing FTime order
+	DFS(true);
+
+	// Find the largest SCC
+	for (i=0; i<m_NumFrames; i++)
+	{
+		v = &m_Vertices[i];
+		if (v->m_Pi == NULL)
+			if ((v->m_FTime - v->m_DTime) > maxInterval)
+			{
+				maxInterval = (v->m_FTime - v->m_DTime);
+				maxSCCRoot = v;
+			}
+	}
+
+	cout << "maxInterval=" << maxInterval << endl;
+	cout << "v=" << v->m_FrameIndex << endl;
 }
