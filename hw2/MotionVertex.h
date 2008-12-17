@@ -9,7 +9,7 @@ class MotionVertex
 {
 public:
 	//----------------Member functions
-	MotionVertex() {}
+	MotionVertex();
 
 public:
 	//----------------Static variables
@@ -29,6 +29,7 @@ public:
 	//	Variables for SCC
 	vector<MotionVertex*> m_TransposeAdjVertices;	//	For Transpose graph
 	int	m_SCCOrder;		//	Order for SCC computation
+	bool	m_InSCC;			//	Whether this vertex is in the largest SCC
 	
 };
 
