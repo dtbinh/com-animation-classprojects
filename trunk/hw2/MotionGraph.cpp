@@ -490,7 +490,7 @@ void MotionGraph::findSCC()
 			v->m_AdjVertices[j]->m_TransposeAdjVertices.push_back(v);
 		}
 	}
-	cout << "size=" << m_SCCQueue.size() << endl;
+
 	//	Do DFS on transpose graph in decreasing FTime order
 	DFS(true);
 
@@ -506,6 +506,15 @@ void MotionGraph::findSCC()
 			}
 	}
 
-	cout << "maxInterval=" << maxInterval << endl;
-	cout << "v=" << v->m_FrameIndex << endl;
+	for (i=0; i<m_NumFrames; i++)
+	{
+		v = &m_Vertices[i];
+		if ( (v->m_DTime >= maxSCCRoot->m_DTime) &&
+			  (v->m_FTime <= maxSCCRoot->m_FTime) )
+		{
+			  v->m_InSCC = true;
+			  size++;
+		}
+	}
+
 }
