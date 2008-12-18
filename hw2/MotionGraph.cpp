@@ -201,6 +201,46 @@ void MotionGraph::Transition(std::vector<Posture>& data)
 
 void MotionGraph::Transition1(std::vector<Posture>& data)
 {
+	if(buffer.empty())
+	{
+		for(int i=0;i<data.size();i++)
+			buffer.push_back(data[i]);
+	}
+	else
+	{
+		Posture old_start, *old_end, new_start, *new_end;
+		double angle;
+		int len1, len2, len;
+
+		len1 = buffer.size();
+		if (len1 > TRANS_NUMS)
+			len1 = TRANS_NUMS;
+
+		len2 = data.size();
+		if (len2 > TRANS_NUMS)
+			len2 = TRANS_NUMS;
+
+		len = min(len1, len2);
+
+		old_end = &buffer[buffer.size() - 1];
+		new_end = &data[len - 1];
+
+		for (int i=0; i<data.size(); i++)
+		{
+			if (i < len)
+			{
+				data[i].root_pos.x = buffer[buffer.size() - len + i].root_pos.x;
+				data[i].root_pos.z = buffer[buffer.size() - len + i].root_pos.z;
+			}
+			else
+			{
+				Vector3 disp = old_end->root_pos - new_end->root_pos;
+				data[i].root_pos.x += disp.x;
+				data[i].root_pos.z += disp.z;
+				buffer.push_back(data[i]);
+			}
+		}
+	}
 
 }
 
