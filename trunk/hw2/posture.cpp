@@ -67,7 +67,7 @@ void Posture::computeJointVelocities(Posture& p, bool Forward)
 
 	if(Forward)	//	p is right after this posture
 	{
-		for (i=0; i < NUM_BONES; i++)
+		for (i=1; i < NUM_BONES; i++)
 		{
 			q1.FromEulerAngle_1(bone_rotation[i]);
 			q2.FromEulerAngle_1(p.bone_rotation[i]);
@@ -76,7 +76,7 @@ void Posture::computeJointVelocities(Posture& p, bool Forward)
 	}
 	else
 	{
-		for (i=0; i < NUM_BONES; i++)
+		for (i=1; i < NUM_BONES; i++)
 		{
 			q2.FromEulerAngle_1(bone_rotation[i]);
 			q1.FromEulerAngle_1(p.bone_rotation[i]);
@@ -92,7 +92,7 @@ double Posture::compareJointAngles(Posture& p1, Posture& p2)
 	Quaternion q1, q2;
 	double poseDiff = 0.0;
 
-	for (i = 0; i < NUM_BONES; i++)
+	for (i = 1; i < NUM_BONES; i++)
 	{
 		q1.FromEulerAngle_1(p1.bone_rotation[i]);
 		q2.FromEulerAngle_1(p2.bone_rotation[i]);
