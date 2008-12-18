@@ -34,9 +34,10 @@ public:
 	void	Concatenate(Motion& m1);
 	void	Construct();
 	int		Traverse(int current, bool& jump);
+	int		Traverse1(int current, bool& jump);
 	int		GenerateMotion(int total_frames, int start_frame, char*);
 	void	Transition(std::vector<Posture>& data);
-	void	Transition(Posture& pose);
+	void	Transition1(std::vector<Posture>& data);
 	int		NextJump(int index);
 	void	setActor(Skeleton *pActor);
 	void	computePoseDifference();
@@ -58,6 +59,7 @@ public:
 	MotionVertex*				m_Vertices;
 	vector<MotionVertex*>		m_SCCQueue;			//	Vertex order for SCC computation	
 	MotionVertex*						m_MaxSCCRoot;
+	int	m_BufferIndex;
 };
 
 #endif
