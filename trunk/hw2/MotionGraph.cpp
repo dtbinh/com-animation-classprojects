@@ -5,6 +5,9 @@
 #include "transform.h"
 #include "Math3D.h"
 
+#include <stdlib.h>
+#include <time.h>
+
 #define NUM_BONES_IN_ASF_FILE 100
 
 using namespace std;
@@ -104,6 +107,8 @@ void MotionGraph::Construct()
 void MotionGraph::Transition(std::vector<Posture>& data)
 {
 	// for reference, you can replace with your code here
+	cout << "test1:buffer size=" << buffer.size() << endl;
+	system("PAUSE");
 
 	if(buffer.empty())
 	{
@@ -160,6 +165,8 @@ void MotionGraph::Transition(std::vector<Posture>& data)
 			len = 0;
 		}
 
+		cout << "test2:buffer size = " << buffer.size() << endl;
+		system("PAUSE");
 		end.Rotate(angle);
 		for(int k=1;k<data.size();k++)
 		{				
@@ -193,12 +200,56 @@ void MotionGraph::Transition(std::vector<Posture>& data)
 			buffer.push_back(p);			
 		}
 	}
+	cout << "test3:buffer size = " << buffer.size() << endl;
+	system("PAUSE");
 }
 
 int	MotionGraph::NextJump(int index)
 {
-	// Add your code here
-	return 0;
+	int i, adjSize, next = -1;
+	int defaultFrame;
+	MotionVertex *curVertex, *adjVertex;
+	double	accProb = 0.0f, Prob;
+
+	srand(time(NULL));
+	Prob = double(rand() % 1000) / 1000.0;
+
+	if (Prob < 0.0 || Prob > 1.0)
+	{
+		cout << "Prob error!" << endl;
+		exit(1);
+	}
+
+	curVertex =  &m_Vertices[index];
+	adjSize = curVertex->m_AdjVertices.size();
+	//cout << "SCCadjSize=" << curVertex->m_NumSCCAdj << endl;
+	//system("PAUSE");
+
+	for (i = 0; i < adjSize; i++)
+	{
+		adjVertex = curVertex->m_AdjVertices[i];
+		if (adjVertex->m_InSCC)
+		{
+			if (adjVertex->m_MotionIndex == curVertex->m_MotionIndex)
+				accProb += 0.5;
+			else
+				accProb += (0.5/(double)curVertex->m_NumSCCAdj);
+
+			if (accProb > 1.0f)
+			{
+				cout << "accProb error" << endl;
+				exit(1);
+			}
+			if (accProb >= Prob)
+			{	
+				next = adjVertex->m_FrameIndex;
+				return next;
+			}
+			defaultFrame = adjVertex->m_FrameIndex;
+		}
+	}
+
+	return defaultFrame;
 }
 
 //	Traverse motion graph
@@ -206,31 +257,22 @@ int MotionGraph::Traverse(int current, bool& jump)
 {
 	jump = false;
 	int next = 0;
-	int i, adjSize;
-	MotionVertex *curVertex, *adjVertex;
-	double	accProb = 0.0f;
 
-	//	Assign a probability for each adjVertex
-	curVertex =  &m_Vertices[current];
-	adjSize = curVertex->m_AdjVertices.size();
-	for (i = 0; i < adjSize; i++)
+	vector<Posture> v;
+	v.push_back(m_pPostures[current]);
+	if(buffer.size() < 1000)
 	{
-		adjVertex = curVertex->m_AdjVertices[i];
-		if (adjVertex->m_InSCC)
-		{
-			adjVertex->m_StartProb = accProb;
-			if (adjVertex->m_MotionIndex == curVertex->m_MotionIndex)
-			{
-				accProb += 0.5;
-				adjVertex->m_EndProb = accProb;
-			}
-			else
-			{
-				accProb += (0.5/(double)curVertex->m_NumSCCAdj);
-				adjVertex->m_EndProb = 
-			}
-		}
+		Transition(v);
+		//buffer.push_back(m_pPostures[current]);
+		
 	}
+	next = NextJump(current);
+	if (next == -1)
+	{
+		cout << "NextJump error" << endl;
+		exit(1);
+	}
+	
 
 	return next;
 }
@@ -373,15 +415,20 @@ void MotionGraph::findLocalMinimum()
 			for (p = i; p < rowBound; p++)
 				for (q = j; q < colBound; q++)
 				{
+					if (p == q)
+						continue;
 					if (m_PoseDifference[p][q] < localMin)
 					{
 						localMin = m_PoseDifference[p][q];
-						minI = i;
-						minJ = j;
+						minI = p;
+						minJ = q;
+
 					}
 				}
 			if (localMin < Threshold)
+			{
 				m_LocalMinima.push_back(pair<int, int>(minI, minJ));
+			}
 			/*
 			//	Gather statistics
 			if (localMin < min)
@@ -416,9 +463,24 @@ void MotionGraph::createGraphStructure()
 		if (i != m_EndFrames[j])
 			pVertex->m_AdjVertices.push_back(&m_Vertices[i+1]);
 		else
-			j++;	
+		{
+			j++;
+		}
 	}
-
+/*
+	for (i = 0, j = 0; i < m_NumFrames; i++)
+	{
+		pVertex = &m_Vertices[i];
+		if (i != m_EndFrames[j])
+			if (pVertex->m_AdjVertices.size() == 0)
+			{
+				cout << "adj Exception : i=" << i << endl;
+				system("PAUSE");
+			}
+		else
+			j++;
+	}
+*/
 	//	Connect edges for local minima
 	int size = (int) m_LocalMinima.size();
 	std::pair<int, int> *pLocalMin;
@@ -426,6 +488,7 @@ void MotionGraph::createGraphStructure()
 	{
 		pLocalMin = &m_LocalMinima[i];
 		m_Vertices[pLocalMin->first].m_AdjVertices.push_back(&m_Vertices[pLocalMin->second]);
+
 	}
 }
 
@@ -537,8 +600,28 @@ void MotionGraph::findSCC()
 		if ( (v->m_DTime >= m_MaxSCCRoot->m_DTime) &&
 			  (v->m_FTime <= m_MaxSCCRoot->m_FTime) )
 		{
-			  v->m_InSCC = true;
-			  v->computeNumSCCAdj();
+			  v->m_InSCC = true;	
+			  /*
+			  if (v->m_FrameIndex == 211)
+			  {
+				  cout << "root:(" << m_MaxSCCRoot->m_DTime << ", " << m_MaxSCCRoot->m_FTime << endl;
+				  cout << "root:(" << v->m_DTime << ", " << v->m_FTime << endl;
+			  }*/
+		}
+	}
+
+	for (i=0; i<m_NumFrames; i++)
+	{
+		v = &m_Vertices[i];
+		if (v->m_InSCC)
+		{
+			v->computeNumSCCAdj();
+			/*
+			if (v->m_NumSCCAdj == 0)
+			{
+				cout << "sccadj =0 : v=" << v->m_FrameIndex << endl;
+				system("PAUSE");
+			}*/
 		}
 	}
 

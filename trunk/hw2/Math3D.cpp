@@ -670,8 +670,43 @@ inline Quaternion Quaternion::operator /(double s) const
 
 Quaternion Quaternion::Slerp(Quaternion q1, Quaternion q2, double time)
 {
-	// ADD your code here
-	Quaternion r;
+	Quaternion r, tmp;
+	double angle = q1.DotProduct(q2);
+	double scale, invScale;
+
+	if (angle < 0.0f)
+	{
+		q1 *= -1.0f;
+		angle *= -1.0f;
+	}
+	
+	if ((angle + 1.0f) > 0.05f)
+    {
+        if ((1.0f - angle) >= 0.05f) // spherical interpolation
+        {
+             const double theta = acos(angle);
+             const double invSinTheta = 1.0/sinf(theta);
+             scale = sin(theta * (1.0f-time)) * invSinTheta;
+             invScale = sin(theta * time) * invSinTheta;
+        }
+        else // linear interploation
+        {
+             scale = 1.0f - time;
+             invScale = time;
+        }
+    }
+    else
+    {
+		tmp.x = q1.y * (-1);
+		tmp.y = q1.x;
+		tmp.z = q1.w * (-1);
+		tmp.w = q1.z;
+        scale = sin(PI * (0.5f - time));
+        invScale = sin(PI * time);
+    }
+
+	r = q1*scale + q2*invScale;
+
 	return r;
 }
 

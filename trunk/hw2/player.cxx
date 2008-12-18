@@ -64,6 +64,7 @@ std::vector <double*> line;
 bool path_draw = true;
 
 static MotionGraph *pMotionGraph;
+int CurrentFrame = -1;
 
 //	Variables for FPS calculation
 int Frames = 0;
@@ -264,7 +265,7 @@ void switchmode_proc(Fl_Light_Button *obj, long val)
 void interpolate_callback(Fl_Button *button, void *) 
 {
 
-
+	CurrentFrame = pMotionGraph->m_MaxSCCRoot->m_FrameIndex;
 }
 
 
@@ -382,6 +383,20 @@ void record_callback(Fl_Light_Button *button, void *)
 
 void idle(void*)
 {
+	bool flag = true;
+
+	if(CurrentFrame != -1)
+	{
+		printf("CurrentFrame = %d\n", CurrentFrame);
+		//CurrentFrame = pMotionGraph->NextJump(CurrentFrame);
+		CurrentFrame = pMotionGraph->Traverse(CurrentFrame, flag);
+		if (pMotionGraph->buffer.size() > 0)
+		{
+			displayer.m_pActor[0]->setPosture(pMotionGraph->buffer[pMotionGraph->buffer.size()-1]);
+		
+		}
+	}
+	/*
 	if (displayer.m_pMotion[0] != NULL)
 	{
 		if(Rewind==ON)
@@ -419,7 +434,7 @@ void idle(void*)
 				nFrameNum += nFrameInc;
 		}
 	}
-
+*/
 	frame_slider->value((double)nFrameNum+1);
 	glwindow->redraw();
 
