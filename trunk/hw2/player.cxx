@@ -71,6 +71,7 @@ int Frames = 0;
 const int UpdateTime = 1000;
 int LastTime = 0, CurrentTime = 0;
 double FPS = 0.0f;
+
 /***************  Functions *******************/
 static void draw_triad() 
 {
@@ -387,13 +388,13 @@ void idle(void*)
 
 	if(CurrentFrame != -1)
 	{
-		printf("CurrentFrame = %d\n", CurrentFrame);
-		
-		CurrentFrame = pMotionGraph->Traverse(CurrentFrame, flag);
+		//printf("CurrentFrame = %d\n", CurrentFrame);
+		printf("buffer size = %d\n", pMotionGraph->buffer.size());
+		CurrentFrame = pMotionGraph->Traverse1(CurrentFrame, flag);
 		if (pMotionGraph->buffer.size() > 0)
 		{
-			displayer.m_pActor[0]->setPosture(pMotionGraph->buffer[pMotionGraph->buffer.size()-1]);
-		
+			displayer.m_pActor[0]->setPosture(pMotionGraph->buffer[pMotionGraph->m_BufferIndex]);
+			pMotionGraph->m_BufferIndex++;
 		}
 	}
 	/*

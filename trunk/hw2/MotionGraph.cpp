@@ -33,6 +33,7 @@ MotionGraph::MotionGraph()
 	m_pPostures = NULL;
 	m_LocalMinima.reserve(2000);
 	m_Vertices = NULL;
+	m_BufferIndex = 0;
 }
 
 MotionGraph::MotionGraph(char *amc_filename, float scale,Skeleton * pActor2)
@@ -198,7 +199,7 @@ void MotionGraph::Transition(std::vector<Posture>& data)
 	}
 }
 
-void MotionGraph::Transition(Posture& pose)
+void MotionGraph::Transition1(std::vector<Posture>& data)
 {
 
 }
@@ -284,6 +285,36 @@ int MotionGraph::Traverse(int current, bool& jump)
 	
 
 	return next;
+}
+
+//	Traverse motion graph
+int MotionGraph::Traverse1(int current, bool& jump)
+{
+	jump = false;
+	int next = 0, curr = current;
+
+
+	vector<Posture> poseVector;
+	while ( (buffer.size() - m_BufferIndex) < TRANS_NUMS)
+	{
+		poseVector.push_back(m_pPostures[curr]);
+		next = NextJump(curr);
+		if (m_Vertices[current].m_MotionIndex == m_Vertices[next].m_MotionIndex)
+		{
+			//poseVector.push_back(m_pPostures[next]);
+		}
+		else
+		{
+			Transition1(poseVector);
+
+			//no alignment but correctly
+			/*for(int i = 0; i < poseVector.size(); i++)
+				buffer.push_back(poseVector[i]);*/
+		}
+
+		curr = next;
+	}
+	return curr;
 }
 
 int MotionGraph::GenerateMotion(int total_frames, int start_frame, char* filename)
