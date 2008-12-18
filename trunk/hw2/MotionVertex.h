@@ -32,6 +32,7 @@ public:
 	int	m_SCCOrder;		//	Order for SCC computation
 	bool	m_InSCC;			//	Whether this vertex is in the largest SCC
 	int		m_NumSCCAdj;	//	Number of adjacent vertices in SCC
+	bool	m_NextFrameInSCC;
 	
 };
 

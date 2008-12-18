@@ -107,8 +107,6 @@ void MotionGraph::Construct()
 void MotionGraph::Transition(std::vector<Posture>& data)
 {
 	// for reference, you can replace with your code here
-	cout << "test1:buffer size=" << buffer.size() << endl;
-	system("PAUSE");
 
 	if(buffer.empty())
 	{
@@ -165,8 +163,6 @@ void MotionGraph::Transition(std::vector<Posture>& data)
 			len = 0;
 		}
 
-		cout << "test2:buffer size = " << buffer.size() << endl;
-		system("PAUSE");
 		end.Rotate(angle);
 		for(int k=1;k<data.size();k++)
 		{				
@@ -200,18 +196,21 @@ void MotionGraph::Transition(std::vector<Posture>& data)
 			buffer.push_back(p);			
 		}
 	}
-	cout << "test3:buffer size = " << buffer.size() << endl;
-	system("PAUSE");
+}
+
+void MotionGraph::Transition(Posture& pose)
+{
+
 }
 
 int	MotionGraph::NextJump(int index)
 {
 	int i, adjSize, next = -1;
 	int defaultFrame;
-	MotionVertex *curVertex, *adjVertex;
+	MotionVertex *curVertex, *adjVertex, *nextFrameVertex;
 	double	accProb = 0.0f, Prob;
 
-	srand(time(NULL));
+	//srand(time(NULL));
 	Prob = double(rand() % 1000) / 1000.0;
 
 	if (Prob < 0.0 || Prob > 1.0)
@@ -222,24 +221,34 @@ int	MotionGraph::NextJump(int index)
 
 	curVertex =  &m_Vertices[index];
 	adjSize = curVertex->m_AdjVertices.size();
-	//cout << "SCCadjSize=" << curVertex->m_NumSCCAdj << endl;
-	//system("PAUSE");
 
 	for (i = 0; i < adjSize; i++)
 	{
 		adjVertex = curVertex->m_AdjVertices[i];
 		if (adjVertex->m_InSCC)
 		{
-			if (adjVertex->m_MotionIndex == curVertex->m_MotionIndex)
-				accProb += 0.5;
-			else
-				accProb += (0.5/(double)curVertex->m_NumSCCAdj);
 
+			//	If only 1 adjVertex in SCC, return it
+			if (curVertex->m_NumSCCAdj == 1)
+				return adjVertex->m_FrameIndex;
+
+			if (curVertex->m_NextFrameInSCC)	//	next frame is in SCC
+			{
+				if (adjVertex->m_FrameIndex == (curVertex->m_MotionIndex + 1))
+					accProb += 0.5f;
+				else
+					accProb += (0.5/(double)(curVertex->m_NumSCCAdj - 1));
+			}
+			else	//	next frame is not in SCC, each adjVertex has the same chance
+			{
+				accProb += (1.0/(double)curVertex->m_NumSCCAdj);
+			}
+			/*
 			if (accProb > 1.0f)
 			{
-				cout << "accProb error" << endl;
-				exit(1);
-			}
+				cout << "accProb error:accProb=" << accProb << endl;
+				system("PAUSE");
+			}*/
 			if (accProb >= Prob)
 			{	
 				next = adjVertex->m_FrameIndex;
@@ -257,15 +266,15 @@ int MotionGraph::Traverse(int current, bool& jump)
 {
 	jump = false;
 	int next = 0;
-
+/*
 	vector<Posture> v;
 	v.push_back(m_pPostures[current]);
 	if(buffer.size() < 1000)
 	{
-		Transition(v);
-		//buffer.push_back(m_pPostures[current]);
+		//Transition(v);
+		buffer.push_back(m_pPostures[current]);
 		
-	}
+	}*/
 	next = NextJump(current);
 	if (next == -1)
 	{
@@ -540,7 +549,8 @@ void MotionGraph::DFS_Visit(MotionVertex* u, int* time, bool SCCOrder)
 	u->m_Color = MotionVertex::GRAY;
 	(*time) = (*time) + 1;
 	u->m_DTime = *time;
-
+if (!SCCOrder)	//	Traverse G
+{
 	size = u->m_AdjVertices.size();
 	for (i = 0; i < size; i++)
 	{
@@ -551,6 +561,21 @@ void MotionGraph::DFS_Visit(MotionVertex* u, int* time, bool SCCOrder)
 			DFS_Visit(v, time, SCCOrder);
 		}
 	}
+}
+else	//	Traverse G^T
+{
+	size = u->m_TransposeAdjVertices.size();
+	for (i = 0; i < size; i++)
+	{
+		v = u->m_TransposeAdjVertices[i];
+		if (v->m_Color == MotionVertex::WHITE)
+		{
+			v->m_Pi =  u;
+			DFS_Visit(v, time, SCCOrder);
+		}
+	}
+}
+
 	u->m_Color = MotionVertex::BLACK;
 	(*time) = (*time) + 1;
 	u->m_FTime = *time;
@@ -593,20 +618,15 @@ void MotionGraph::findSCC()
 				m_MaxSCCRoot = v;
 			}
 	}
-
+//	Identify all vertices in SCC
 	for (i=0; i<m_NumFrames; i++)
 	{
 		v = &m_Vertices[i];
 		if ( (v->m_DTime >= m_MaxSCCRoot->m_DTime) &&
 			  (v->m_FTime <= m_MaxSCCRoot->m_FTime) )
 		{
-			  v->m_InSCC = true;	
-			  /*
-			  if (v->m_FrameIndex == 211)
-			  {
-				  cout << "root:(" << m_MaxSCCRoot->m_DTime << ", " << m_MaxSCCRoot->m_FTime << endl;
-				  cout << "root:(" << v->m_DTime << ", " << v->m_FTime << endl;
-			  }*/
+			if (v->m_AdjVertices.size() > 0)
+				v->m_InSCC = true;	
 		}
 	}
 
@@ -616,13 +636,12 @@ void MotionGraph::findSCC()
 		if (v->m_InSCC)
 		{
 			v->computeNumSCCAdj();
-			/*
-			if (v->m_NumSCCAdj == 0)
+			if ( ((v->m_FrameIndex + 1) < m_NumFrames) &&
+				(m_Vertices[v->m_FrameIndex + 1].m_MotionIndex == v->m_MotionIndex) &&
+				(m_Vertices[v->m_FrameIndex + 1].m_InSCC) )
 			{
-				cout << "sccadj =0 : v=" << v->m_FrameIndex << endl;
-				system("PAUSE");
-			}*/
+				v->m_NextFrameInSCC = true;
+			}
 		}
 	}
-
 }

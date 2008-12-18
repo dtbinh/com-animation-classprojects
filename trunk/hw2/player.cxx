@@ -388,7 +388,7 @@ void idle(void*)
 	if(CurrentFrame != -1)
 	{
 		printf("CurrentFrame = %d\n", CurrentFrame);
-		//CurrentFrame = pMotionGraph->NextJump(CurrentFrame);
+		
 		CurrentFrame = pMotionGraph->Traverse(CurrentFrame, flag);
 		if (pMotionGraph->buffer.size() > 0)
 		{
