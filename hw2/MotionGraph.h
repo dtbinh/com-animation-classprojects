@@ -36,6 +36,7 @@ public:
 	int		Traverse(int current, bool& jump);
 	int		GenerateMotion(int total_frames, int start_frame, char*);
 	void	Transition(std::vector<Posture>& data);
+	void	Transition(Posture& pose);
 	int		NextJump(int index);
 	void	setActor(Skeleton *pActor);
 	void	computePoseDifference();
