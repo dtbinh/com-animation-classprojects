@@ -41,6 +41,7 @@ Posture Slerp(float t, Posture& a, Posture& b )
 	Quaternion q1, q2;
 
 	InterpPosture.root_pos = Vector3::interpolate(a.root_pos, b.root_pos, (double)t);
+	InterpPosture.bone_translation[0]= Vector3::interpolate(a.bone_translation[0], b.bone_translation[0], (double)t);
 
 	for (i=0; i<Posture::NUM_BONES; i++)
 	{
