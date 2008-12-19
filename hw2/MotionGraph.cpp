@@ -208,7 +208,7 @@ void MotionGraph::Transition1(std::vector<Posture>& data)
 	}
 	else
 	{
-		Posture old_start, *old_end, new_start, *new_end;
+		Posture old_start, old_end, new_start, new_end;
 		double angle;
 		int len1, len2, len;
 
@@ -222,23 +222,30 @@ void MotionGraph::Transition1(std::vector<Posture>& data)
 
 		len = min(len1, len2);
 
-		old_end = &buffer[buffer.size() - 1];
-		new_end = &data[len - 1];
+		old_end = buffer[buffer.size() - 1];
+		new_end = data[len - 1];
+		old_start = buffer[buffer.size() - len];
+		new_start = data[0];
+
+			
 
 		for (int i=0; i<data.size(); i++)
 		{
+/*
 			if (i < len)
 			{
-				data[i].root_pos.x = buffer[buffer.size() - len + i].root_pos.x;
-				data[i].root_pos.z = buffer[buffer.size() - len + i].root_pos.z;
+				data[i].bone_translation[0].x = buffer[buffer.size() - len + i].bone_translation[0].x;
+				data[i].bone_translation[0].z = buffer[buffer.size() - len + i].bone_translation[0].z;
 			}
-			else
+			else*/
 			{
-				Vector3 disp = old_end->root_pos - new_end->root_pos;
-				data[i].root_pos.x += disp.x;
-				data[i].root_pos.z += disp.z;
+				Vector3 disp = data[i].bone_translation[0] - new_start.bone_translation[0];
+				//cout << "disp[" << i << " = " << disp.x << " , " << disp.z << endl;
+				data[i].bone_translation[0].x = old_end.bone_translation[0].x + disp.x;
+				data[i].bone_translation[0].z = old_end.bone_translation[0].z + disp.z;
 				buffer.push_back(data[i]);
 			}
+
 		}
 	}
 
@@ -332,20 +339,47 @@ int MotionGraph::Traverse1(int current, bool& jump)
 {
 	jump = false;
 	int next = 0, curr = current;
+	int i;
 
 
 	vector<Posture> poseVector;
 	while ( (buffer.size() - m_BufferIndex) < TRANS_NUMS)
 	{
+		//	Add postures before curr
+		for (i=TRANS_NUMS; i>0; i--)
+		{
+			if( ((curr-i) >= 0) && 
+				m_Vertices[curr-i].m_MotionIndex == m_Vertices[curr].m_MotionIndex)
+				poseVector.push_back(m_pPostures[curr-i]);
+		}
 		poseVector.push_back(m_pPostures[curr]);
+		
+		//	Add postures after curr
+		/*for (i=1; i>TRANS_NUMS; i++)
+		{
+			if( ((curr+i) < m_NumFrames) && 
+				m_Vertices[curr+i].m_MotionIndex == m_Vertices[curr].m_MotionIndex)
+				poseVector.push_back(m_pPostures[curr+i]);
+			else
+			{
+				curr = curr+i-1;
+				break;
+			}
+		}*/
+		
 		next = NextJump(curr);
-		if (m_Vertices[current].m_MotionIndex == m_Vertices[next].m_MotionIndex)
+		if (m_Vertices[current].m_MotionIndex == m_Vertices[next].m_MotionIndex &&
+			next == (current + 1))
 		{
 			//poseVector.push_back(m_pPostures[next]);
 		}
 		else
 		{
+			//cout << "transition : poseVector size = " << poseVector.size() << endl;
+			//system("PAUSE");
+			cout << " buffer size : " << buffer.size() << endl;
 			Transition1(poseVector);
+			poseVector.clear();
 
 			//no alignment but correctly
 			/*for(int i = 0; i < poseVector.size(); i++)
