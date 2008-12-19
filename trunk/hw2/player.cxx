@@ -267,6 +267,7 @@ void interpolate_callback(Fl_Button *button, void *)
 {
 
 	CurrentFrame = pMotionGraph->m_MaxSCCRoot->m_FrameIndex;
+	displayer.m_pActor[0]->setPosture(pMotionGraph->m_pPostures[CurrentFrame]);
 }
 
 
