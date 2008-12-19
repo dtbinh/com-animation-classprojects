@@ -395,7 +395,8 @@ void idle(void*)
 		if (pMotionGraph->buffer.size() > 0)
 		{
 			displayer.m_pActor[0]->setPosture(pMotionGraph->buffer[pMotionGraph->m_BufferIndex]);
-			pMotionGraph->m_BufferIndex++;
+			if (pMotionGraph->m_BufferIndex+1 < pMotionGraph->buffer.size())
+				pMotionGraph->m_BufferIndex++;
 		}
 	}
 	/*
