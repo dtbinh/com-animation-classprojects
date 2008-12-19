@@ -39,15 +39,17 @@ Posture Slerp(float t, Posture& a, Posture& b )
 	int i;
 	Posture InterpPosture;
 	Quaternion q1, q2;
-/*
+
+	InterpPosture.root_pos = Vector3::interpolate(a.root_pos, b.root_pos, (double)t);
+
 	for (i=0; i<Posture::NUM_BONES; i++)
 	{
 		q1.FromEulerAngle_1(a.bone_rotation[i]);
 		q2.FromEulerAngle_1(b.bone_rotation[i]);
+		InterpPosture.bone_rotation[i] = Quaternion::Slerp1(q1, q2, (double)t).ToEulerAngle();
 
-		InterpPosture.bone_rotation[i] = Quaternion::Slerp(q1, q2, (double)t).ToEulerAngle();
+		//InterpPosture.bone_rotation[i] = Vector3::interpolate(a.bone_rotation[i], b.bone_rotation[i], t);
 	}
-*/
 	return InterpPosture;
 }
 
