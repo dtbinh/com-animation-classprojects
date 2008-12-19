@@ -372,7 +372,7 @@ int MotionGraph::Traverse1(int current, bool& jump)
 			//cout << "transition : poseVector size = " << poseVector.size() << endl;
 			//system("PAUSE");
 			cout << " poseVector size : " << poseVector.size() << endl;
-			Transition1(poseVector);
+			Transition(poseVector);
 			poseVector.clear();
 
 			//no alignment but correctly
@@ -544,14 +544,14 @@ void MotionGraph::findLocalMinimum()
 			if (localMin > max)
 				max = localMin;
 			sum += localMin;
-			cnt++;
-			*/
+			cnt++;*/
+			
 		}
 /*
 	cout << "min = " << min << endl;
 	cout << "max = " << max << endl;
 	cout << "avg = " << sum / (double) cnt << endl;
-	*/
+	system("PAUSE");*/
 }
 
 void MotionGraph::createGraphStructure()

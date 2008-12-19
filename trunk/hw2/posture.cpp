@@ -44,9 +44,9 @@ Posture Slerp(float t, Posture& a, Posture& b )
 
 	for (i=0; i<Posture::NUM_BONES; i++)
 	{
-		q1.FromEulerAngle_1(a.bone_rotation[i]);
-		q2.FromEulerAngle_1(b.bone_rotation[i]);
-		InterpPosture.bone_rotation[i] = Quaternion::Slerp1(q1, q2, (double)t).ToEulerAngle();
+		q1.FromEulerAngle_1(a.bone_rotation[i]*deg2rad);
+		q2.FromEulerAngle_1(b.bone_rotation[i]*deg2rad);
+		InterpPosture.bone_rotation[i] = (Quaternion::Slerp1(q1, q2, (double)t).ToEulerAngle() )* rad2deg;
 
 		//InterpPosture.bone_rotation[i] = Vector3::interpolate(a.bone_rotation[i], b.bone_rotation[i], t);
 	}
@@ -71,8 +71,8 @@ void Posture::computeJointVelocities(Posture& p, bool Forward)
 	{
 		for (i=1; i < NUM_BONES; i++)
 		{
-			q1.FromEulerAngle_1(bone_rotation[i]);
-			q2.FromEulerAngle_1(p.bone_rotation[i]);
+			q1.FromEulerAngle_1(bone_rotation[i]*deg2rad);
+			q2.FromEulerAngle_1(p.bone_rotation[i]*deg2rad);
 			joint_velocity[i] = q2.Inverse() * q1;
 		}
 	}
@@ -80,8 +80,8 @@ void Posture::computeJointVelocities(Posture& p, bool Forward)
 	{
 		for (i=1; i < NUM_BONES; i++)
 		{
-			q2.FromEulerAngle_1(bone_rotation[i]);
-			q1.FromEulerAngle_1(p.bone_rotation[i]);
+			q2.FromEulerAngle_1(bone_rotation[i]*deg2rad);
+			q1.FromEulerAngle_1(p.bone_rotation[i]*deg2rad);
 			joint_velocity[i] = q2.Inverse() * q1;
 		}
 	}
@@ -96,8 +96,8 @@ double Posture::compareJointAngles(Posture& p1, Posture& p2)
 
 	for (i = 1; i < NUM_BONES; i++)
 	{
-		q1.FromEulerAngle_1(p1.bone_rotation[i]);
-		q2.FromEulerAngle_1(p2.bone_rotation[i]);
+		q1.FromEulerAngle_1(p1.bone_rotation[i]*deg2rad);
+		q2.FromEulerAngle_1(p2.bone_rotation[i]*deg2rad);
 		poseDiff += getJointWeight(i) * (q2.Inverse() * q1).Log().Norm();
 	}
 
