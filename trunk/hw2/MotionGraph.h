@@ -6,7 +6,7 @@
 #include "MotionVertex.h"
 #include <vector>
 
-#define Threshold	1.5f//0.03f
+#define Threshold	0.05f//0.03f
 #define MAX_DIST	100
 #define MAX_MOTION	100
 #define Window		30

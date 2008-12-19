@@ -47,8 +47,6 @@ Posture Slerp(float t, Posture& a, Posture& b )
 		q1.FromEulerAngle_1(a.bone_rotation[i]*deg2rad);
 		q2.FromEulerAngle_1(b.bone_rotation[i]*deg2rad);
 		InterpPosture.bone_rotation[i] = (Quaternion::Slerp1(q1, q2, (double)t).ToEulerAngle() )* rad2deg;
-
-		//InterpPosture.bone_rotation[i] = Vector3::interpolate(a.bone_rotation[i], b.bone_rotation[i], t);
 	}
 	return InterpPosture;
 }

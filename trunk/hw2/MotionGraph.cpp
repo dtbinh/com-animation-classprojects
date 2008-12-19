@@ -226,38 +226,46 @@ void MotionGraph::Transition1(std::vector<Posture>& data)
 		new_end = data[len - 1];
 		old_start = buffer[buffer.size() - len];
 		new_start = data[0];
+		angle = GetFacingAngle(old_end.bone_rotation[0]) - GetFacingAngle(new_start.bone_rotation[0]);
 
-		cout << "len1=" << len1 << ", len2=" << len2 << ", len=" << len << endl;
 
 		if (len < 2)
 		{
+			new_start.Rotate(angle);
 			for (int k=1; k<TRANS_NUMS-1; k++)
 			{
 				Posture temp;
-				//temp = LinearInterpolate((float)k/TRANS_NUMS, old_end, new_start);
 				temp = Slerp((float)k/TRANS_NUMS, old_end, new_start);
 				temp.bone_translation[0] = old_end.bone_translation[0];
 				buffer.push_back(temp);
 			}
 		}
 
+		Posture p, source;
 		for (int i=0; i<data.size(); i++)
 		{
-			//	Look postures before current for interpolation
-/*
+			source = data[i];
 			if (i < len)
 			{
-				data[i].bone_translation[0].x = buffer[buffer.size() - len + i].bone_translation[0].x;
-				data[i].bone_translation[0].z = buffer[buffer.size() - len + i].bone_translation[0].z;
+				p = Slerp((float)i/len, buffer[buffer.size()-i-1], source);
+				//	orientation
+				source.Rotate(angle);
+				p.bone_rotation[0] = source.bone_rotation[0];
 			}
-			else*/
+			else
 			{
-				Vector3 disp = data[i].bone_translation[0] - new_start.bone_translation[0];
-				//cout << "disp[" << i << " = " << disp.x << " , " << disp.z << endl;
-				data[i].bone_translation[0].x = old_end.bone_translation[0].x + disp.x;
-				data[i].bone_translation[0].z = old_end.bone_translation[0].z + disp.z;
-				buffer.push_back(data[i]);
+				//	orientation
+				p = data[i];
+				p.Rotate(angle);
 			}
+			//	Displacement
+			Vector3 disp = data[i].bone_translation[0] - new_start.bone_translation[0];
+			Matrix4 RyTrans = Matrix4::Yrotate(angle*deg2rad);
+			disp = RyTrans*disp;
+			data[i].bone_translation[0].x = old_end.bone_translation[0].x + disp.x;
+			data[i].bone_translation[0].z = old_end.bone_translation[0].z + disp.z;
+
+			buffer.push_back(data[i]);
 
 		}
 	}
@@ -372,7 +380,7 @@ int MotionGraph::Traverse1(int current, bool& jump)
 			//cout << "transition : poseVector size = " << poseVector.size() << endl;
 			//system("PAUSE");
 			cout << " poseVector size : " << poseVector.size() << endl;
-			Transition(poseVector);
+			Transition1(poseVector);
 			poseVector.clear();
 
 			//no alignment but correctly
