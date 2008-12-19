@@ -227,10 +227,23 @@ void MotionGraph::Transition1(std::vector<Posture>& data)
 		old_start = buffer[buffer.size() - len];
 		new_start = data[0];
 
-			
+		cout << "len1=" << len1 << ", len2=" << len2 << ", len=" << len << endl;
+
+		if (len < 2)
+		{
+			for (int k=1; k<TRANS_NUMS-1; k++)
+			{
+				Posture temp;
+				//temp = LinearInterpolate((float)k/TRANS_NUMS, old_end, new_start);
+				temp = Slerp((float)k/TRANS_NUMS, old_end, new_start);
+				temp.bone_translation[0] = old_end.bone_translation[0];
+				buffer.push_back(temp);
+			}
+		}
 
 		for (int i=0; i<data.size(); i++)
 		{
+			//	Look postures before current for interpolation
 /*
 			if (i < len)
 			{
@@ -345,28 +358,9 @@ int MotionGraph::Traverse1(int current, bool& jump)
 	vector<Posture> poseVector;
 	while ( (buffer.size() - m_BufferIndex) < TRANS_NUMS)
 	{
-		//	Add postures before curr
-		for (i=TRANS_NUMS; i>0; i--)
-		{
-			if( ((curr-i) >= 0) && 
-				m_Vertices[curr-i].m_MotionIndex == m_Vertices[curr].m_MotionIndex)
-				poseVector.push_back(m_pPostures[curr-i]);
-		}
+
 		poseVector.push_back(m_pPostures[curr]);
-		
-		//	Add postures after curr
-		/*for (i=1; i>TRANS_NUMS; i++)
-		{
-			if( ((curr+i) < m_NumFrames) && 
-				m_Vertices[curr+i].m_MotionIndex == m_Vertices[curr].m_MotionIndex)
-				poseVector.push_back(m_pPostures[curr+i]);
-			else
-			{
-				curr = curr+i-1;
-				break;
-			}
-		}*/
-		
+
 		next = NextJump(curr);
 		if (m_Vertices[current].m_MotionIndex == m_Vertices[next].m_MotionIndex &&
 			next == (current + 1))
@@ -377,7 +371,7 @@ int MotionGraph::Traverse1(int current, bool& jump)
 		{
 			//cout << "transition : poseVector size = " << poseVector.size() << endl;
 			//system("PAUSE");
-			cout << " buffer size : " << buffer.size() << endl;
+			cout << " poseVector size : " << poseVector.size() << endl;
 			Transition1(poseVector);
 			poseVector.clear();
 

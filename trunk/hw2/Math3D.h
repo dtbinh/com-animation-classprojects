@@ -144,6 +144,7 @@ public:
 	static void ShortArcCheck(Quaternion& q0, Quaternion& q1) {if(q0.DotProduct(q1) < 0) q1 = q1*-1;}
 	// Interpolates the quaternion between to quaternions based on time
 	static Quaternion Slerp(Quaternion q1, Quaternion q2, double time);
+	static Quaternion Slerp1(Quaternion q1, Quaternion q2, double time);
 
 public:
 	double x, y, z, w;

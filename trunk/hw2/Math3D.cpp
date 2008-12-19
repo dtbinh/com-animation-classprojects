@@ -218,6 +218,8 @@ Matrix4 Matrix4::FromEulerAngle(const Vector3& v)
 	return m;
 }
 
+
+
 void Matrix4::negate(void)
 {
 	for(int i=0; i<16; i++)
@@ -708,6 +710,37 @@ Quaternion Quaternion::Slerp(Quaternion q1, Quaternion q2, double time)
 	r = q1*scale + q2*invScale;
 
 	return r;
+}
+
+Quaternion Quaternion::Slerp1(Quaternion q1, Quaternion q2, double time)
+{
+	double angle = q1.DotProduct(q2);
+        if(angle < 0.0f)
+        {
+                q2 = -q2;
+                angle *= -1.0f;
+        }
+        double scale;
+        double invscale;
+
+        if((1.0f - angle) >= 0.00000001f)  // spherical interpolation
+        {
+                double theta = acos(angle);
+                double invsintheta = 1.0f / sin(theta);
+                scale = sin(theta * (1.0f - time)) * invsintheta;
+                invscale = sin(theta * time) * invsintheta;
+        }
+        else // linear interploation
+        {
+                scale = 1.0f - time;
+                invscale = time;
+        }
+
+
+        Quaternion inter = (q1 * scale) + (q2 * invscale);
+        inter.Normalize();
+
+        return inter;
 }
 
 Quaternion operator* (double s, Quaternion const& b)
