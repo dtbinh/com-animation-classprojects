@@ -210,17 +210,12 @@ void MotionGraph::Transition1(std::vector<Posture>& data)
 	{
 		Posture old_start, old_end, new_start, new_end;
 		double angle;
-		int len1, len2, len;
+		int len;
 
-		len1 = buffer.size();
-		if (len1 > TRANS_NUMS)
-			len1 = TRANS_NUMS;
+		len = data.size();
+		if (len > TRANS_NUMS)
+			len = TRANS_NUMS;
 
-		len2 = data.size();
-		if (len2 > TRANS_NUMS)
-			len2 = TRANS_NUMS;
-
-		len = min(len1, len2);
 
 		old_end = buffer[buffer.size() - 1];
 		new_end = data[len - 1];
@@ -229,15 +224,36 @@ void MotionGraph::Transition1(std::vector<Posture>& data)
 		angle = GetFacingAngle(old_end.bone_rotation[0]) - GetFacingAngle(new_start.bone_rotation[0]);
 
 
-		if (len < 2)
+		if (len <= 2)
 		{
+			if (buffer.size() >= TRANS_NUMS)
+			{
+				Posture front;
+				front = buffer[buffer.size() -TRANS_NUMS];
+				new_start.Rotate(angle);
+				for(int i=1; i<TRANS_NUMS; i++)
+				{
+					// Blend front and new_start in different ratio as temp
+					Posture temp = Slerp((float)i/(TRANS_NUMS-1), front, new_start);
+					Posture source;
+					source = buffer[buffer.size()-TRANS_NUMS+i];
+					temp.bone_translation[0].x = source.bone_translation[0].x;
+					temp.bone_translation[0].z = source.bone_translation[0].z;
+					// Blend poses in buffer with temp
+					buffer[buffer.size()-TRANS_NUMS+i] = Slerp((float)i/(TRANS_NUMS-1), source, temp);
+				}
+			}
+			else
+			{
 			new_start.Rotate(angle);
 			for (int k=1; k<TRANS_NUMS-1; k++)
 			{
 				Posture temp;
 				temp = Slerp((float)k/TRANS_NUMS, old_end, new_start);
 				temp.bone_translation[0] = old_end.bone_translation[0];
+				temp.bone_translation[0].y = old_end.bone_translation[0].y;
 				buffer.push_back(temp);
+			}
 			}
 		}
 
