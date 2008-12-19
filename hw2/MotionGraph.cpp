@@ -155,7 +155,7 @@ void MotionGraph::Transition(std::vector<Posture>& data)
 				{
 					Posture temp;
 					//	Blend old_end and new_start in different ratio as temp
-					temp = Slerp((float)k/(len-1), old_end, new_start);
+					temp = Slerp((float)k/(TRANS_NUMS-1), old_end, new_start);
 					temp.root_pos.x = old_end.root_pos.x;
 					temp.root_pos.z = old_end.root_pos.z;
 					buffer.push_back(temp);
@@ -250,22 +250,29 @@ void MotionGraph::Transition1(std::vector<Posture>& data)
 			{
 				Posture temp;
 				temp = Slerp((float)k/TRANS_NUMS, old_end, new_start);
-				temp.bone_translation[0] = old_end.bone_translation[0];
-				temp.bone_translation[0].y = old_end.bone_translation[0].y;
+				temp.bone_translation[0].x = old_end.bone_translation[0].x;
+				temp.bone_translation[0].z = old_end.bone_translation[0].z;
 				buffer.push_back(temp);
 			}
 			}
+			len = 0;
 		}
 
 		Posture p, source;
+		new_end.Rotate(angle);
 		for (int i=0; i<data.size(); i++)
 		{
 			source = data[i];
 			if (i < len)
 			{
-				p = Slerp((float)i/len, buffer[buffer.size()-i-1], source);
+				Posture temp;
+				temp = Slerp((float)i/len, old_end,new_end);
 				//	orientation
 				source.Rotate(angle);
+				temp.bone_translation[0].x = source.bone_translation[0].x;
+				temp.bone_translation[0].z = source.bone_translation[0].z;
+				p = Slerp((float)i/len, buffer[buffer.size()-i-1], source);
+				
 				p.bone_rotation[0] = source.bone_rotation[0];
 			}
 			else
@@ -275,13 +282,12 @@ void MotionGraph::Transition1(std::vector<Posture>& data)
 				p.Rotate(angle);
 			}
 			//	Displacement
-			Vector3 disp = data[i].bone_translation[0] - new_start.bone_translation[0];
+			Vector3 disp = p.bone_translation[0] - new_start.bone_translation[0];
 			Matrix4 RyTrans = Matrix4::Yrotate(angle*deg2rad);
 			disp = RyTrans*disp;
-			data[i].bone_translation[0].x = old_end.bone_translation[0].x + disp.x;
-			data[i].bone_translation[0].z = old_end.bone_translation[0].z + disp.z;
-
-			buffer.push_back(data[i]);
+			p.bone_translation[0].x = old_end.bone_translation[0].x + disp.x;
+			p.bone_translation[0].z = old_end.bone_translation[0].z + disp.z;
+			buffer.push_back(p);
 
 		}
 	}
@@ -395,7 +401,7 @@ int MotionGraph::Traverse1(int current, bool& jump)
 		{
 			//cout << "transition : poseVector size = " << poseVector.size() << endl;
 			//system("PAUSE");
-			cout << " poseVector size : " << poseVector.size() << endl;
+			//cout << " poseVector size : " << poseVector.size() << endl;
 			Transition1(poseVector);
 			poseVector.clear();
 
