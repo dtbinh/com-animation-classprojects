@@ -63,7 +63,7 @@ static int maxFrames=0;
 std::vector <double*> line;
 bool path_draw = true;
 
-static MotionGraph *pMotionGraph;
+static MotionGraph *pMotionGraph = NULL;
 int CurrentFrame = -1;
 
 //	Variables for FPS calculation
@@ -266,8 +266,16 @@ void switchmode_proc(Fl_Light_Button *obj, long val)
 void interpolate_callback(Fl_Button *button, void *) 
 {
 
-	CurrentFrame = pMotionGraph->m_MaxSCCRoot->m_FrameIndex;
-	displayer.m_pActor[0]->setPosture(pMotionGraph->m_pPostures[CurrentFrame]);
+	if (pMotionGraph)
+	if (line.size() > 1)
+	{
+		pMotionGraph->doPathSynthesis(line);
+	}
+	else
+	{
+		CurrentFrame = pMotionGraph->m_MaxSCCRoot->m_FrameIndex;
+		displayer.m_pActor[0]->setPosture(pMotionGraph->m_pPostures[CurrentFrame]);
+	}
 }
 
 
@@ -387,19 +395,37 @@ void idle(void*)
 {
 	bool flag = true;
 
+	
+	
+	if (line.size() && pMotionGraph->buffer.size())
+	{
+		displayer.m_pActor[0]->setPosture(pMotionGraph->buffer[pMotionGraph->m_BufferIndex]);
+		if (pMotionGraph->m_BufferIndex+1 < pMotionGraph->buffer.size())
+			pMotionGraph->m_BufferIndex++;
+	}
+
+
 	if(CurrentFrame != -1)
 	{
-		//printf("CurrentFrame = %d\n", CurrentFrame);
+		printf("CurrentFrame = %d\n", CurrentFrame);
 		printf("buffer size = %d\n", pMotionGraph->buffer.size());
 		CurrentFrame = pMotionGraph->Traverse1(CurrentFrame, flag);
 		if (pMotionGraph->buffer.size() > 0)
 		{
 			displayer.m_pActor[0]->setPosture(pMotionGraph->buffer[pMotionGraph->m_BufferIndex]);
+
 			if (pMotionGraph->m_BufferIndex+1 < pMotionGraph->buffer.size())
 				pMotionGraph->m_BufferIndex++;
+
+			if (pMotionGraph->buffer.size() > 1000)
+			{
+				pMotionGraph->GenerateMotion(1000, 0, "OutputMotion.amc");
+				exit(0);
+			}
+
 		}
 	}
-	/*
+	/*else
 	if (displayer.m_pMotion[0] != NULL)
 	{
 		if(Rewind==ON)
@@ -436,8 +462,8 @@ void idle(void*)
 			if (nFrameNum < maxFrames)
 				nFrameNum += nFrameInc;
 		}
-	}
-*/
+	}*/
+
 	frame_slider->value((double)nFrameNum+1);
 	glwindow->redraw();
 

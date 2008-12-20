@@ -142,6 +142,38 @@ Vector3 Vector3::interpolate(Vector3 v0, Vector3 v1, double t)
 	return inter;
 }
 
+double Vector3::getAngleFromZAxis(Vector3& end)
+{
+	Vector3 axis;
+	double angle = 0.0;
+
+	if (end.x >= 0.0 && end.z > 0.0)
+	{
+		axis.set(0, 0, 1);
+		angle = acos(axis.dot(*this))*rad2deg;
+	}
+	else if (end.x > 0.0 && end.z <= 0.0)
+	{
+		axis.set(1, 0, 0);
+		angle = acos(axis.dot(*this))*rad2deg;
+		angle += 90;
+	}
+	else if (end.x <= 0.0 && end.z < 0.0)
+	{
+		axis.set(0, 0, -1);
+		angle = acos(axis.dot(*this))*rad2deg;
+		angle += 180;
+	}
+	else if (end.x < 0 && end.z >=0)
+	{
+		axis.set(-1, 0, 0); 
+		angle = acos(axis.dot(*this))*rad2deg;
+		angle += 270;
+	}
+	return angle;
+
+}
+
 Matrix4::Matrix4()
 {
 	loadIdentity();

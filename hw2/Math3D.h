@@ -37,6 +37,8 @@ public:
 	inline double norm(){return x*x+y*y+z*z;}
 	inline double length(){return sqrt(norm());}
 
+	double getAngleFromZAxis(Vector3& end);
+
 public:
 	double x,y,z;
 };
