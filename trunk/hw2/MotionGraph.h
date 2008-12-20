@@ -46,6 +46,9 @@ public:
 	void	DFS(bool SCCOrder);										//	Depth-first search
 	void	DFS_Visit(MotionVertex* u, int* time, bool SCCOrder);	//	Do DFS visit for vertex v
 	void	findSCC();												//	Find strongly connected components
+	//	Functions for path synthesis
+	void	doPathSynthesis(vector<double*>& line);
+	int	NextJumpPS(int index, Vector3& goal);					// For path synthesis
 private:
 	void	printJumpIdx(int current, int next);
 
