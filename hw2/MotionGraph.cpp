@@ -34,6 +34,7 @@ MotionGraph::MotionGraph()
 	m_LocalMinima.reserve(2000);
 	m_Vertices = NULL;
 	m_BufferIndex = 0;
+	m_MaxSCCRoot = NULL;
 }
 
 MotionGraph::MotionGraph(char *amc_filename, float scale,Skeleton * pActor2)
@@ -208,7 +209,8 @@ void MotionGraph::Transition1(std::vector<Posture>& data)
 	}
 	else
 	{
-		Posture old_start, old_end, new_start, new_end;
+		
+		Posture old_end, new_start, new_end;
 		double angle;
 		int len;
 
@@ -216,10 +218,9 @@ void MotionGraph::Transition1(std::vector<Posture>& data)
 		if (len > TRANS_NUMS)
 			len = TRANS_NUMS;
 
-
 		old_end = buffer[buffer.size() - 1];
 		new_end = data[len - 1];
-		old_start = buffer[buffer.size() - len];
+
 		new_start = data[0];
 		angle = GetFacingAngle(old_end.bone_rotation[0]) - GetFacingAngle(new_start.bone_rotation[0]);
 
@@ -282,7 +283,7 @@ void MotionGraph::Transition1(std::vector<Posture>& data)
 				p.Rotate(angle);
 			}
 			//	Displacement
-			Vector3 disp = p.bone_translation[0] - new_start.bone_translation[0];
+			Vector3 disp = data[i].bone_translation[0] - new_start.bone_translation[0];
 			Matrix4 RyTrans = Matrix4::Yrotate(angle*deg2rad);
 			disp = RyTrans*disp;
 			p.bone_translation[0].x = old_end.bone_translation[0].x + disp.x;
@@ -325,7 +326,8 @@ int	MotionGraph::NextJump(int index)
 
 			if (curVertex->m_NextFrameInSCC)	//	next frame is in SCC
 			{
-				if (adjVertex->m_FrameIndex == (curVertex->m_MotionIndex + 1))
+				if (adjVertex->m_FrameIndex == (curVertex->m_FrameIndex + 1) &&
+					adjVertex->m_MotionIndex == curVertex->m_MotionIndex)
 					accProb += 0.5f;
 				else
 					accProb += (0.5/(double)(curVertex->m_NumSCCAdj - 1));
@@ -388,26 +390,22 @@ int MotionGraph::Traverse1(int current, bool& jump)
 	vector<Posture> poseVector;
 	while ( (buffer.size() - m_BufferIndex) < TRANS_NUMS)
 	{
-
 		poseVector.push_back(m_pPostures[curr]);
 
 		next = NextJump(curr);
+
+		
 		if (m_Vertices[current].m_MotionIndex == m_Vertices[next].m_MotionIndex &&
 			next == (current + 1))
 		{
-			//poseVector.push_back(m_pPostures[next]);
+
 		}
 		else
 		{
-			//cout << "transition : poseVector size = " << poseVector.size() << endl;
-			//system("PAUSE");
-			//cout << " poseVector size : " << poseVector.size() << endl;
+
 			Transition1(poseVector);
 			poseVector.clear();
 
-			//no alignment but correctly
-			/*for(int i = 0; i < poseVector.size(); i++)
-				buffer.push_back(poseVector[i]);*/
 		}
 
 		curr = next;
@@ -422,9 +420,12 @@ int MotionGraph::GenerateMotion(int total_frames, int start_frame, char* filenam
 	int next = start_frame;
 	while(buffer.size() < total_frames)
 		next = NextJump(next);
-	
+
 	for(int i=0;i<total_frames;i++)
+	{
+		buffer[i].root_pos = buffer[i].bone_translation[0];
 		outMotion.SetPosture(i, buffer[i]);
+	}
 	
 	outMotion.writeAMCfile(filename, MOCAP_SCALE);
 	return next;
@@ -516,7 +517,7 @@ void MotionGraph::computePoseDifference()
 			
 				
 		}
-		cout << "i=" << i << endl;
+		printf("%2.2f %%completed\n",(double) i/(m_NumFrames-1)*100);
 	}
 
 }
@@ -740,12 +741,19 @@ void MotionGraph::findSCC()
 	for (i=0; i<m_NumFrames; i++)
 	{
 		v = &m_Vertices[i];
-		if (v->m_Pi == NULL)
+		if (v->m_Pi == NULL && v->m_AdjVertices.size())
 			if ((v->m_FTime - v->m_DTime) > maxInterval)
 			{
 				maxInterval = (v->m_FTime - v->m_DTime);
 				m_MaxSCCRoot = v;
 			}
+	}
+
+	if (!m_MaxSCCRoot)
+	{
+		cout << "Motion graph has no large SCC" <<endl;
+		system("PAUSE");
+		exit(1);
 	}
 //	Identify all vertices in SCC
 	for (i=0; i<m_NumFrames; i++)
@@ -773,4 +781,194 @@ void MotionGraph::findSCC()
 			}
 		}
 	}
+}
+
+inline double getPieceLength(double* start, double* end)
+{
+	double x = end[0]-start[0];
+	double z = end[2]-start[2];
+
+	return sqrt(x*x+z*z);
+}
+
+void MotionGraph::doPathSynthesis(vector<double*>& line)
+{
+	double	lineLen=0.0f, pathLen=0.0f;
+	int		i;
+	vector<Posture> poseVector;
+	int current, next;
+	Vector3 goal, currentPos, nextPos;
+	MotionVertex	*nextVertex, *currentVertex, *tempVertex;
+
+	Vector3 dir, zAxis(0.0, 0.0, 1.0);
+	Posture *lastPose;
+	int len;
+
+	if (!buffer.empty())
+		buffer.clear();
+
+	//	Align position to the start point of the line
+	current = m_MaxSCCRoot->m_FrameIndex;
+	buffer.push_back(m_pPostures[current]);
+	buffer[0].bone_translation[0].x = line[0][0];
+	buffer[0].bone_translation[0].z = line[0][2];
+
+	lastPose = &buffer[buffer.size()-1];
+	
+	if (line.size() < 5)
+		len = line.size();
+	else
+		len = 2;
+	goal.set(line[len-1][0], line[len-1][1], line[len-1][2]);
+	dir = goal - lastPose->bone_translation[0];
+	dir.y = 0;
+	dir.normalize();
+
+	double angle = dir.getAngleFromZAxis(dir) - GetFacingAngle(lastPose->bone_rotation[0]);
+	
+	lastPose->Rotate(angle);
+
+	//cout << "angle:" << dir.getAngleFromZAxis(dir) << endl;
+
+
+
+	for (i=0; i<line.size()-1; i++)
+	{
+		//	Extract a piece of line
+		lineLen += getPieceLength(line[i], line[i+1]);
+
+		if ( i + 10 < line.size())
+			goal.set(line[i+1][0], line[i+1][1], line[i+1][2]);
+		else
+			goal.set(line[i+1][0], line[i+1][1], line[i+1][2]);
+
+		
+		while(pathLen < lineLen)
+		{
+			currentPos = buffer[buffer.size()-1].bone_translation[0];
+			//	adjust orientation of the last frame in buffer
+			lastPose = &buffer[buffer.size()-1];
+
+			dir = goal - lastPose->bone_translation[0];
+			dir.y = 0;
+			dir.normalize();
+
+			double angle = dir.getAngleFromZAxis(dir) - GetFacingAngle(lastPose->bone_rotation[0]);
+			lastPose->Rotate(angle);
+		//	Search for the posture that minimize 
+		//	the distance between root and line node
+			
+			//	Select next frame index
+			next = NextJumpPS(current, goal);
+
+			
+			nextVertex = &m_Vertices[next];
+			currentVertex = &m_Vertices[current];
+			//------------do transition-----------------
+			if(nextVertex->m_MotionIndex == currentVertex->m_MotionIndex &&
+			   nextVertex->m_FrameIndex == currentVertex->m_FrameIndex + 1)
+			{
+				poseVector.push_back(m_pPostures[current]);
+			}
+			
+			poseVector.push_back(m_pPostures[nextVertex->m_FrameIndex]);
+			//	Take the next frames as edge
+			for (int j=0; j<TRANS_NUMS-1; j++)
+			{
+				tempVertex = &m_Vertices[nextVertex->m_FrameIndex+j];
+				if (tempVertex->m_InSCC &&
+					tempVertex->m_MotionIndex == nextVertex->m_MotionIndex)
+				{
+					poseVector.push_back(m_pPostures[nextVertex->m_FrameIndex+j]);
+					current = nextVertex->m_FrameIndex+j;
+				}
+				else
+					break;
+			}
+			Transition1(poseVector);
+			poseVector.clear();
+
+			//---------------------------------------------
+			//	Record positions
+			
+			nextPos = buffer[buffer.size()-1].bone_translation[0];
+			nextPos.y = 0.0f;
+			currentPos.y = 0.0f;
+			pathLen += (nextPos-currentPos).length();
+
+		}
+	printf("Path synthesis...%2.2f%%\n", (double)i/(line.size()-1)*100);
+	}
+	m_BufferIndex = 0;
+	cout << "lineLen:" << lineLen << ", pathLen:" << pathLen << endl;
+
+}
+
+int MotionGraph::NextJumpPS(int index, Vector3& goal)
+{
+	int i, j, adjSize, next = -1;
+	MotionVertex *curVertex, *adjVertex, *nextVertex;
+	int adjFrameIndex, adjMotionIndex;
+	vector<Posture> poseVector;
+	double currentError, minError = 99999.0f;
+
+	curVertex = &m_Vertices[index];
+	adjSize = curVertex->m_AdjVertices.size();
+
+	//	For each adjVertex, find an edge and transit it
+	//	Then compute errors and do comparison
+	for (i=0; i<adjSize; i++)
+	{
+		adjVertex = curVertex->m_AdjVertices[i];
+		if (adjVertex->m_InSCC)
+		{
+			adjFrameIndex = adjVertex->m_FrameIndex;
+			adjMotionIndex = adjVertex->m_MotionIndex;
+
+			if(adjMotionIndex == curVertex->m_MotionIndex &&
+				adjFrameIndex == curVertex->m_FrameIndex + 1)
+			{
+				poseVector.push_back(m_pPostures[index]);
+			}
+			
+			poseVector.push_back(m_pPostures[adjFrameIndex]);
+			//	Take the next frames as edge
+			for (j=0; j<TRANS_NUMS-1; j++)
+			{
+				nextVertex = &m_Vertices[adjFrameIndex+j];
+				if (nextVertex->m_InSCC &&
+					nextVertex->m_MotionIndex == adjMotionIndex)
+				{
+					poseVector.push_back(m_pPostures[adjFrameIndex+j]);
+				}
+				else
+					break;
+			}
+
+			m_BufferIndex = buffer.size()-1;
+			//	Check the transition result to compare errors
+			Transition1(poseVector);
+
+				//	Error
+			currentError = (goal - buffer[buffer.size()-1].bone_translation[0]).norm();
+			if (currentError < minError)
+			{
+				minError = currentError;
+				next = adjFrameIndex;
+			}
+
+			//	Recovery the motion buffer
+			while(buffer.size() > m_BufferIndex+1)
+				buffer.pop_back();
+			poseVector.clear();
+		}
+	}
+
+	if (next == -1)
+	{
+		cout << "Exception in NextJumpSP()" << endl;
+		system("PAUSE");
+		exit(1);
+	}
+	return next;
 }
