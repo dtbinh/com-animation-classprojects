@@ -1,5 +1,4 @@
-Q : 從svn check out出來無法執行?錯誤訊息顯示缺少OgreMain_d.dll等.
-A : 第一次check out出來請執行HairSimulation.vcproj, 開啟Visual Studio後關閉.
-     在HairSimulation\HairSimulation下產生一個新檔案-HairSimulation.vcproj-XXX.user (XXX為電腦名稱),
-     將HairSimulation.vcproj.KUENHAN-1E28FB6.Administrator.user更名為HairSimulation.vcproj-XXX.user,
-     之後開啟project在偵錯項目執行時就會到OgreSDK的目錄下執行而不會有缺少檔案的情況發生.
+Q : Cannot execute after check out from svn check out? The error message shows lack of OgreMain_d.dll etc.
+A : Execute "HairSimulation.vcproj" if check out the project first time. And close the project.
+    A new file "HairSimulation.vcproj-XXX.user" is generated in "HairSimulation\HairSimulation". (XXX is your computer's name)
+    Rename the file "HairSimulation.vcproj.KUENHAN-1E28FB6.Administrator.user" as "HairSimulation.vcproj-XXX.user".
