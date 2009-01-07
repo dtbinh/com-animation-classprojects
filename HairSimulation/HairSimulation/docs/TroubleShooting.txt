@@ -1,4 +1,4 @@
 Q : Cannot execute after check out from svn check out? The error message shows lack of OgreMain_d.dll etc.
-A : Execute "HairSimulation.vcproj" if check out the project first time. And close the project.
+A : Execute "HairSimulation.vcproj" if check out the project first time. And close the project after the project is builded.
     A new file "HairSimulation.vcproj-XXX.user" is generated in "HairSimulation\HairSimulation". (XXX is your computer's name)
     Rename the file "HairSimulation.vcproj.KUENHAN-1E28FB6.Administrator.user" as "HairSimulation.vcproj-XXX.user".
