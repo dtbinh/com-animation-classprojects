@@ -22,12 +22,11 @@ LGPL like the rest of the OGRE engine.
 
 
 #include "ExampleApplication.h"
+#include "World.h"
+#include "ApplicationObject.h"
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
 #include "../res/resource.h"
 #endif
-
-
-
 
 class HairSimulationFrameListener : public ExampleFrameListener
 {
@@ -44,8 +43,7 @@ public:
 	{
 		bool ret = ExampleFrameListener::frameStarted(evt);
 
-
-      return ret;
+		return ret;
 
 	}
 
@@ -55,15 +53,17 @@ public:
 
 class HairSimulationApp : public ExampleApplication
 {
-	public:
-		HairSimulationApp()
-      {}
+public:
+	HairSimulationApp()
+	{}
 
 	~HairSimulationApp()
 	{
 	}
 
 protected:
+	World* mWorld;
+	ApplicationObject* mHead;
 
 	virtual void createCamera(void)
 	{
@@ -107,11 +107,17 @@ protected:
 	// Just override the mandatory create scene method
 	virtual void createScene(void)
 	{
+		//	Create the world
+		mWorld = new World(mSceneMgr);
 
-      Entity* ogreHead = mSceneMgr->createEntity("Head", "ogrehead.mesh");
+		//	Create a sphere
+		mHead = mWorld->createBall("ball", 7);
+		mHead->getEntity()->setMaterialName("Ogre/Eyes");
 
-      SceneNode* headNode = mSceneMgr->getRootSceneNode()->createChildSceneNode();
-      headNode->attachObject(ogreHead);
+		/*
+		//	Creaete an ogre head
+		mHead = mWorld->createOgreHead("OgreHead");
+		*/
 
       // Set ambient light
       mSceneMgr->setAmbientLight(ColourValue(0.5, 0.5, 0.5));
