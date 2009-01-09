@@ -212,6 +212,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\AppManHead.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\AppOgreHead.cpp"
 				>
 			</File>
@@ -243,6 +247,10 @@
 			</File>
 			<File
 				RelativePath=".\include\ApplicationObject.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\AppManHead.h"
 				>
 			</File>
 			<File
