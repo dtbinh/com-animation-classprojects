@@ -10,6 +10,7 @@ class World contains all objects required to simulate hair, such as a head and h
 #include "ApplicationObject.h"
 #include "AppBall.h"
 #include "AppOgreHead.h"
+#include "AppManHead.h"
 #include <Ogre.h>
 #include <OgreSingleton.h>
 
@@ -45,6 +46,9 @@ public:
 
 	/** Create an OGRE head object. */
     OgreHead* createOgreHead(const String& name, const Vector3& pos = Vector3::ZERO);
+
+	/** Create a man head object. */
+    ManHead* createManHead(const String& name, const Vector3& pos = Vector3::ZERO);
 
 	/** Clears the scene */
 	void clear(void);

@@ -58,3 +58,13 @@ OgreHead* World::createOgreHead(const String& name, const Vector3& pos)
     return head;
 }
 //-------------------------------------------------------------------------
+ManHead* World::createManHead(const String& name, const Vector3& pos)
+{
+    ManHead* head = new ManHead(name);
+    head->setPosition(pos);
+
+    mObjects[name] = head;
+
+    return head;
+}
+//-------------------------------------------------------------------------

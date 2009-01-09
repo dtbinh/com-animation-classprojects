@@ -112,13 +112,16 @@ protected:
 
 		//	Create a sphere
 		mHead = mWorld->createBall("ball", 7);
-		mHead->getEntity()->setMaterialName("Ogre/Eyes");
+		mHead->getEntity()->setMaterialName("");	// Color white
 
 		/*
 		//	Creaete an ogre head
 		mHead = mWorld->createOgreHead("OgreHead");
 		*/
-
+		/*
+		//	Creaete a man head
+		mHead = mWorld->createManHead("ManHead");
+*/
       // Set ambient light
       mSceneMgr->setAmbientLight(ColourValue(0.5, 0.5, 0.5));
 
