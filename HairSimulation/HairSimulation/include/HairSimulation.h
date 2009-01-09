@@ -24,29 +24,85 @@ LGPL like the rest of the OGRE engine.
 #include "ExampleApplication.h"
 #include "World.h"
 #include "ApplicationObject.h"
+#include <CEGUI/CEGUI.h>
+#include <OgreCEGUIRenderer.h>
+
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
 #include "../res/resource.h"
 #endif
 
-class HairSimulationFrameListener : public ExampleFrameListener
+/** Convert OIS mouse buttons to CEGUI's */
+CEGUI::MouseButton convertMouseButton(OIS::MouseButtonID buttonID)
+{
+    switch (buttonID)
+    {
+    case OIS::MB_Left:
+        return CEGUI::LeftButton;
+
+    case OIS::MB_Right:
+        return CEGUI::RightButton;
+
+    case OIS::MB_Middle:
+        return CEGUI::MiddleButton;
+
+    default:
+        return CEGUI::LeftButton;
+    }
+}
+
+class HairSimulationFrameListener : public ExampleFrameListener, public OIS::MouseListener
 {
 private:
    SceneManager* mSceneMgr;
+
 public:
-      HairSimulationFrameListener(SceneManager *sceneMgr, RenderWindow* win, Camera* cam)
-         : ExampleFrameListener(win, cam),
-         mSceneMgr(sceneMgr)
+	HairSimulationFrameListener(SceneManager *sceneMgr, RenderWindow* win, Camera* cam)
+         : ExampleFrameListener(win, cam, false, true), mSceneMgr(sceneMgr)
 	{
+		mMouse->setEventCallback(this);
+
+		
 	}
 
+	//-----------------------------------------------------------------//
 	bool frameStarted(const FrameEvent& evt)
 	{
 		bool ret = ExampleFrameListener::frameStarted(evt);
-
 		return ret;
-
 	}
 
+	//--------------MouseListener--------------------------------------------------//
+	bool mouseMoved( const OIS::MouseEvent &arg )
+	{
+		// Rotation factors
+		const OIS::MouseState &ms = arg.state;
+		if( ms.buttonDown( OIS::MB_Right ) )
+		{
+			mRotX = Degree(-ms.X.rel * 0.13);
+			mRotY = Degree(-ms.Y.rel * 0.13);
+		}
+		//	Do camera rotation
+		mCamera->yaw(mRotX);
+		mCamera->pitch(mRotY);
+
+		CEGUI::System::getSingleton().injectMouseMove(arg.state.X.rel, arg.state.Y.rel);
+		return true;
+	}
+
+	//----------------------------------------------------------------//
+	bool mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
+	{
+		CEGUI::System::getSingleton().injectMouseButtonDown(convertMouseButton(id));
+		return true;
+	}
+
+	//----------------------------------------------------------------//
+	bool mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
+	{
+		CEGUI::System::getSingleton().injectMouseButtonUp(convertMouseButton(id));
+		return true;
+	}
+	
 };
 
 
@@ -55,15 +111,31 @@ class HairSimulationApp : public ExampleApplication
 {
 public:
 	HairSimulationApp()
+		: mGUISystem(0), mGUIRenderer(0)
 	{}
 
 	~HairSimulationApp()
 	{
+		//	Delete GUI system and renderer
+		if (mGUISystem)
+		{
+			delete mGUISystem;
+			mGUISystem = 0;
+		}
+		
+		if (mGUIRenderer)
+		{
+			delete mGUIRenderer;
+			mGUIRenderer = 0;
+		}
 	}
 
 protected:
 	World* mWorld;
 	ApplicationObject* mHead;
+	//		GUI system and renderer
+	CEGUI::System *mGUISystem;
+	CEGUI::OgreCEGUIRenderer * mGUIRenderer;
 
 	virtual void createCamera(void)
 	{
@@ -128,6 +200,21 @@ protected:
       // Create a light
       Light* l = mSceneMgr->createLight("MainLight");
       l->setPosition(20,80,50);
+
+	  //	Setup GUI system
+	  mGUIRenderer = new CEGUI::OgreCEGUIRenderer(mWindow, Ogre::RENDER_QUEUE_OVERLAY, false, 3000, mSceneMgr);
+       mGUISystem = new CEGUI::System(mGUIRenderer);
+
+	   // load scheme and set up defaults
+	   CEGUI::SchemeManager::getSingleton().loadScheme((CEGUI::utf8*)"TaharezLookSkin.scheme");
+	   mGUISystem->setDefaultMouseCursor((CEGUI::utf8*)"TaharezLook", (CEGUI::utf8*)"MouseArrow");
+       mGUISystem->setDefaultFont((CEGUI::utf8*)"BlueHighway-12");
+
+	   CEGUI::WindowManager *win = CEGUI::WindowManager::getSingletonPtr();
+       CEGUI::Window *sheet = win->createWindow("DefaultGUISheet", "HairSimulationApp/Sheet");
+
+		createButtons(win, sheet);
+	   mGUISystem->setGUISheet(sheet);
 	}
 
    // Create new frame listener
@@ -135,6 +222,51 @@ protected:
 	{
       mFrameListener= new HairSimulationFrameListener(mSceneMgr, mWindow, mCamera);
 		mRoot->addFrameListener(mFrameListener);
+	}
+
+	/** Handle Quit button */
+	bool quit(const CEGUI::EventArgs &e)
+    {
+        exit(0);
+        return true;
+    }
+
+	/** Create buttons */
+	void createButtons(CEGUI::WindowManager *win, CEGUI::Window *sheet)
+	{
+		
+	   CEGUI::Window *ButtonQuit = win->createWindow("TaharezLook/Button", "HairSimulationApp/ButtonQuit"),
+		   *Button1 = win->createWindow("TaharezLook/Button", "HairSimulationApp/Button1"),
+		   *Button2 = win->createWindow("TaharezLook/Button", "HairSimulationApp/Button2"),
+		   *Button3 = win->createWindow("TaharezLook/Button", "HairSimulationApp/Button3");
+
+	   //	Button1
+	   Button1->setText("1. Select scalp range");
+	   Button1->setSize(CEGUI::UVector2(CEGUI::UDim(0.20, 0), CEGUI::UDim(0.05, 0)));
+	   Button1->setPosition(CEGUI::UVector2(CEGUI::UDim(0, 0), CEGUI::UDim(0, 0)));
+	   sheet->addChildWindow(Button1);
+
+	   //	Button2
+	   Button2->setText("2. Generate hairs");
+	   Button2->setSize(CEGUI::UVector2(CEGUI::UDim(0.20, 0), CEGUI::UDim(0.05, 0)));
+	   Button2->setPosition(CEGUI::UVector2(CEGUI::UDim(0, 0), CEGUI::UDim(0.10, 0)));
+	   sheet->addChildWindow(Button2);
+
+	   //	Button3
+	   Button3->setText("3. Simulate dynamics");
+	   Button3->setSize(CEGUI::UVector2(CEGUI::UDim(0.20, 0), CEGUI::UDim(0.05, 0)));
+	   Button3->setPosition(CEGUI::UVector2(CEGUI::UDim(0, 0), CEGUI::UDim(0.20, 0)));
+	   sheet->addChildWindow(Button3);
+
+		//	Button quit
+       ButtonQuit->setText("Quit");
+       ButtonQuit->setSize(CEGUI::UVector2(CEGUI::UDim(0.20, 0), CEGUI::UDim(0.05, 0)));
+	   ButtonQuit->setPosition(CEGUI::UVector2(CEGUI::UDim(0, 0), CEGUI::UDim(0.3, 0)));
+
+	   ButtonQuit->subscribeEvent(CEGUI::PushButton::EventClicked,
+		   CEGUI::Event::Subscriber(&HairSimulationApp::quit, this));
+		sheet->addChildWindow(ButtonQuit);
+       
 	}
 };
 
