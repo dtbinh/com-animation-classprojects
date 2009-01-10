@@ -18,6 +18,15 @@ using namespace Ogre;
 
 class World : public Singleton<World>
 {
+public:
+	//	Process state type
+	enum ProcessState {
+		PS_INITIAL,
+		PS_SELECT_SCALP,
+		PS_GENERATION,
+		PS_SIMULATION
+	};
+
 protected:
 	// Pointer to OGRE's scene manager
 	 SceneManager* mSceneMgr;
@@ -29,6 +38,9 @@ protected:
 	 typedef std::set<ApplicationObject*> ObjectSet;
 	 //	Set of dynamics objects
 	 ObjectSet mDynamicsObjects;
+
+	 //	Process state of hair simulation
+	 ProcessState mProcessState;
 
 public:
 	/** Creates an instance of the world */
