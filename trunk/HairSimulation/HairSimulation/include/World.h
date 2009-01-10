@@ -47,11 +47,13 @@ public:
 	World(SceneManager* sceneMgr);
 	~World();
 	
-	//		Get the scene manager for this world
+	//	Get the scene manager for this world
 	SceneManager* getSceneManager(void);
-
-	/**	Create on OGRE head object */
-	//	OgreHead* createOgreHead(const String& name, const Vector3 &pos = Vector3::ZERO);
+	
+	//	Get the process state of hair simulation
+	inline ProcessState getProcessState(void);
+	//	Set the process state of hair simulaiton
+	void setProcessState(ProcessState ps);
 
 	/**	Create a ball object */
 	Ball* createBall(const String& name, Real radius, const Vector3& pos = Vector3::ZERO);
@@ -68,6 +70,7 @@ public:
 	/** Override standard Singleton retrieval */
 	static World& getSingleton(void);
 	static World* getSingletonPtr(void);
+
 };
 
 

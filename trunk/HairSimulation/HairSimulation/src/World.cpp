@@ -68,4 +68,17 @@ ManHead* World::createManHead(const String& name, const Vector3& pos)
 
     return head;
 }
+
+//-------------------------------------------------------------------------
+World::ProcessState World::getProcessState(void)
+{
+	return mProcessState;
+}
+
+//-------------------------------------------------------------------------
+void World::setProcessState(World::ProcessState ps)
+{
+	mProcessState = ps;
+}
+
 //-------------------------------------------------------------------------

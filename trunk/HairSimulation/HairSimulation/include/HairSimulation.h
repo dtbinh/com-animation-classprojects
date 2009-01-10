@@ -133,9 +133,11 @@ public:
 protected:
 	World* mWorld;
 	ApplicationObject* mHead;
-	//		GUI system and renderer
+	//	GUI system and renderer
 	CEGUI::System *mGUISystem;
 	CEGUI::OgreCEGUIRenderer * mGUIRenderer;
+	//	GUI components
+	CEGUI::Window *mButtonQuit, *mButton1, *mButton2, *mButton3;
 
 	virtual void createCamera(void)
 	{
@@ -225,50 +227,84 @@ protected:
 		mRoot->addFrameListener(mFrameListener);
 	}
 
-	/** Handle Quit button */
+	/** Create buttons */
+	void createButtons(CEGUI::WindowManager *win, CEGUI::Window *sheet)
+	{
+		
+		mButtonQuit = win->createWindow("TaharezLook/Button", "HairSimulationApp/ButtonQuit");
+		mButton1 = win->createWindow("TaharezLook/Button", "HairSimulationApp/Button1");
+		mButton2 = win->createWindow("TaharezLook/Button", "HairSimulationApp/Button2");
+		mButton3 = win->createWindow("TaharezLook/Button", "HairSimulationApp/Button3");
+
+		//	Button1
+		mButton1->setText("1. Select scalp range");
+		mButton1->setSize(CEGUI::UVector2(CEGUI::UDim(0.20, 0), CEGUI::UDim(0.05, 0)));
+		mButton1->setPosition(CEGUI::UVector2(CEGUI::UDim(0, 0), CEGUI::UDim(0, 0)));
+		mButton1->subscribeEvent(CEGUI::PushButton::EventClicked,
+			CEGUI::Event::Subscriber(&HairSimulationApp::handleButton1, this));
+		sheet->addChildWindow(mButton1);
+
+		//	Button2
+		mButton2->setText("2. Generate hairs");
+		mButton2->setSize(CEGUI::UVector2(CEGUI::UDim(0.20, 0), CEGUI::UDim(0.05, 0)));
+		mButton2->setPosition(CEGUI::UVector2(CEGUI::UDim(0, 0), CEGUI::UDim(0.10, 0)));
+		mButton2->setVisible(false);
+		mButton2->subscribeEvent(CEGUI::PushButton::EventClicked,
+			CEGUI::Event::Subscriber(&HairSimulationApp::handleButton2, this));
+		sheet->addChildWindow(mButton2);
+
+		//	Button3
+		mButton3->setText("3. Simulate dynamics");
+		mButton3->setSize(CEGUI::UVector2(CEGUI::UDim(0.20, 0), CEGUI::UDim(0.05, 0)));
+		mButton3->setPosition(CEGUI::UVector2(CEGUI::UDim(0, 0), CEGUI::UDim(0.20, 0)));
+		mButton3->setVisible(false);
+		mButton3->subscribeEvent(CEGUI::PushButton::EventClicked,
+			CEGUI::Event::Subscriber(&HairSimulationApp::handleButton3, this));
+		sheet->addChildWindow(mButton3);
+
+		//	Button quit
+		mButtonQuit->setText("Quit");
+		mButtonQuit->setSize(CEGUI::UVector2(CEGUI::UDim(0.20, 0), CEGUI::UDim(0.05, 0)));
+		mButtonQuit->setPosition(CEGUI::UVector2(CEGUI::UDim(0, 0), CEGUI::UDim(0.3, 0)));
+
+		mButtonQuit->subscribeEvent(CEGUI::PushButton::EventClicked,
+		   CEGUI::Event::Subscriber(&HairSimulationApp::quit, this));
+		sheet->addChildWindow(mButtonQuit);
+       
+	}
+
+	//----------------------Handler functions for button events--------
+	bool handleButton1(const CEGUI::EventArgs &e)
+	{
+		mWorld->setProcessState(World::PS_SELECT_SCALP);
+		mButton1->setVisible(false);
+		mButton2->setVisible(true);
+
+		return true;
+	}
+	//-----------------------------------------------------------------
+	bool handleButton2(const CEGUI::EventArgs &e)
+	{
+		mWorld->setProcessState(World::PS_GENERATION);
+		mButton2->setVisible(false);
+		mButton3->setVisible(true);
+
+		return true;
+	}
+	//-----------------------------------------------------------------
+	bool handleButton3(const CEGUI::EventArgs &e)
+	{
+		mWorld->setProcessState(World::PS_SIMULATION);
+		mButton3->setVisible(false);
+
+		return true;
+	}
+	//------------------ Handle Quit button --------------------------
 	bool quit(const CEGUI::EventArgs &e)
     {
         exit(0);
         return true;
     }
-
-	/** Create buttons */
-	void createButtons(CEGUI::WindowManager *win, CEGUI::Window *sheet)
-	{
-		
-	   CEGUI::Window *ButtonQuit = win->createWindow("TaharezLook/Button", "HairSimulationApp/ButtonQuit"),
-		   *Button1 = win->createWindow("TaharezLook/Button", "HairSimulationApp/Button1"),
-		   *Button2 = win->createWindow("TaharezLook/Button", "HairSimulationApp/Button2"),
-		   *Button3 = win->createWindow("TaharezLook/Button", "HairSimulationApp/Button3");
-
-	   //	Button1
-	   Button1->setText("1. Select scalp range");
-	   Button1->setSize(CEGUI::UVector2(CEGUI::UDim(0.20, 0), CEGUI::UDim(0.05, 0)));
-	   Button1->setPosition(CEGUI::UVector2(CEGUI::UDim(0, 0), CEGUI::UDim(0, 0)));
-	   sheet->addChildWindow(Button1);
-
-	   //	Button2
-	   Button2->setText("2. Generate hairs");
-	   Button2->setSize(CEGUI::UVector2(CEGUI::UDim(0.20, 0), CEGUI::UDim(0.05, 0)));
-	   Button2->setPosition(CEGUI::UVector2(CEGUI::UDim(0, 0), CEGUI::UDim(0.10, 0)));
-	   sheet->addChildWindow(Button2);
-
-	   //	Button3
-	   Button3->setText("3. Simulate dynamics");
-	   Button3->setSize(CEGUI::UVector2(CEGUI::UDim(0.20, 0), CEGUI::UDim(0.05, 0)));
-	   Button3->setPosition(CEGUI::UVector2(CEGUI::UDim(0, 0), CEGUI::UDim(0.20, 0)));
-	   sheet->addChildWindow(Button3);
-
-		//	Button quit
-       ButtonQuit->setText("Quit");
-       ButtonQuit->setSize(CEGUI::UVector2(CEGUI::UDim(0.20, 0), CEGUI::UDim(0.05, 0)));
-	   ButtonQuit->setPosition(CEGUI::UVector2(CEGUI::UDim(0, 0), CEGUI::UDim(0.3, 0)));
-
-	   ButtonQuit->subscribeEvent(CEGUI::PushButton::EventClicked,
-		   CEGUI::Event::Subscriber(&HairSimulationApp::quit, this));
-		sheet->addChildWindow(ButtonQuit);
-       
-	}
 };
 
 #endif // #ifndef __HairSimulation_h_
