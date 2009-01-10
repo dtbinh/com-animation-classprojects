@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="big5"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="8.00"
 	Name="HairSimulation"
 	ProjectGUID="{BB0AD050-AA20-42E0-92F3-FEBA703C9154}"
 	RootNamespace="HairSimulation"
-	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -65,7 +64,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OgreMain_d.lib OIS_d.lib CEGUIBase_d.lib OgreGUIRenderer_d.lib"
+				AdditionalDependencies="OgreMain_d.lib OIS_d.lib"
 				OutputFile="$(OutDir)\$(ProjectName).exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(OGRE_HOME)\lib"
@@ -73,8 +72,6 @@
 				ProgramDatabaseFile="$(OutDir)/HairSimulation.pdb"
 				SubSystem="2"
 				OptimizeForWindows98="1"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -94,6 +91,9 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -165,8 +165,6 @@
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				OptimizeForWindows98="1"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -188,6 +186,9 @@
 				Name="VCAppVerifierTool"
 			/>
 			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying exe to samples bin directory ..."
 				CommandLine="copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(OGRE_HOME)\Bin\$(ConfigurationName)&quot;"
@@ -203,22 +204,6 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\src\AppBall.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\ApplicationObject.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\AppManHead.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\AppOgreHead.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\src\DynamicLines.cpp"
 				>
 			</File>
@@ -230,36 +215,12 @@
 				RelativePath=".\src\HairSimulation.cpp"
 				>
 			</File>
-			<File
-				RelativePath=".\src\World.cpp"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="標頭檔"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
-			<File
-				RelativePath=".\include\AppBall.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\ApplicationObject.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\AppManHead.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\AppOgreHead.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\AppPrerequisites.h"
-				>
-			</File>
 			<File
 				RelativePath=".\include\DynamicLines.h"
 				>
@@ -274,10 +235,6 @@
 			</File>
 			<File
 				RelativePath=".\res\Resource.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\World.h"
 				>
 			</File>
 		</Filter>
