@@ -5,6 +5,7 @@
 World::World(SceneManager* sceneMgr)
 : mSceneMgr(sceneMgr)
 {
+	mProcessState = PS_INITIAL;
 }
 //-----------------------------------------------------------
 World::~World()

@@ -194,27 +194,28 @@ protected:
 		//	Creaete a man head
 		mHead = mWorld->createManHead("ManHead");
 */
-      // Set ambient light
-      mSceneMgr->setAmbientLight(ColourValue(0.5, 0.5, 0.5));
+		// Set ambient light
+		mSceneMgr->setAmbientLight(ColourValue(0.5, 0.5, 0.5));
 
-      // Create a light
-      Light* l = mSceneMgr->createLight("MainLight");
-      l->setPosition(20,80,50);
+		// Create a light
+		Light* l = mSceneMgr->createLight("MainLight");
+		l->setPosition(20,80,50);
 
-	  //	Setup GUI system
-	  mGUIRenderer = new CEGUI::OgreCEGUIRenderer(mWindow, Ogre::RENDER_QUEUE_OVERLAY, false, 3000, mSceneMgr);
-       mGUISystem = new CEGUI::System(mGUIRenderer);
+		//	Setup GUI system
+		mGUIRenderer = new CEGUI::OgreCEGUIRenderer(mWindow, Ogre::RENDER_QUEUE_OVERLAY, false, 3000, mSceneMgr);
+		mGUISystem = new CEGUI::System(mGUIRenderer);
 
-	   // load scheme and set up defaults
-	   CEGUI::SchemeManager::getSingleton().loadScheme((CEGUI::utf8*)"TaharezLookSkin.scheme");
-	   mGUISystem->setDefaultMouseCursor((CEGUI::utf8*)"TaharezLook", (CEGUI::utf8*)"MouseArrow");
-       mGUISystem->setDefaultFont((CEGUI::utf8*)"BlueHighway-12");
+		// load scheme and set up defaults
+		CEGUI::SchemeManager::getSingleton().loadScheme((CEGUI::utf8*)"TaharezLookSkin.scheme");
+		mGUISystem->setDefaultMouseCursor((CEGUI::utf8*)"TaharezLook", (CEGUI::utf8*)"MouseArrow");
+		mGUISystem->setDefaultFont((CEGUI::utf8*)"BlueHighway-12");
 
-	   CEGUI::WindowManager *win = CEGUI::WindowManager::getSingletonPtr();
-       CEGUI::Window *sheet = win->createWindow("DefaultGUISheet", "HairSimulationApp/Sheet");
+		CEGUI::WindowManager *win = CEGUI::WindowManager::getSingletonPtr();
+       
+		CEGUI::Window *sheet = win->createWindow("DefaultGUISheet", "HairSimulationApp/Sheet");
 
 		createButtons(win, sheet);
-	   mGUISystem->setGUISheet(sheet);
+		mGUISystem->setGUISheet(sheet);
 	}
 
    // Create new frame listener
