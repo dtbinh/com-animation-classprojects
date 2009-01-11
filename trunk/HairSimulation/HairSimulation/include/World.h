@@ -11,6 +11,7 @@ class World contains all objects required to simulate hair, such as a head and h
 #include "AppBall.h"
 #include "AppOgreHead.h"
 #include "AppManHead.h"
+#include "DynamicLines.h"
 #include <Ogre.h>
 #include <OgreSingleton.h>
 
@@ -41,6 +42,9 @@ protected:
 
 	 //	Process state of hair simulation
 	 ProcessState mProcessState;
+public:
+	 // The pointer to Scalp
+	 DynamicLines* mScalpCircle;
 
 public:
 	/** Creates an instance of the world */
@@ -51,9 +55,12 @@ public:
 	SceneManager* getSceneManager(void);
 	
 	//	Get the process state of hair simulation
-	inline ProcessState getProcessState(void);
+	ProcessState getProcessState(void);
 	//	Set the process state of hair simulaiton
 	void setProcessState(ProcessState ps);
+
+	//	Add a point to the scalp circle
+	void addPointToScalpCircle(const Vector3& point);
 
 	/**	Create a ball object */
 	Ball* createBall(const String& name, Real radius, const Vector3& pos = Vector3::ZERO);
@@ -63,6 +70,9 @@ public:
 
 	/** Create a man head object. */
     ManHead* createManHead(const String& name, const Vector3& pos = Vector3::ZERO);
+
+	/** Create the scalp */
+	void createScalpCircle(const String& name);
 
 	/** Clears the scene */
 	void clear(void);

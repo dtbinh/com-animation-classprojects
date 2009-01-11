@@ -26,10 +26,13 @@ LGPL like the rest of the OGRE engine.
 #include "ApplicationObject.h"
 #include <CEGUI/CEGUI.h>
 #include <OgreCEGUIRenderer.h>
+#include <iostream>
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
 #include "../res/resource.h"
 #endif
+
+using namespace std;
 
 /** Convert OIS mouse buttons to CEGUI's */
 CEGUI::MouseButton convertMouseButton(OIS::MouseButtonID buttonID)
@@ -53,15 +56,25 @@ CEGUI::MouseButton convertMouseButton(OIS::MouseButtonID buttonID)
 class HairSimulationFrameListener : public ExampleFrameListener, public OIS::MouseListener
 {
 private:
-   SceneManager* mSceneMgr;
+   SceneManager* mSceneMgr;			//	A pointer to the scene manager
+   World*		 mWorld;
+   RaySceneQuery *mRaySceneQuery;	//	The ray scene query pointer
 
 public:
-	HairSimulationFrameListener(SceneManager *sceneMgr, RenderWindow* win, Camera* cam)
-         : ExampleFrameListener(win, cam, false, true), mSceneMgr(sceneMgr)
+	HairSimulationFrameListener(SceneManager *sceneMgr, RenderWindow* win, Camera* cam, World* world)
+         : ExampleFrameListener(win, cam, false, true), mSceneMgr(sceneMgr), mWorld(world)
 	{
 		mMouse->setEventCallback(this);
 
-		
+		//	Create RaySceneQuery
+		mRaySceneQuery = mSceneMgr->createRayQuery(Ray());
+	}
+
+	//-----------------------------------------------------------------//
+	~HairSimulationFrameListener()
+	{
+		//	Delete RaySceneQuery
+		mSceneMgr->destroyQuery(mRaySceneQuery);
 	}
 
 	//-----------------------------------------------------------------//
@@ -93,6 +106,41 @@ public:
 	bool mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 	{
 		CEGUI::System::getSingleton().injectMouseButtonDown(convertMouseButton(id));
+
+		// Use RaySceneQuery to do scalp selection
+		if (mWorld->getProcessState() == World::PS_SELECT_SCALP)
+		{
+			if (id == OIS::MB_Left)
+			{
+				//	Setup the ray scene query, use CEGUI's mouse position
+				CEGUI::Point mousePos = CEGUI::MouseCursor::getSingleton().getPosition();
+				Ray mouseRay = mCamera->getCameraToViewportRay(mousePos.d_x/float(arg.state.width), mousePos.d_y/float(arg.state.height));
+				mRaySceneQuery->setRay(mouseRay);
+
+				//	Execute query
+				RaySceneQueryResult &result = mRaySceneQuery->execute();
+				RaySceneQueryResult::iterator itr;
+
+				//	Get results
+				for (itr = result.begin(); itr != result.end(); itr++)
+				{
+					if (itr->movable)
+					{
+						Real dis = itr->distance;
+						Vector3 target, origin = mouseRay.getOrigin();
+						Vector3 dir = mouseRay.getDirection();
+						dir.normalise();
+						target = origin + (dir*dis);
+		
+						//mWorld->addPointToScalpCircle(target);
+						//cout << "test:(" << target.x << ", " << target.y << ", " << target.z << ")" << endl;
+
+						break;
+					}
+				}	//	for
+			}
+		}
+
 		return true;
 	}
 
@@ -137,7 +185,7 @@ protected:
 	CEGUI::System *mGUISystem;
 	CEGUI::OgreCEGUIRenderer * mGUIRenderer;
 	//	GUI components
-	CEGUI::Window *mButtonQuit, *mButton1, *mButton2, *mButton3;
+	CEGUI::Window *mButtonQuit, *mButton1, *mButton2, *mButton3, *mButtonTest;
 
 	virtual void createCamera(void)
 	{
@@ -184,6 +232,8 @@ protected:
 		//	Create the world
 		mWorld = new World(mSceneMgr);
 
+		mWorld->createScalpCircle("ScalpCircle");
+		
 		//	Create a sphere
 		mHead = mWorld->createBall("ball", 7);
 		mHead->getEntity()->setMaterialName("");	// Color white
@@ -223,7 +273,7 @@ protected:
    // Create new frame listener
 	void createFrameListener(void)
 	{
-      mFrameListener= new HairSimulationFrameListener(mSceneMgr, mWindow, mCamera);
+      mFrameListener= new HairSimulationFrameListener(mSceneMgr, mWindow, mCamera, mWorld);
 		mRoot->addFrameListener(mFrameListener);
 	}
 
@@ -235,6 +285,7 @@ protected:
 		mButton1 = win->createWindow("TaharezLook/Button", "HairSimulationApp/Button1");
 		mButton2 = win->createWindow("TaharezLook/Button", "HairSimulationApp/Button2");
 		mButton3 = win->createWindow("TaharezLook/Button", "HairSimulationApp/Button3");
+		mButtonTest = win->createWindow("TaharezLook/Button", "HairSimulationApp/ButtonTest");
 
 		//	Button1
 		mButton1->setText("1. Select scalp range");
@@ -270,6 +321,15 @@ protected:
 		mButtonQuit->subscribeEvent(CEGUI::PushButton::EventClicked,
 		   CEGUI::Event::Subscriber(&HairSimulationApp::quit, this));
 		sheet->addChildWindow(mButtonQuit);
+
+		//	ButtonTest
+		mButtonTest->setText("Test");
+		mButtonTest->setSize(CEGUI::UVector2(CEGUI::UDim(0.20, 0), CEGUI::UDim(0.05, 0)));
+		mButtonTest->setPosition(CEGUI::UVector2(CEGUI::UDim(0, 0), CEGUI::UDim(0.40, 0)));
+		//mButtonTest->setVisible(false);
+		mButtonTest->subscribeEvent(CEGUI::PushButton::EventClicked,
+			CEGUI::Event::Subscriber(&HairSimulationApp::handleButtonTest, this));
+		sheet->addChildWindow(mButtonTest);
        
 	}
 
@@ -305,6 +365,24 @@ protected:
         exit(0);
         return true;
     }
+	//------------------ Handle Test button --------------------------
+	bool handleButtonTest(const CEGUI::EventArgs &e)
+	{
+		mWorld->addPointToScalpCircle(Vector3(0, 0, 0));
+		mWorld->addPointToScalpCircle(Vector3(1, 0, 0));
+		mWorld->addPointToScalpCircle(Vector3(2, 0, 0));
+		//mWorld->addPointToScalpCircle(Vector3(3, 0, 0));
+
+		SceneNode *node = mWorld->mScalpCircle->getParentSceneNode();
+
+		//node->scale(1, 1, 1);
+
+		//node->detachObject(mWorld->mScalpCircle);
+		//node->attachObject(mWorld->mScalpCircle);
+
+		cout << "Button test is pressed" << endl;
+		return true;
+	}
 };
 
 #endif // #ifndef __HairSimulation_h_
