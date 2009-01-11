@@ -82,3 +82,21 @@ void World::setProcessState(World::ProcessState ps)
 }
 
 //-------------------------------------------------------------------------
+void World::createScalpCircle(const String& name)
+{
+	mScalpCircle = new DynamicLines(RenderOperation::OT_LINE_LIST);
+
+	SceneManager* sm = World::getSingleton().getSceneManager();
+
+	SceneNode *scalpCircleNode = sm->getRootSceneNode()->createChildSceneNode(name);
+	scalpCircleNode->attachObject(mScalpCircle);
+}
+
+//-------------------------------------------------------------------------
+void World::addPointToScalpCircle(const Vector3& point)
+{
+	mScalpCircle->addPoint(point);
+	mScalpCircle->update();
+
+	std::cout << "length of scalpCircle:" << mScalpCircle->getNumPoints() << std::endl;
+}
