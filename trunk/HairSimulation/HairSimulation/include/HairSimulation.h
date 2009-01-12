@@ -132,11 +132,12 @@ public:
 						dir.normalise();
 						target = origin + (dir*dis);
 		
-						//mWorld->addPointToScalpCircle(target);
-						//cout << "test:(" << target.x << ", " << target.y << ", " << target.z << ")" << endl;
+						mWorld->addPointToScalpCircle(target);
 
 						break;
 					}
+					if (itr->worldFragment)
+						cout << "worldFragment" << endl;
 				}	//	for
 			}
 		}
@@ -185,7 +186,7 @@ protected:
 	CEGUI::System *mGUISystem;
 	CEGUI::OgreCEGUIRenderer * mGUIRenderer;
 	//	GUI components
-	CEGUI::Window *mButtonQuit, *mButton1, *mButton2, *mButton3, *mButtonTest;
+	CEGUI::Window *mButtonQuit, *mButton1, *mButton2, *mButton3, *mButtonTest, *mButton1Finish;
 
 	virtual void createCamera(void)
 	{
@@ -231,21 +232,22 @@ protected:
 	{
 		//	Create the world
 		mWorld = new World(mSceneMgr);
-
-		mWorld->createScalpCircle("ScalpCircle");
-		
+		/*
 		//	Create a sphere
 		mHead = mWorld->createBall("ball", 7);
 		mHead->getEntity()->setMaterialName("");	// Color white
-
+*/
 		/*
 		//	Creaete an ogre head
 		mHead = mWorld->createOgreHead("OgreHead");
 		*/
-		/*
+		
 		//	Creaete a man head
 		mHead = mWorld->createManHead("ManHead");
-*/
+
+		//	Create scalp after the head is created
+		mWorld->createScalpCircle("ScalpCircle");
+
 		// Set ambient light
 		mSceneMgr->setAmbientLight(ColourValue(0.5, 0.5, 0.5));
 
@@ -286,6 +288,7 @@ protected:
 		mButton2 = win->createWindow("TaharezLook/Button", "HairSimulationApp/Button2");
 		mButton3 = win->createWindow("TaharezLook/Button", "HairSimulationApp/Button3");
 		mButtonTest = win->createWindow("TaharezLook/Button", "HairSimulationApp/ButtonTest");
+		mButton1Finish = win->createWindow("TaharezLook/Button", "HairSimulationApp/Button1Finish");
 
 		//	Button1
 		mButton1->setText("1. Select scalp range");
@@ -330,6 +333,14 @@ protected:
 		mButtonTest->subscribeEvent(CEGUI::PushButton::EventClicked,
 			CEGUI::Event::Subscriber(&HairSimulationApp::handleButtonTest, this));
 		sheet->addChildWindow(mButtonTest);
+
+		//	Button1Finish
+		mButton1Finish->setText("Finish");
+		mButton1Finish->setSize(CEGUI::UVector2(CEGUI::UDim(0.20, 0), CEGUI::UDim(0.05, 0)));
+		mButton1Finish->setPosition(CEGUI::UVector2(CEGUI::UDim(0.2, 0), CEGUI::UDim(0, 0)));
+		mButton1Finish->subscribeEvent(CEGUI::PushButton::EventClicked,
+			CEGUI::Event::Subscriber(&HairSimulationApp::handleButton1Finish, this));
+		sheet->addChildWindow(mButton1Finish);
        
 	}
 
@@ -338,7 +349,7 @@ protected:
 	{
 		mWorld->setProcessState(World::PS_SELECT_SCALP);
 		mButton1->setVisible(false);
-		mButton2->setVisible(true);
+		mButton1Finish->setVisible(true);
 
 		return true;
 	}
@@ -368,19 +379,17 @@ protected:
 	//------------------ Handle Test button --------------------------
 	bool handleButtonTest(const CEGUI::EventArgs &e)
 	{
-		mWorld->addPointToScalpCircle(Vector3(0, 0, 0));
-		mWorld->addPointToScalpCircle(Vector3(1, 0, 0));
-		mWorld->addPointToScalpCircle(Vector3(2, 0, 0));
-		//mWorld->addPointToScalpCircle(Vector3(3, 0, 0));
-
-		SceneNode *node = mWorld->mScalpCircle->getParentSceneNode();
-
-		//node->scale(1, 1, 1);
-
-		//node->detachObject(mWorld->mScalpCircle);
-		//node->attachObject(mWorld->mScalpCircle);
-
 		cout << "Button test is pressed" << endl;
+		return true;
+	}
+	//------------------ Handle Button1Finish ------------------------
+	bool handleButton1Finish(const CEGUI::EventArgs &e)
+	{
+
+		mWorld->completeScalpCircle();
+
+		mButton1Finish->setVisible(false);
+		mButton2->setVisible(true);
 		return true;
 	}
 };

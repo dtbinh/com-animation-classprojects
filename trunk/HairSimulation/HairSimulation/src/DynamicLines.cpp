@@ -12,14 +12,42 @@ enum {
 
 DynamicLines::DynamicLines(OperationType opType)
 {
+/*
   initialize(opType,false);
   setMaterial("BaseWhiteNoLighting");
   mDirty = true;
+*/
+	initDynamicLines(Ogre::ColourValue::Red, opType);
+}
+
+DynamicLines::DynamicLines(ColourValue colour, OperationType opType)
+{
+  initDynamicLines(colour, opType);
 }
 
 DynamicLines::~DynamicLines()
 {
 }
+
+void DynamicLines::initDynamicLines(Ogre::ColourValue colour, OperationType opType)
+{
+  initialize(opType,false);
+  static int matIndex = 0;
+  String matName = "DL" + StringConverter::toString(matIndex++);
+  MaterialPtr materialPtr = MaterialManager::getSingleton().create(matName,
+              ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+  materialPtr->setAmbient(colour);
+
+  setMaterial(matName);
+ 
+  mDirty = true;
+}
+
+void DynamicLines::setColour(Ogre::ColourValue colour)
+{
+  getMaterial()->setAmbient(colour);
+}
+
 
 void DynamicLines::setOperationType(OperationType opType)
 {
@@ -41,6 +69,15 @@ void DynamicLines::addPoint(Real x, Real y, Real z)
    mPoints.push_back(Vector3(x,y,z));
    mDirty = true;
 }
+
+
+void DynamicLines::addSegment(const Ogre::Vector3 &p1, const Ogre::Vector3 &p2)
+{
+  mPoints.push_back(p1);
+  mPoints.push_back(p2);
+  mDirty = true;
+}
+
 const Vector3& DynamicLines::getPoint(unsigned short index) const
 {
    assert(index < mPoints.size() && "Point index is out of bounds!!");
@@ -76,7 +113,7 @@ void DynamicLines::createVertexDeclaration()
 
 void DynamicLines::fillHardwareBuffers()
 {
-  int size = mPoints.size();
+  int size = (int) mPoints.size();
 
   prepareHardwareBuffers(size,0);
 
