@@ -39,7 +39,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="include;$(OGRE_HOME)\include;$(OGRE_HOME)\samples\include"
+				AdditionalIncludeDirectories="include;&quot;$(OGRE_HOME)\include&quot;;&quot;$(OGRE_HOME)\samples\include&quot;;&quot;$(OGRE_HOME)\ogreopcode\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="true"
 				ExceptionHandling="1"
@@ -64,10 +64,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OgreMain_d.lib OIS_d.lib CEGUIBase_d.lib OgreGUIRenderer_d.lib"
+				AdditionalDependencies="OgreMain_d.lib OIS_d.lib CEGUIBase_d.lib OgreGUIRenderer_d.lib OgreOpcode_d.lib"
 				OutputFile="$(OutDir)\$(ProjectName).exe"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="$(OGRE_HOME)\lib"
+				AdditionalLibraryDirectories="&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\ogreopcode\bin\debug&quot;"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/HairSimulation.pdb"
 				SubSystem="2"
