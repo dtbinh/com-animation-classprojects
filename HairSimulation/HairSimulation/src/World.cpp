@@ -84,12 +84,13 @@ void World::setProcessState(World::ProcessState ps)
 //-------------------------------------------------------------------------
 void World::createScalpCircle(const String& name)
 {
-	mScalpCircle = new DynamicLines(RenderOperation::OT_LINE_LIST);
+	mScalpCircle = new DynamicLines(RenderOperation::OT_LINE_STRIP);
 
 	SceneManager* sm = World::getSingleton().getSceneManager();
 
 	SceneNode *scalpCircleNode = sm->getRootSceneNode()->createChildSceneNode(name);
 	scalpCircleNode->attachObject(mScalpCircle);
+
 }
 
 //-------------------------------------------------------------------------
@@ -97,6 +98,19 @@ void World::addPointToScalpCircle(const Vector3& point)
 {
 	mScalpCircle->addPoint(point);
 	mScalpCircle->update();
+	//	Update the SceneNode to redraw DynamicLines
+	mScalpCircle->getParentSceneNode()->needUpdate(true);
 
-	std::cout << "length of scalpCircle:" << mScalpCircle->getNumPoints() << std::endl;
+}
+//-------------------------------------------------------------------------
+void World::completeScalpCircle()
+{
+	int numPoints = (int) mScalpCircle->getNumPoints();
+	if (numPoints < 3)
+	{
+		std::cout << "DynamicLines for scalp circle is too short" << std::endl;
+		exit(1);
+	}
+	//	Add the starting point to the end of DynamicLines to complete the circle
+	addPointToScalpCircle(mScalpCircle->getPoint(0));
 }

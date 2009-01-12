@@ -42,7 +42,7 @@ protected:
 
 	 //	Process state of hair simulation
 	 ProcessState mProcessState;
-public:
+
 	 // The pointer to Scalp
 	 DynamicLines* mScalpCircle;
 
@@ -73,6 +73,9 @@ public:
 
 	/** Create the scalp */
 	void createScalpCircle(const String& name);
+
+	/** Complete the DynamicLines as scalp circle */
+	void completeScalpCircle(void);
 
 	/** Clears the scene */
 	void clear(void);

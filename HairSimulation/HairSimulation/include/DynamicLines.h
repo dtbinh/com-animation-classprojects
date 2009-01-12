@@ -15,12 +15,19 @@ class DynamicLines : public DynamicRenderable
 public:
   /// Constructor - see setOperationType() for description of argument.
   DynamicLines(OperationType opType=Ogre::RenderOperation::OT_LINE_STRIP);
+  DynamicLines(Ogre::ColourValue colour, OperationType opType=Ogre::RenderOperation::OT_LINE_STRIP);
   virtual ~DynamicLines();
+
+  // change the line colour
+  void setColour(Ogre::ColourValue colour);
 
   /// Add a point to the point list
   void addPoint(const Ogre::Vector3 &p);
   /// Add a point to the point list
   void addPoint(Real x, Real y, Real z);
+
+  // Add a line segment
+  void addSegment(const Ogre::Vector3 &p1, const Ogre::Vector3 &p2);
 
   /// Change the location of an existing point in the point list
   void setPoint(unsigned short index, const Vector3 &value);
@@ -55,6 +62,8 @@ protected:
   virtual void createVertexDeclaration();
   /// Implementation DynamicRenderable, pushes point list out to hardware memory
   virtual void fillHardwareBuffers();
+
+  void initDynamicLines(Ogre::ColourValue colour, OperationType opType);
 
 private:
   std::vector<Vector3> mPoints;
