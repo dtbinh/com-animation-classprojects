@@ -6,6 +6,9 @@ World::World(SceneManager* sceneMgr)
 : mSceneMgr(sceneMgr)
 {
 	mProcessState = PS_INITIAL;
+
+	// Create a CollisionContext
+	mCollisionContext = CollisionManager::getSingletonPtr()->createContext("mCollisionContext");
 }
 //-----------------------------------------------------------
 World::~World()
@@ -45,7 +48,7 @@ Ball* World::createBall(const Ogre::String &name, Ogre::Real radius, const Ogre:
 	ball->setPosition(pos);
 
 	mObjects[name] = ball;
-
+	addCollisionEntity(ball->getEntity());
 	return ball;
 }
 //-------------------------------------------------------------------------
@@ -55,7 +58,7 @@ OgreHead* World::createOgreHead(const String& name, const Vector3& pos)
     head->setPosition(pos);
 
     mObjects[name] = head;
-
+	addCollisionEntity(head->getEntity());
     return head;
 }
 //-------------------------------------------------------------------------
@@ -65,7 +68,7 @@ ManHead* World::createManHead(const String& name, const Vector3& pos)
     head->setPosition(pos);
 
     mObjects[name] = head;
-
+	addCollisionEntity(head->getEntity());
     return head;
 }
 
@@ -114,3 +117,63 @@ void World::completeScalpCircle()
 	//	Add the starting point to the end of DynamicLines to complete the circle
 	addPointToScalpCircle(mScalpCircle->getPoint(0));
 }
+//-------------------------------------------------------------------------
+void World::addCollisionEntity( Entity* pEntity )
+{
+	EntityCollisionShape* pCollisionShape = CollisionManager::getSingletonPtr()->createEntityCollisionShape( pEntity->getName() );
+	pCollisionShape->load( pEntity );
+	CollisionObject* pCollisionObject = mCollisionContext->createObject( pEntity->getName() );
+	pCollisionObject->setCollClass( "mCollClass" );
+	pCollisionObject->setShape( pCollisionShape );
+	mCollisionContext->addObject( pCollisionObject );
+}
+
+//-------------------------------------------------------------------------
+void  World::removeCollisionEntity( Ogre::Entity* pEntity )
+{
+	ICollisionShape* pShape = CollisionManager::getSingletonPtr()->getShape( pEntity->getName() );
+	if( NULL != pShape )
+	{
+		CollisionManager::getSingletonPtr()->destroyShape( pShape );
+	}
+
+	CollisionObject* pObject = NULL;
+	try
+	{
+		pObject = mCollisionContext->getAttachedObject( pEntity->getName() );
+	}
+	catch( ... )
+	{
+		return;
+	}
+
+	mCollisionContext->destroyObject( pObject );
+}
+
+//-------------------------------------------------------------------------
+void World::doRayTest(const Ogre::Ray &ray, const Ogre::Real MaxDistance)
+{
+	int ContactCount = 0;
+	CollisionPair** ppCollisionPair = NULL;
+
+	mCollisionContext->reset();
+
+	if ((ContactCount = mCollisionContext->rayCheck(ray, MaxDistance, COLLTYPE_EXACT, COLLTYPE_ALWAYS_EXACT, ppCollisionPair)) > 0)
+	{
+		mContactVector.clear();
+		for (int i = 0; i < ContactCount; i++)
+		{
+			mContactVector.push_back(ppCollisionPair[i]->contact);
+		}
+	}
+}
+
+//-------------------------------------------------------------------------
+Vector3* World::getContactPoint()
+{
+	if (mContactVector.size() > 0)
+		return &mContactVector[0];
+	else
+		return NULL;
+}
+

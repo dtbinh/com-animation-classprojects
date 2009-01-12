@@ -14,8 +14,10 @@ class World contains all objects required to simulate hair, such as a head and h
 #include "DynamicLines.h"
 #include <Ogre.h>
 #include <OgreSingleton.h>
+#include <OgreOpcode.h>
 
 using namespace Ogre;
+using namespace OgreOpcode;
 
 class World : public Singleton<World>
 {
@@ -45,6 +47,12 @@ protected:
 
 	 // The pointer to Scalp
 	 DynamicLines* mScalpCircle;
+
+	  //	CollisionContext for coliision detection
+	 CollisionContext* mCollisionContext;
+
+	 //	Contact vector for ray collision detection
+	 std::vector<Vector3> mContactVector;
 
 public:
 	/** Creates an instance of the world */
@@ -83,6 +91,16 @@ public:
 	/** Override standard Singleton retrieval */
 	static World& getSingleton(void);
 	static World* getSingletonPtr(void);
+
+	/** Add an entity to CollisionContext */
+	void addCollisionEntity(Entity* entity);
+	/** Remove an entity from CollisionContext */
+	void removeCollisionEntity(Entity* entity);
+	/** Test for ray collision */
+	void doRayTest(const Ray &ray, const Real MaxDistance = 2000.0f);
+	/** Get the first point in mContactVector */
+	Vector3* getContactPoint();
+
 
 };
 

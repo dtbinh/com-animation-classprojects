@@ -24,6 +24,7 @@ LGPL like the rest of the OGRE engine.
 #include "ExampleApplication.h"
 #include "World.h"
 #include "ApplicationObject.h"
+#include <OgreOpcode.h>
 #include <CEGUI/CEGUI.h>
 #include <OgreCEGUIRenderer.h>
 #include <iostream>
@@ -33,6 +34,7 @@ LGPL like the rest of the OGRE engine.
 #endif
 
 using namespace std;
+using namespace OgreOpcode;
 
 /** Convert OIS mouse buttons to CEGUI's */
 CEGUI::MouseButton convertMouseButton(OIS::MouseButtonID buttonID)
@@ -58,23 +60,17 @@ class HairSimulationFrameListener : public ExampleFrameListener, public OIS::Mou
 private:
    SceneManager* mSceneMgr;			//	A pointer to the scene manager
    World*		 mWorld;
-   RaySceneQuery *mRaySceneQuery;	//	The ray scene query pointer
 
 public:
 	HairSimulationFrameListener(SceneManager *sceneMgr, RenderWindow* win, Camera* cam, World* world)
          : ExampleFrameListener(win, cam, false, true), mSceneMgr(sceneMgr), mWorld(world)
 	{
 		mMouse->setEventCallback(this);
-
-		//	Create RaySceneQuery
-		mRaySceneQuery = mSceneMgr->createRayQuery(Ray());
 	}
 
 	//-----------------------------------------------------------------//
 	~HairSimulationFrameListener()
 	{
-		//	Delete RaySceneQuery
-		mSceneMgr->destroyQuery(mRaySceneQuery);
 	}
 
 	//-----------------------------------------------------------------//
@@ -115,30 +111,12 @@ public:
 				//	Setup the ray scene query, use CEGUI's mouse position
 				CEGUI::Point mousePos = CEGUI::MouseCursor::getSingleton().getPosition();
 				Ray mouseRay = mCamera->getCameraToViewportRay(mousePos.d_x/float(arg.state.width), mousePos.d_y/float(arg.state.height));
-				mRaySceneQuery->setRay(mouseRay);
 
-				//	Execute query
-				RaySceneQueryResult &result = mRaySceneQuery->execute();
-				RaySceneQueryResult::iterator itr;
-
-				//	Get results
-				for (itr = result.begin(); itr != result.end(); itr++)
-				{
-					if (itr->movable)
-					{
-						Real dis = itr->distance;
-						Vector3 target, origin = mouseRay.getOrigin();
-						Vector3 dir = mouseRay.getDirection();
-						dir.normalise();
-						target = origin + (dir*dis);
-		
-						mWorld->addPointToScalpCircle(target);
-
-						break;
-					}
-					if (itr->worldFragment)
-						cout << "worldFragment" << endl;
-				}	//	for
+				//	Do ray collision test
+				mWorld->doRayTest(mouseRay);
+				Vector3* point;
+				if ( (point = mWorld->getContactPoint()) != NULL)
+					mWorld->addPointToScalpCircle(*point);
 			}
 		}
 
@@ -187,6 +165,8 @@ protected:
 	CEGUI::OgreCEGUIRenderer * mGUIRenderer;
 	//	GUI components
 	CEGUI::Window *mButtonQuit, *mButton1, *mButton2, *mButton3, *mButtonTest, *mButton1Finish;
+	CollisionManager*							mCollisionMgr;	//	A pointer to CollisionManager
+	CollisionContext*							mCollisionContext;
 
 	virtual void createCamera(void)
 	{
@@ -230,21 +210,24 @@ protected:
 	// Just override the mandatory create scene method
 	virtual void createScene(void)
 	{
+		//	Setup CollisionManager
+		setupCollisionManager();
+
 		//	Create the world
 		mWorld = new World(mSceneMgr);
-		/*
+		
 		//	Create a sphere
 		mHead = mWorld->createBall("ball", 7);
 		mHead->getEntity()->setMaterialName("");	// Color white
-*/
+
 		/*
 		//	Creaete an ogre head
 		mHead = mWorld->createOgreHead("OgreHead");
 		*/
-		
+		/*
 		//	Creaete a man head
 		mHead = mWorld->createManHead("ManHead");
-
+*/
 		//	Create scalp after the head is created
 		mWorld->createScalpCircle("ScalpCircle");
 
@@ -391,6 +374,17 @@ protected:
 		mButton1Finish->setVisible(false);
 		mButton2->setVisible(true);
 		return true;
+	}
+	//	Setup CollisionManager
+	void setupCollisionManager()
+	{
+		//	Create a CollisionManager and choose a SceneManager
+		mCollisionMgr = new CollisionManager(mSceneMgr);
+		CollisionManager::getSingletonPtr()->setSceneManager(mSceneMgr);
+
+		//	Add collision class and collision type
+		CollisionManager::getSingletonPtr()->addCollClass("mCollClass");
+		CollisionManager::getSingletonPtr()->addCollType("mCollClass", "mCollClass", COLLTYPE_EXACT);
 	}
 };
 
