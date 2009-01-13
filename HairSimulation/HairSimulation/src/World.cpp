@@ -169,11 +169,18 @@ void World::doRayTest(const Ogre::Ray &ray, const Ogre::Real MaxDistance)
 }
 
 //-------------------------------------------------------------------------
-Vector3* World::getContactPoint()
+Vector3* World::getContactPoint(void)
 {
 	if (mContactVector.size() > 0)
 		return &mContactVector[0];
 	else
 		return NULL;
+}
+
+//-------------------------------------------------------------------------
+void World::generateHairRoots(void)
+{
+
+
 }
 
