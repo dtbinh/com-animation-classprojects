@@ -52,6 +52,8 @@ public:
 
 		/** Get mesh information */
 		void generateMeshInfo(void);
+		/** Clear mesh information */
+		void clearMeshInfo(void);
 			
 };
 
