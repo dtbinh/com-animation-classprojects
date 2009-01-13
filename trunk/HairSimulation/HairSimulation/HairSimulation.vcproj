@@ -220,6 +220,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\AppUtilities.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\DynamicLines.cpp"
 				>
 			</File>
@@ -259,6 +263,10 @@
 			</File>
 			<File
 				RelativePath=".\include\AppPrerequisites.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\AppUtilities.h"
 				>
 			</File>
 			<File
