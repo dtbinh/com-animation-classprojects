@@ -45,9 +45,11 @@ World& World::getSingleton(void)
 Ball* World::createBall(const Ogre::String &name, Ogre::Real radius, const Ogre::Vector3 &pos)
 {
 	Ball* ball = new Ball(name, radius);
-	ball->setPosition(pos);
 
+	ball->setPosition(pos);
+	ball->generateMeshInfo();
 	mObjects[name] = ball;
+
 	addCollisionEntity(ball->getEntity());
 	return ball;
 }
@@ -55,9 +57,11 @@ Ball* World::createBall(const Ogre::String &name, Ogre::Real radius, const Ogre:
 OgreHead* World::createOgreHead(const String& name, const Vector3& pos)
 {
     OgreHead* head = new OgreHead(name);
-    head->setPosition(pos);
 
+    head->setPosition(pos);
+	head->generateMeshInfo();
     mObjects[name] = head;
+
 	addCollisionEntity(head->getEntity());
     return head;
 }
@@ -65,9 +69,11 @@ OgreHead* World::createOgreHead(const String& name, const Vector3& pos)
 ManHead* World::createManHead(const String& name, const Vector3& pos)
 {
     ManHead* head = new ManHead(name);
-    head->setPosition(pos);
 
+    head->setPosition(pos);
+	head->generateMeshInfo();
     mObjects[name] = head;
+
 	addCollisionEntity(head->getEntity());
     return head;
 }
