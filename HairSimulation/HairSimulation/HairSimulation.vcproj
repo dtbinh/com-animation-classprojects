@@ -220,6 +220,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\AppSelection.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\AppUtilities.cpp"
 				>
 			</File>
@@ -233,6 +237,10 @@
 			</File>
 			<File
 				RelativePath=".\src\HairSimulation.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\Mesh.cpp"
 				>
 			</File>
 			<File
@@ -266,6 +274,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\include\AppSelection.h"
+				>
+			</File>
+			<File
 				RelativePath=".\include\AppUtilities.h"
 				>
 			</File>
@@ -279,6 +291,10 @@
 			</File>
 			<File
 				RelativePath=".\include\HairSimulation.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\Mesh.h"
 				>
 			</File>
 			<File

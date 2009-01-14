@@ -83,6 +83,7 @@ void ApplicationObject::generateMeshInfo(void)
 
 	Utilities::getMeshInformation(mEntity->getMesh(), mVertexCount, mVertices, mIndexCount, mIndices,
 		mSceneNode->getWorldPosition(), mSceneNode->getWorldOrientation(), mSceneNode->getScale());
+
 }
 
 //-------------------------------------------------------------------------

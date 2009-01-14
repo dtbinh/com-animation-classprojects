@@ -19,7 +19,7 @@ protected:
 	unsigned long* mIndices;
 
 	//		Set up method, must override
-	virtual void setUp(const String& name) = 0;
+i	virtual void setUp(const String& name) = 0;
 
 public:
 		ApplicationObject(const String& name);
