@@ -212,7 +212,7 @@ protected:
 */
 		
 		//	Creaete an ogre head
-		//mHead = mWorld->createOgreHead("OgreHead");
+		mHead = mWorld->createOgreHead("OgreHead");
 		
 		
 		//	Creaete a man head

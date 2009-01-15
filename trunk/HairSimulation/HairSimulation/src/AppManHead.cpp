@@ -27,4 +27,7 @@ void ManHead::setUp(const String& name)
 
 	//Generate mesh information
 	setupMesh();
+
+	createVisualMesh();
+	attachVisualMesh();
 }
