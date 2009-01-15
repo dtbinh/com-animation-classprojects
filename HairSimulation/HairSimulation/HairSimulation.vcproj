@@ -240,6 +240,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\intersection.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\Mesh.cpp"
 				>
 			</File>
@@ -291,6 +295,10 @@
 			</File>
 			<File
 				RelativePath=".\include\HairSimulation.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\intersection.h"
 				>
 			</File>
 			<File
