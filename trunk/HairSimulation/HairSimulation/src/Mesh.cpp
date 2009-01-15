@@ -36,7 +36,8 @@ void CMesh::generateMeshInfo(void)
 	}
 
 	Utilities::getMeshInformation(mEntity->getMesh(), mVertexCount, mVertices, mIndexCount, mIndices,
-		mSceneNode->getWorldPosition(), mSceneNode->getWorldOrientation(), mSceneNode->getScale());
+		mEntity->getParentNode()->_getDerivedPosition(), 
+		mEntity->getParentNode()->_getDerivedOrientation());
 
 	mTriCount = mIndexCount / 3;
 	// Allocate space for mNormals and mTriFlags
