@@ -16,15 +16,15 @@ class MeshSelection
 public:
 	MeshSelection(Camera* camera, OIS::Keyboard* kb);
 	void ButtonDown(const OIS::MouseEvent &mouseEvent, CMesh *pMesh);
-	void MouseMove( int MouseX, int MouseY );
-	void ButtonUp( MeshPtr pMesh );
+	void MouseMove( float MouseX, float MouseY );
+	void ButtonUp( CMesh* pMesh );
 	void getFrustum( Vector3 Normals[4], Vector3 Points[8] );
 	void getLine( Vector3 &P1, Vector3 &P2, float MouseX, float MouseY );
 	void setWindowHeight( int Height );
 	void render(void);
 
 private:
-	CEGUI::Point mStartPoint, mEndPoint;
+	float mStartX, mStartY, mEndX, mEndY;
 	bool mButton;
 	int mWindowHeight;
 	Vector3 mLine[2];

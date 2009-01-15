@@ -25,4 +25,6 @@ void ManHead::setUp(const String& name)
     // Add reverse reference
     mEntity->setUserObject(this);
 
+	//Generate mesh information
+	setupMesh();
 }

@@ -24,4 +24,9 @@ void Ball::setUp(const Ogre::String &name)
 	mSceneNode->attachObject(mEntity);
 	//	Add reverse reference
 	mEntity->setUserObject(this);
+
+	//Generate mesh information
+	setupMesh();
+	createVisualMesh();
+	attachVisualMesh();
 }

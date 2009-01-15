@@ -7,10 +7,8 @@ ApplicationObject::ApplicationObject(const String& name)
 {
 	mSceneNode = 0;
 	mEntity = 0;
-	mIndexCount = 0;
-	mIndices = 0;
-	mVertexCount = 0;
-	mVertices = 0;
+	mMesh = 0;
+	mVisualMesh = 0;
 }
 //-------------------------------------------------------------------------
 ApplicationObject::~ApplicationObject()
@@ -49,46 +47,41 @@ Entity* ApplicationObject::getEntity(void)
 }
 
 //-------------------------------------------------------------------------
-size_t ApplicationObject::getVertexCount(void)
-{
-	return mVertexCount;
-}
-
-//-------------------------------------------------------------------------
-size_t ApplicationObject::getIndexCount(void)
-{
-	return mIndexCount;
-}
-
-//-------------------------------------------------------------------------
-Vector3* ApplicationObject::getVertices(void)
-{
-	return mVertices;
-}
-
-//-------------------------------------------------------------------------
-unsigned long* ApplicationObject::getIndices(void)
-{
-	return mIndices;
-}
-
-//-------------------------------------------------------------------------
-void ApplicationObject::generateMeshInfo(void)
+void ApplicationObject::setupMesh(void)
 {
 	if ((mSceneNode == NULL) || (mEntity == NULL))
 	{
-		std::cout << "Error in ApplicationObject::generateMeshInfo()" << std::endl;
+		std::cout << "Error in ApplicationObject::setupMesh()" << std::endl;
 		return;
 	}
 
-	Utilities::getMeshInformation(mEntity->getMesh(), mVertexCount, mVertices, mIndexCount, mIndices,
-		mSceneNode->getWorldPosition(), mSceneNode->getWorldOrientation(), mSceneNode->getScale());
-
+	mMesh = new CMesh(mSceneNode, mEntity);
+	mMesh->generateMeshInfo();
+	mVisualMesh = new DynamicLines(ColourValue::White,
+		RenderOperation::OT_LINE_LIST);
 }
 
 //-------------------------------------------------------------------------
-void ApplicationObject::clearMeshInfo(void)
+void ApplicationObject::createVisualMesh()
 {
-	delete[] mVertices;
-	delete[] mIndices;
+	int fIndex, vIndex;
+	int fCount = (int)mMesh->getTriCount();
+	Vector3* vertices = mMesh->getVertices();
+	unsigned long* indices = mMesh->getIndices();
+	
+	for (fIndex = 0; fIndex < fCount; fIndex++)
+	{
+		vIndex = fIndex*3;
+		mVisualMesh->addPoint(vertices[indices[vIndex]]);
+		mVisualMesh->addPoint(vertices[indices[vIndex+1]]);
+		mVisualMesh->addPoint(vertices[indices[vIndex+2]]);
+	}
+	mVisualMesh->update();
+}	
+
+//-------------------------------------------------------------------------
+void ApplicationObject::attachVisualMesh()
+{
+	mEntity->setVisible(false);
+	mSceneNode->attachObject(mVisualMesh);
 }

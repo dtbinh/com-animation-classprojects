@@ -24,7 +24,7 @@ LGPL like the rest of the OGRE engine.
 #include "ExampleApplication.h"
 #include "World.h"
 #include "ApplicationObject.h"
-#include <OgreOpcode.h>
+
 #include <CEGUI/CEGUI.h>
 #include <OgreCEGUIRenderer.h>
 #include <iostream>
@@ -108,15 +108,7 @@ public:
 		{
 			if (id == OIS::MB_Left)
 			{
-				//	Setup the ray scene query, use CEGUI's mouse position
-				CEGUI::Point mousePos = CEGUI::MouseCursor::getSingleton().getPosition();
-				Ray mouseRay = mCamera->getCameraToViewportRay(mousePos.d_x/float(arg.state.width), mousePos.d_y/float(arg.state.height));
 
-				//	Do ray collision test
-				mWorld->doRayTest(mouseRay);
-				Vector3* point;
-				if ( (point = mWorld->getContactPoint()) != NULL)
-					mWorld->addPointToScalpCircle(*point);
 			}
 		}
 
@@ -165,8 +157,7 @@ protected:
 	CEGUI::OgreCEGUIRenderer * mGUIRenderer;
 	//	GUI components
 	CEGUI::Window *mButtonQuit, *mButton1, *mButton2, *mButton3, *mButtonTest, *mButton1Finish;
-	CollisionManager*							mCollisionMgr;	//	A pointer to CollisionManager
-	CollisionContext*							mCollisionContext;
+	
 
 	virtual void createCamera(void)
 	{
@@ -210,26 +201,23 @@ protected:
 	// Just override the mandatory create scene method
 	virtual void createScene(void)
 	{
-		//	Setup CollisionManager
-		setupCollisionManager();
-
 		//	Create the world
 		mWorld = new World(mSceneMgr);
+		
+		//	[Error] The mesh info is not consistent with build-in mesh(Scale is different)
 		/*
 		//	Create a sphere
 		mHead = mWorld->createBall("ball", 7);
 		mHead->getEntity()->setMaterialName("");	// Color white
 */
-		/*
+		
 		//	Creaete an ogre head
-		mHead = mWorld->createOgreHead("OgreHead");
-		*/
+		//mHead = mWorld->createOgreHead("OgreHead");
+		
 		
 		//	Creaete a man head
-		mHead = mWorld->createManHead("ManHead");
+		//mHead = mWorld->createManHead("ManHead");
 
-		//	Create scalp after the head is created
-		mWorld->createScalpCircle("ScalpCircle");
 
 		// Set ambient light
 		mSceneMgr->setAmbientLight(ColourValue(0.5, 0.5, 0.5));
@@ -369,24 +357,12 @@ protected:
 	bool handleButton1Finish(const CEGUI::EventArgs &e)
 	{
 
-		mWorld->completeScalpCircle();
-		mWorld->generateHairRoots();
 
 		mButton1Finish->setVisible(false);
 		mButton2->setVisible(true);
 		return true;
 	}
-	//	Setup CollisionManager
-	void setupCollisionManager()
-	{
-		//	Create a CollisionManager and choose a SceneManager
-		mCollisionMgr = new CollisionManager(mSceneMgr);
-		CollisionManager::getSingletonPtr()->setSceneManager(mSceneMgr);
-
-		//	Add collision class and collision type
-		CollisionManager::getSingletonPtr()->addCollClass("mCollClass");
-		CollisionManager::getSingletonPtr()->addCollType("mCollClass", "mCollClass", COLLTYPE_EXACT);
-	}
+	
 };
 
 #endif // #ifndef __HairSimulation_h_
