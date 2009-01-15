@@ -93,6 +93,6 @@ void ApplicationObject::createVisualMesh()
 //-------------------------------------------------------------------------
 void ApplicationObject::attachVisualMesh()
 {
-	mEntity->setVisible(false);
+	//mEntity->setVisible(false);
 	mSceneNode->attachObject(mVisualMesh);
 }
