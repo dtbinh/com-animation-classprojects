@@ -164,5 +164,35 @@ int CMesh::FrustumSelect( Vector3 Normals[4], Vector3 Points[8] )
 	
 	return nbHits;
 }
+
+//-------------------------------------------------------------------------
+size_t CMesh::getVertexCount(void)
+{
+	return mVertexCount;
+}
+
+//-------------------------------------------------------------------------
+size_t CMesh::getIndexCount(void)
+{
+	return mIndexCount;
+}
+
+//-------------------------------------------------------------------------
+Vector3* CMesh::getVertices(void)
+{
+	return mVertices;
+}
+
+//-------------------------------------------------------------------------
+unsigned long* CMesh::getIndices(void)
+{
+	return mIndices;
+}
+
+//-------------------------------------------------------------------------
+size_t CMesh::getTriCount()
+{
+	return mTriCount;
+}
 	
 	

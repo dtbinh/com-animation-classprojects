@@ -1,6 +1,8 @@
 #ifndef _APPLICATIONOBJECT_H_
 #define _APPLICATIONOBJECT_H_
 
+#include "Mesh.h"
+#include "DynamicLines.h"
 #include <Ogre.h>
 
 using namespace Ogre;
@@ -11,12 +13,8 @@ protected:
 	//		Visual component
 	SceneNode* mSceneNode;
 	Entity* mEntity;
-
-	//	Mesh information
-	size_t mVertexCount;
-	size_t mIndexCount;
-	Vector3* mVertices;
-	unsigned long* mIndices;
+	CMesh* mMesh;	// Mesh data (vertices, indices, and normals)
+	DynamicLines* mVisualMesh;	// Mesh data for rendering
 
 	//		Set up method, must override
 	virtual void setUp(const String& name) = 0;
@@ -38,23 +36,12 @@ public:
         /** Gets the Entity which is being used to represent this object in the OGRE world. */
         Entity* getEntity(void);
 
-		//------------------------------------------------------------------------------
-		size_t getVertexCount(void);
+		/** Setup mesh data */
+		void setupMesh(void);
 
-		//------------------------------------------------------------------------------
-		size_t getIndexCount(void);
-
-		//------------------------------------------------------------------------------
-		Vector3* getVertices(void);
-
-		//------------------------------------------------------------------------------
-		unsigned long* getIndices(void);
-
-		/** Get mesh information */
-		void generateMeshInfo(void);
-		/** Clear mesh information */
-		void clearMeshInfo(void);
+		void createVisualMesh(void);
 			
+		void attachVisualMesh(void);
 };
 
 #endif

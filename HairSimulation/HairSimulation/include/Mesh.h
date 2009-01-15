@@ -12,6 +12,9 @@ using namespace Ogre;
 class CMesh
 {
 public:
+	enum SelectionModes{ SELECT_ADD, SELECT_SUB };
+	enum TriFlags{ TF_SELECTED = 1, TF_BACKFACING = (1<<1) };	
+
 	CMesh(SceneNode* sceneNode, Entity* entity);
 	~CMesh();
 	void generateMeshInfo(void);
@@ -26,8 +29,13 @@ public:
 	int LineSelect( const Vector3 &p1, const Vector3 &p2 );
 	int FrustumSelect( Vector3 normals[4], Vector3 points[8] );
 
-	enum SelectionModes{ SELECT_ADD, SELECT_SUB };
-	enum TriFlags{ TF_SELECTED = 1, TF_BACKFACING = (1<<1) };	
+	//------------------------------------------------------------------------------
+	size_t getVertexCount(void);
+	size_t getIndexCount(void);
+	Vector3* getVertices(void);
+	unsigned long* getIndices(void);
+	size_t getTriCount(void);
+
 private:
 	
 	// Member Data		

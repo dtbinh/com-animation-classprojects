@@ -8,7 +8,7 @@ World::World(SceneManager* sceneMgr)
 	mProcessState = PS_INITIAL;
 
 	// Create a CollisionContext
-	mCollisionContext = CollisionManager::getSingletonPtr()->createContext("mCollisionContext");
+	//mCollisionContext = CollisionManager::getSingletonPtr()->createContext("mCollisionContext");
 }
 //-----------------------------------------------------------
 World::~World()
@@ -47,10 +47,10 @@ Ball* World::createBall(const Ogre::String &name, Ogre::Real radius, const Ogre:
 	Ball* ball = new Ball(name, radius);
 
 	ball->setPosition(pos);
-	ball->generateMeshInfo();
+	ball->setupMesh();
 	mObjects[name] = ball;
 
-	addCollisionEntity(ball->getEntity());
+	//addCollisionEntity(ball->getEntity());
 	return ball;
 }
 //-------------------------------------------------------------------------
@@ -59,10 +59,10 @@ OgreHead* World::createOgreHead(const String& name, const Vector3& pos)
     OgreHead* head = new OgreHead(name);
 
     head->setPosition(pos);
-	head->generateMeshInfo();
+	head->setupMesh();
     mObjects[name] = head;
 
-	addCollisionEntity(head->getEntity());
+	//addCollisionEntity(head->getEntity());
     return head;
 }
 //-------------------------------------------------------------------------
@@ -71,10 +71,10 @@ ManHead* World::createManHead(const String& name, const Vector3& pos)
     ManHead* head = new ManHead(name);
 
     head->setPosition(pos);
-	head->generateMeshInfo();
+	head->setupMesh();
     mObjects[name] = head;
 
-	addCollisionEntity(head->getEntity());
+	//addCollisionEntity(head->getEntity());
     return head;
 }
 
@@ -90,39 +90,6 @@ void World::setProcessState(World::ProcessState ps)
 	mProcessState = ps;
 }
 
-//-------------------------------------------------------------------------
-void World::createScalpCircle(const String& name)
-{
-	mScalpCircle = new DynamicLines(RenderOperation::OT_LINE_STRIP);
-
-	SceneManager* sm = World::getSingleton().getSceneManager();
-
-	SceneNode *scalpCircleNode = sm->getRootSceneNode()->createChildSceneNode(name);
-	scalpCircleNode->attachObject(mScalpCircle);
-
-}
-
-//-------------------------------------------------------------------------
-void World::addPointToScalpCircle(const Vector3& point)
-{
-	mScalpCircle->addPoint(point);
-	mScalpCircle->update();
-	//	Update the SceneNode to redraw DynamicLines
-	mScalpCircle->getParentSceneNode()->needUpdate(true);
-
-}
-//-------------------------------------------------------------------------
-void World::completeScalpCircle()
-{
-	int numPoints = (int) mScalpCircle->getNumPoints();
-	if (numPoints < 3)
-	{
-		std::cout << "DynamicLines for scalp circle is too short" << std::endl;
-		exit(1);
-	}
-	//	Add the starting point to the end of DynamicLines to complete the circle
-	addPointToScalpCircle(mScalpCircle->getPoint(0));
-}
 //-------------------------------------------------------------------------
 void World::addCollisionEntity( Entity* pEntity )
 {
@@ -188,5 +155,16 @@ void World::generateHairRoots(void)
 {
 
 
+}
+
+//	Setup CollisionManager
+void World::setupCollisionManager()
+{
+	//	Create a CollisionManager and choose a SceneManager
+	mCollisionMgr = new CollisionManager(mSceneMgr);
+	CollisionManager::getSingletonPtr()->setSceneManager(mSceneMgr);
+	//	Add collision class and collision type
+	CollisionManager::getSingletonPtr()->addCollClass("mCollClass");
+	CollisionManager::getSingletonPtr()->addCollType("mCollClass", "mCollClass", COLLTYPE_EXACT);
 }
 

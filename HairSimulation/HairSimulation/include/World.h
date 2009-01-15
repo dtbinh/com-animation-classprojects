@@ -11,7 +11,6 @@ class World contains all objects required to simulate hair, such as a head and h
 #include "AppBall.h"
 #include "AppOgreHead.h"
 #include "AppManHead.h"
-#include "DynamicLines.h"
 #include <Ogre.h>
 #include <OgreSingleton.h>
 #include <OgreOpcode.h>
@@ -45,14 +44,16 @@ protected:
 	 //	Process state of hair simulation
 	 ProcessState mProcessState;
 
-	 // The pointer to Scalp
-	 DynamicLines* mScalpCircle;
-
 	  //	CollisionContext for coliision detection
 	 CollisionContext* mCollisionContext;
 
 	 //	Contact vector for ray collision detection
 	 std::vector<Vector3> mContactVector;
+
+	 //	A pointer to CollisionManager
+	CollisionManager*	mCollisionMgr;
+	
+
 
 public:
 	/** Creates an instance of the world */
@@ -83,14 +84,8 @@ public:
 	/** Create a man head object. */
     ManHead* createManHead(const String& name, const Vector3& pos = Vector3::ZERO);
 
-//----------------- Methods for scalp and hair roots -----------------------------------------------------
-	/** Create the scalp */
-	void createScalpCircle(const String& name);
-	/** Complete the DynamicLines as scalp circle */
-	void completeScalpCircle(void);
-	//	Add a point to the scalp circle
-	void addPointToScalpCircle(const Vector3& point);
-	/** Generate hair roots */
+//----------------- Methods to generate hair roots -----------------------------------------------------
+
 	void generateHairRoots(void);
 
 //---------------- Methods related to collision detection ------------------------------------------------
@@ -102,6 +97,8 @@ public:
 	void doRayTest(const Ray &ray, const Real MaxDistance = 2000.0f);
 	/** Get the first point in mContactVector */
 	Vector3* getContactPoint(void);
+
+	void setupCollisionManager();
 
 
 };
