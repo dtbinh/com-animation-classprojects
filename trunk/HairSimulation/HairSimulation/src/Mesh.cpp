@@ -111,19 +111,21 @@ void CMesh::renderSelectedFaces()
 	mSelectedFaces->clear();
 
 	mSelectedFaces->begin("BaseWhiteNoLighting", RenderOperation::OT_TRIANGLE_LIST);
+	mSelectedFaces->colour(ColourValue::Red);
 	// Render the wireframe
 	for (fIndex = 0; fIndex < (int)mTriCount; fIndex++)
 	{
-		if (mTriFlags[fIndex] & TF_SELECTED)
+		if ((mTriFlags[fIndex] & TF_SELECTED) &&
+			 !(mTriFlags[fIndex] & TF_BACKFACING))
 		{
-		vIndex = fIndex*3;
-		p1 = mVertices[mIndices[vIndex]];
-		p2 = mVertices[mIndices[vIndex+1]];
-		p3 = mVertices[mIndices[vIndex+2]];
+			vIndex = fIndex*3;
+			p1 = mVertices[mIndices[vIndex]];
+			p2 = mVertices[mIndices[vIndex+1]];
+			p3 = mVertices[mIndices[vIndex+2]];
 		
-		mSelectedFaces->position(p1);
-		mSelectedFaces->position(p2);
-		mSelectedFaces->position(p3);
+			mSelectedFaces->position(p1);
+			mSelectedFaces->position(p2);
+			mSelectedFaces->position(p3);
 		}
 	}
 
@@ -219,7 +221,7 @@ int CMesh::FrustumSelect( Vector3 Normals[4], Vector3 Points[8] )
 			nbHits++;			
 		}
 	}
-	
+	std::cout << "FrustumSelect(): numHit = " << nbHits << std::endl;
 	return nbHits;
 }
 

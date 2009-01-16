@@ -97,6 +97,14 @@ public:
 			mRotX = Degree(-ms.X.rel * 0.13);
 			mRotY = Degree(-ms.Y.rel * 0.13);
 		}
+		else if(ms.buttonDown(OIS::MB_Left))
+		{
+			CEGUI::Point cursorPos;
+
+			cursorPos = CEGUI::MouseCursor::getSingleton().getPosition();
+			mMeshSelection->MouseMove(cursorPos.d_x, cursorPos.d_y);
+			mMeshSelection->render();
+		}
 		//	Do camera rotation
 		mCamera->yaw(mRotX);
 		mCamera->pitch(mRotY);
@@ -110,13 +118,14 @@ public:
 	{
 		CEGUI::System::getSingleton().injectMouseButtonDown(convertMouseButton(id));
 
-		// Use RaySceneQuery to do scalp selection
 		if (mWorld->getProcessState() == World::PS_SELECT_SCALP)
 		{
 			if (id == OIS::MB_Left)
 			{
 				mMesh->markBackfacing(mCamera->getPosition());
 				mMeshSelection->ButtonDown(arg, mMesh);
+				//	Rendering of selected triangles and selection box
+				mMeshSelection->render();
 				mMesh->renderSelectedFaces();
 			}
 		}
@@ -128,6 +137,18 @@ public:
 	bool mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 	{
 		CEGUI::System::getSingleton().injectMouseButtonUp(convertMouseButton(id));
+
+		if (mWorld->getProcessState() == World::PS_SELECT_SCALP)
+		{
+			if (id == OIS::MB_Left)
+			{
+				mMesh->markBackfacing(mCamera->getPosition());
+				mMeshSelection->ButtonUp(mMesh);
+				//	Rendering of selected triangles and selection box
+				mMeshSelection->render();
+				mMesh->renderSelectedFaces();
+			}
+		}
 		return true;
 	}
 	
@@ -206,7 +227,6 @@ protected:
         }
     }
 
-
 	// Just override the mandatory create scene method
 	virtual void createScene(void)
 	{
@@ -220,7 +240,6 @@ protected:
 		
 		//	Creaete an ogre head
 		mHead = mWorld->createOgreHead("OgreHead");
-		
 		
 		//	Creaete a man head
 		//mHead = mWorld->createManHead("ManHead");

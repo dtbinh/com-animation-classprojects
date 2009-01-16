@@ -25,11 +25,13 @@ public:
 
 private:
 	float mStartX, mStartY, mEndX, mEndY;
+	float mWinWidth, mWinHeight;
 	bool mButton;
 	int mWindowHeight;
 	Vector3 mLine[2];
 	Camera *mCamera;
 	OIS::Keyboard *mKeyboard;
+	ManualObject	*mSelectionBox;
 };
 
 #endif
