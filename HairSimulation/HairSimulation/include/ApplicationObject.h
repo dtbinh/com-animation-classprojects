@@ -14,7 +14,6 @@ protected:
 	SceneNode* mSceneNode;
 	Entity* mEntity;
 	CMesh* mMesh;	// Mesh data (vertices, indices, and normals)
-	DynamicLines* mVisualMesh;	// Mesh data for rendering
 
 	//		Set up method, must override
 	virtual void setUp(const String& name) = 0;

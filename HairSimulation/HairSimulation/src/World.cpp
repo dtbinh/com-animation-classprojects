@@ -47,7 +47,7 @@ Ball* World::createBall(const Ogre::String &name, Ogre::Real radius, const Ogre:
 	Ball* ball = new Ball(name, radius);
 
 	ball->setPosition(pos);
-	ball->setupMesh();
+
 	mObjects[name] = ball;
 
 	//addCollisionEntity(ball->getEntity());
@@ -59,7 +59,7 @@ OgreHead* World::createOgreHead(const String& name, const Vector3& pos)
     OgreHead* head = new OgreHead(name);
 
     head->setPosition(pos);
-	head->setupMesh();
+
     mObjects[name] = head;
 
 	//addCollisionEntity(head->getEntity());
@@ -71,7 +71,7 @@ ManHead* World::createManHead(const String& name, const Vector3& pos)
     ManHead* head = new ManHead(name);
 
     head->setPosition(pos);
-	head->setupMesh();
+
     mObjects[name] = head;
 
 	//addCollisionEntity(head->getEntity());

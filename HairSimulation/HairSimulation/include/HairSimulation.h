@@ -117,7 +117,7 @@ public:
 			{
 				mMesh->markBackfacing(mCamera->getPosition());
 				mMeshSelection->ButtonDown(arg, mMesh);
-				mMesh->renderSelectedMesh();
+				mMesh->renderSelectedFaces();
 			}
 		}
 
@@ -139,7 +139,7 @@ class HairSimulationApp : public ExampleApplication
 {
 public:
 	HairSimulationApp()
-		: mGUISystem(0), mGUIRenderer(0)
+		: mGUISystem(0), mGUIRenderer(0), mHead(0)
 	{}
 
 	~HairSimulationApp()
@@ -212,8 +212,6 @@ protected:
 	{
 		//	Create the world
 		mWorld = new World(mSceneMgr);
-		
-		//	[Error] The mesh info is not consistent with build-in mesh(Scale is different)
 		/*
 		//	Create a sphere
 		mHead = mWorld->createBall("ball", 7);
@@ -255,7 +253,8 @@ protected:
    // Create new frame listener
 	void createFrameListener(void)
 	{
-      mFrameListener= new HairSimulationFrameListener(mSceneMgr, mWindow, mCamera, mWorld, mHead->getMesh());
+		CMesh *mesh = (mHead) ? mHead->getMesh() : NULL;
+      mFrameListener= new HairSimulationFrameListener(mSceneMgr, mWindow, mCamera, mWorld, mesh);
 		mRoot->addFrameListener(mFrameListener);
 	}
 
@@ -327,6 +326,8 @@ protected:
 	//----------------------Handler functions for button events--------
 	bool handleButton1(const CEGUI::EventArgs &e)
 	{
+		//	Let textured model to be invisible for triangle selection
+		mHead->getEntity()->setVisible(false);
 		mWorld->setProcessState(World::PS_SELECT_SCALP);
 		mButton1->setVisible(false);
 		mButton1Finish->setVisible(true);
