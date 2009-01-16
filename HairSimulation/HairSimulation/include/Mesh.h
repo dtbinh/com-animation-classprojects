@@ -6,6 +6,7 @@
 	---------------------------------------------------------
 	Contain vertex and index information for meshes in Ogre
 */
+#include "DynamicLines.h"
 #include <Ogre.h>
 using namespace Ogre;
 
@@ -19,7 +20,8 @@ public:
 	~CMesh();
 	void generateMeshInfo(void);
 	void calculateFaceNormals(void);
-	void render(void);
+	void renderAllMesh(void);
+	void renderSelectedMesh(void);
 	
 	void clearSelection();
 	void setSelectionMode( int mode );
@@ -28,6 +30,7 @@ public:
 	
 	int LineSelect( const Vector3 &p1, const Vector3 &p2 );
 	int FrustumSelect( Vector3 normals[4], Vector3 points[8] );
+
 
 	//------------------------------------------------------------------------------
 	size_t getVertexCount(void);
@@ -48,6 +51,8 @@ private:
 	Vector3*		mNormals;					//	Face normals
 	int*			mTriFlags;					//	Selection flag for triangle
 	int				mSelectionMode;				//	Selection mode
+	DynamicLines	*mVisualMesh, *mSelectedMesh;
+	
 };
 
 #endif

@@ -36,10 +36,10 @@ public:
         /** Gets the Entity which is being used to represent this object in the OGRE world. */
         Entity* getEntity(void);
 
+		CMesh* getMesh(void);
+
 		/** Setup mesh data */
 		void setupMesh(void);
-
-		void createVisualMesh(void);
 			
 		void attachVisualMesh(void);
 };

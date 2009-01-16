@@ -21,10 +21,7 @@ void OgreHead::setUp(const String& name)
     // Add reverse reference
     mEntity->setUserObject(this);
 
-	//Generate mesh information
+	//Setup mesh
 	setupMesh();
-
-	createVisualMesh();
-	attachVisualMesh();
 }
 

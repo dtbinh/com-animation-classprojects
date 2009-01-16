@@ -24,6 +24,8 @@ LGPL like the rest of the OGRE engine.
 #include "ExampleApplication.h"
 #include "World.h"
 #include "ApplicationObject.h"
+#include "AppSelection.h"
+#include "DynamicLines.h"	//	line
 
 #include <CEGUI/CEGUI.h>
 #include <OgreCEGUIRenderer.h>
@@ -35,6 +37,7 @@ LGPL like the rest of the OGRE engine.
 
 using namespace std;
 using namespace OgreOpcode;
+
 
 /** Convert OIS mouse buttons to CEGUI's */
 CEGUI::MouseButton convertMouseButton(OIS::MouseButtonID buttonID)
@@ -60,12 +63,16 @@ class HairSimulationFrameListener : public ExampleFrameListener, public OIS::Mou
 private:
    SceneManager* mSceneMgr;			//	A pointer to the scene manager
    World*		 mWorld;
+   MeshSelection*	mMeshSelection;
+   CMesh*			mMesh;
+
 
 public:
-	HairSimulationFrameListener(SceneManager *sceneMgr, RenderWindow* win, Camera* cam, World* world)
-         : ExampleFrameListener(win, cam, false, true), mSceneMgr(sceneMgr), mWorld(world)
+	HairSimulationFrameListener(SceneManager *sceneMgr, RenderWindow* win, Camera* cam, World* world, CMesh* mesh)
+         : ExampleFrameListener(win, cam, false, true), mSceneMgr(sceneMgr), mWorld(world), mMesh(mesh)
 	{
 		mMouse->setEventCallback(this);
+		mMeshSelection = new MeshSelection(cam, mKeyboard);
 	}
 
 	//-----------------------------------------------------------------//
@@ -108,7 +115,9 @@ public:
 		{
 			if (id == OIS::MB_Left)
 			{
-
+				mMesh->markBackfacing(mCamera->getPosition());
+				mMeshSelection->ButtonDown(arg, mMesh);
+				mMesh->renderSelectedMesh();
 			}
 		}
 
@@ -246,7 +255,7 @@ protected:
    // Create new frame listener
 	void createFrameListener(void)
 	{
-      mFrameListener= new HairSimulationFrameListener(mSceneMgr, mWindow, mCamera, mWorld);
+      mFrameListener= new HairSimulationFrameListener(mSceneMgr, mWindow, mCamera, mWorld, mHead->getMesh());
 		mRoot->addFrameListener(mFrameListener);
 	}
 
