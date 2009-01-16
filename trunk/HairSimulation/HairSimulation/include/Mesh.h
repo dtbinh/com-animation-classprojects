@@ -21,7 +21,7 @@ public:
 	void generateMeshInfo(void);
 	void calculateFaceNormals(void);
 	void renderAllMesh(void);
-	void renderSelectedMesh(void);
+	void renderSelectedFaces(void);
 	
 	void clearSelection();
 	void setSelectionMode( int mode );
@@ -51,7 +51,8 @@ private:
 	Vector3*		mNormals;					//	Face normals
 	int*			mTriFlags;					//	Selection flag for triangle
 	int				mSelectionMode;				//	Selection mode
-	DynamicLines	*mVisualMesh, *mSelectedMesh;
+	DynamicLines	*mVisualMesh;
+	ManualObject *mSelectedFaces;
 	
 };
 

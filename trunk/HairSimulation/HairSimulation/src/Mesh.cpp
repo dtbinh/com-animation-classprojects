@@ -1,7 +1,7 @@
 #include "Mesh.h"
 #include "AppUtilities.h"
 #include "intersection.h"
-
+#include "World.h"
 
 //----------------------------------------------------------
 CMesh::CMesh(SceneNode* sceneNode, Entity* entity) 
@@ -17,9 +17,10 @@ CMesh::CMesh(SceneNode* sceneNode, Entity* entity)
 	mSelectionMode = SELECT_ADD;
 	mVisualMesh = new DynamicLines(ColourValue(0.0f, .4f, .8f),
 		RenderOperation::OT_LINE_LIST);
+	mSelectedFaces = World::getSingleton().getSceneManager()->createManualObject("SelectedFaces");
 
-	mSelectedMesh = new DynamicLines(ColourValue(.75f, .8f, 1.0f),
-		RenderOperation::OT_LINE_LIST);
+	mSceneNode->attachObject(mVisualMesh);
+	mSceneNode->attachObject(mSelectedFaces);
 }
 
 //----------------------------------------------------------
@@ -98,40 +99,35 @@ void CMesh::renderAllMesh(void)
 		mVisualMesh->addPoint(p3);
 	}
 	mVisualMesh->update();
-
-	mSceneNode->attachObject(mVisualMesh);
-	mSceneNode->attachObject(mSelectedMesh);
-	
 }
 
 //----------------------------------------------------------
-void CMesh::renderSelectedMesh()
+void CMesh::renderSelectedFaces()
 {
 	int fIndex, vIndex;
 	Vector3 p1, p2, p3;
 
 	// Clear existed in mSelectedMesh
-	mSelectedMesh->clear();
+	mSelectedFaces->clear();
 
+	mSelectedFaces->begin("BaseWhiteNoLighting", RenderOperation::OT_TRIANGLE_LIST);
 	// Render the wireframe
 	for (fIndex = 0; fIndex < (int)mTriCount; fIndex++)
 	{
+		if (mTriFlags[fIndex] & TF_SELECTED)
+		{
 		vIndex = fIndex*3;
 		p1 = mVertices[mIndices[vIndex]];
 		p2 = mVertices[mIndices[vIndex+1]];
 		p3 = mVertices[mIndices[vIndex+2]];
-		// Line 1
-		mSelectedMesh->addPoint(p1);
-		mSelectedMesh->addPoint(p2);
-		// Line 2
-		mSelectedMesh->addPoint(p1);
-		mSelectedMesh->addPoint(p3);
-		// Line 3
-		mSelectedMesh->addPoint(p2);
-		mSelectedMesh->addPoint(p3);
+		
+		mSelectedFaces->position(p1);
+		mSelectedFaces->position(p2);
+		mSelectedFaces->position(p3);
+		}
 	}
-	mSelectedMesh->update();
-	mVisualMesh->setVisible(false);
+
+	mSelectedFaces->end();
 
 	mSceneNode->needUpdate(true);
 }

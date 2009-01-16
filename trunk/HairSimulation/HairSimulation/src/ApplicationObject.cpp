@@ -8,7 +8,6 @@ ApplicationObject::ApplicationObject(const String& name)
 	mSceneNode = 0;
 	mEntity = 0;
 	mMesh = 0;
-	mVisualMesh = 0;
 }
 //-------------------------------------------------------------------------
 ApplicationObject::~ApplicationObject()
@@ -60,7 +59,6 @@ void ApplicationObject::setupMesh(void)
 		std::cout << "Error in ApplicationObject::setupMesh()" << std::endl;
 		return;
 	}
-
 	mMesh = new CMesh(mSceneNode, mEntity);
 	mMesh->generateMeshInfo();
 	mMesh->renderAllMesh();
