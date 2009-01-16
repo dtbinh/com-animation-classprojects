@@ -47,6 +47,12 @@ Entity* ApplicationObject::getEntity(void)
 }
 
 //-------------------------------------------------------------------------
+CMesh* ApplicationObject::getMesh(void)
+{
+	return mMesh;
+}
+
+//-------------------------------------------------------------------------
 void ApplicationObject::setupMesh(void)
 {
 	if ((mSceneNode == NULL) || (mEntity == NULL))
@@ -57,42 +63,5 @@ void ApplicationObject::setupMesh(void)
 
 	mMesh = new CMesh(mSceneNode, mEntity);
 	mMesh->generateMeshInfo();
-	mVisualMesh = new DynamicLines(ColourValue::White,
-		RenderOperation::OT_LINE_LIST);
-}
-
-//-------------------------------------------------------------------------
-void ApplicationObject::createVisualMesh()
-{
-	int fIndex, vIndex;
-	int fCount = (int)mMesh->getTriCount();
-	Vector3* vertices = mMesh->getVertices();
-	unsigned long* indices = mMesh->getIndices();
-	Vector3 p1, p2, p3;
-	
-	// For each triangle, add three lines
-	for (fIndex = 0; fIndex < fCount; fIndex++)
-	{
-		vIndex = fIndex*3;
-		p1 = vertices[indices[vIndex]];
-		p2 = vertices[indices[vIndex+1]];
-		p3 = vertices[indices[vIndex+2]];
-		// Line 1
-		mVisualMesh->addPoint(p1);
-		mVisualMesh->addPoint(p2);
-		// Line 2
-		mVisualMesh->addPoint(p1);
-		mVisualMesh->addPoint(p3);
-		// Line 3
-		mVisualMesh->addPoint(p2);
-		mVisualMesh->addPoint(p3);
-	}
-	mVisualMesh->update();
-}	
-
-//-------------------------------------------------------------------------
-void ApplicationObject::attachVisualMesh()
-{
-	//mEntity->setVisible(false);
-	mSceneNode->attachObject(mVisualMesh);
+	mMesh->renderAllMesh();
 }

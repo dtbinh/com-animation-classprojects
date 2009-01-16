@@ -15,6 +15,11 @@ CMesh::CMesh(SceneNode* sceneNode, Entity* entity)
 	mNormals = 0;
 	mTriFlags = 0;
 	mSelectionMode = SELECT_ADD;
+	mVisualMesh = new DynamicLines(ColourValue(0.0f, .4f, .8f),
+		RenderOperation::OT_LINE_LIST);
+
+	mSelectedMesh = new DynamicLines(ColourValue(.75f, .8f, 1.0f),
+		RenderOperation::OT_LINE_LIST);
 }
 
 //----------------------------------------------------------
@@ -70,9 +75,65 @@ void CMesh::calculateFaceNormals(void)
 }
 
 //----------------------------------------------------------
-void CMesh::render(void)
+void CMesh::renderAllMesh(void)
 {
+	int fIndex, vIndex;
+	Vector3 p1, p2, p3;
 	
+	// Render the wireframe
+	for (fIndex = 0; fIndex < (int)mTriCount; fIndex++)
+	{
+		vIndex = fIndex*3;
+		p1 = mVertices[mIndices[vIndex]];
+		p2 = mVertices[mIndices[vIndex+1]];
+		p3 = mVertices[mIndices[vIndex+2]];
+		// Line 1
+		mVisualMesh->addPoint(p1);
+		mVisualMesh->addPoint(p2);
+		// Line 2
+		mVisualMesh->addPoint(p1);
+		mVisualMesh->addPoint(p3);
+		// Line 3
+		mVisualMesh->addPoint(p2);
+		mVisualMesh->addPoint(p3);
+	}
+	mVisualMesh->update();
+
+	mSceneNode->attachObject(mVisualMesh);
+	mSceneNode->attachObject(mSelectedMesh);
+	
+}
+
+//----------------------------------------------------------
+void CMesh::renderSelectedMesh()
+{
+	int fIndex, vIndex;
+	Vector3 p1, p2, p3;
+
+	// Clear existed in mSelectedMesh
+	mSelectedMesh->clear();
+
+	// Render the wireframe
+	for (fIndex = 0; fIndex < (int)mTriCount; fIndex++)
+	{
+		vIndex = fIndex*3;
+		p1 = mVertices[mIndices[vIndex]];
+		p2 = mVertices[mIndices[vIndex+1]];
+		p3 = mVertices[mIndices[vIndex+2]];
+		// Line 1
+		mSelectedMesh->addPoint(p1);
+		mSelectedMesh->addPoint(p2);
+		// Line 2
+		mSelectedMesh->addPoint(p1);
+		mSelectedMesh->addPoint(p3);
+		// Line 3
+		mSelectedMesh->addPoint(p2);
+		mSelectedMesh->addPoint(p3);
+	}
+	mSelectedMesh->update();
+	mVisualMesh->setVisible(false);
+
+	mSceneNode->needUpdate(true);
 }
 	
 //----------------------------------------------------------
