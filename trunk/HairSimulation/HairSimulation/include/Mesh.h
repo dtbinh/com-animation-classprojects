@@ -42,7 +42,7 @@ public:
 private:
 	
 	// Member Data		
-	SceneNode*		mSceneNode;					// Scene node of this mesh
+	SceneNode		*mSceneNode, *mMeshSceneNode;					// Scene node of this mesh
 	Entity*			mEntity;					// Entity of this mesh
 	size_t			mVertexCount, mIndexCount;	// Vertex count and index count
 	size_t			mTriCount;					// Triangle count
