@@ -11,7 +11,7 @@ class ApplicationObject : public UserDefinedObject
 {
 protected:
 	//		Visual component
-	SceneNode* mSceneNode;
+	SceneNode *mSceneNode;
 	Entity* mEntity;
 	CMesh* mMesh;	// Mesh data (vertices, indices, and normals)
 

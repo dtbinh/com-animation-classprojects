@@ -19,8 +19,9 @@ CMesh::CMesh(SceneNode* sceneNode, Entity* entity)
 		RenderOperation::OT_LINE_LIST);
 	mSelectedFaces = World::getSingleton().getSceneManager()->createManualObject("SelectedFaces");
 
-	mSceneNode->attachObject(mVisualMesh);
-	mSceneNode->attachObject(mSelectedFaces);
+	mMeshSceneNode = World::getSingleton().getSceneManager()->getRootSceneNode()->createChildSceneNode();
+	mMeshSceneNode->attachObject(mVisualMesh);
+	mMeshSceneNode->attachObject(mSelectedFaces);
 }
 
 //----------------------------------------------------------
@@ -43,7 +44,8 @@ void CMesh::generateMeshInfo(void)
 
 	Utilities::getMeshInformation(mEntity->getMesh(), mVertexCount, mVertices, mIndexCount, mIndices,
 		mEntity->getParentNode()->_getDerivedPosition(), 
-		mEntity->getParentNode()->_getDerivedOrientation());
+		mEntity->getParentNode()->_getDerivedOrientation(),
+		mEntity->getParentNode()->_getDerivedScale());
 
 	mTriCount = mIndexCount / 3;
 	// Allocate space for mNormals and mTriFlags
@@ -131,7 +133,7 @@ void CMesh::renderSelectedFaces()
 
 	mSelectedFaces->end();
 
-	mSceneNode->needUpdate(true);
+	mMeshSceneNode->needUpdate(true);
 }
 	
 //----------------------------------------------------------

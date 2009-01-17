@@ -232,14 +232,14 @@ protected:
 	{
 		//	Create the world
 		mWorld = new World(mSceneMgr);
-		/*
+		
 		//	Create a sphere
 		mHead = mWorld->createBall("ball", 7);
 		mHead->getEntity()->setMaterialName("");	// Color white
-*/
+
 		
 		//	Creaete an ogre head
-		mHead = mWorld->createOgreHead("OgreHead");
+		//mHead = mWorld->createOgreHead("OgreHead");
 		
 		//	Creaete a man head
 		//mHead = mWorld->createManHead("ManHead");
