@@ -11,6 +11,8 @@ class World contains all objects required to simulate hair, such as a head and h
 #include "AppBall.h"
 #include "AppOgreHead.h"
 #include "AppManHead.h"
+#include "Hair.h"
+#include "Mesh.h"
 #include <Ogre.h>
 #include <OgreSingleton.h>
 #include <OgreOpcode.h>
@@ -28,6 +30,7 @@ public:
 		PS_GENERATION,
 		PS_SIMULATION
 	};
+	static float TRI_AREA_THRESHOLD;
 
 protected:
 	// Pointer to OGRE's scene manager
@@ -52,7 +55,8 @@ protected:
 
 	 //	A pointer to CollisionManager
 	CollisionManager*	mCollisionMgr;
-	
+
+	Hair*	mAllHairs;
 
 
 public:
@@ -67,6 +71,8 @@ public:
 	ProcessState getProcessState(void);
 	//	Set the process state of hair simulaiton
 	void setProcessState(ProcessState ps);
+
+	void handleProcessState();
 
 	/** Clears the scene */
 	void clear(void);
@@ -86,7 +92,8 @@ public:
 
 //----------------- Methods to generate hair roots -----------------------------------------------------
 
-	void generateHairRoots(void);
+	void generateHairRoots(CMesh* mesh);
+	void generateHairRootsInsideTri(Vector3& p1, Vector3& p2, Vector3& p3, std::map<Vector3*, Vector3*>& vertexMap, float area);
 
 //---------------- Methods related to collision detection ------------------------------------------------
 	/** Add an entity to CollisionContext */

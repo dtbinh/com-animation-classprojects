@@ -223,7 +223,6 @@ int CMesh::FrustumSelect( Vector3 Normals[4], Vector3 Points[8] )
 			nbHits++;			
 		}
 	}
-	std::cout << "FrustumSelect(): numHit = " << nbHits << std::endl;
 	return nbHits;
 }
 
@@ -249,6 +248,12 @@ Vector3* CMesh::getVertices(void)
 unsigned long* CMesh::getIndices(void)
 {
 	return mIndices;
+}
+
+//-------------------------------------------------------------------------
+int* CMesh::getTriFlags(void)
+{
+	return mTriFlags;
 }
 
 //-------------------------------------------------------------------------

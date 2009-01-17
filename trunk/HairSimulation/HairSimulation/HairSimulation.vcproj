@@ -236,6 +236,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\Hair.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\HairSimulation.cpp"
 				>
 			</File>
@@ -291,6 +295,10 @@
 			</File>
 			<File
 				RelativePath=".\include\DynamicRenderable.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\Hair.h"
 				>
 			</File>
 			<File

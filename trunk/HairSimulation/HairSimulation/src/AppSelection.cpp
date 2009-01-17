@@ -91,7 +91,7 @@ void MeshSelection::ButtonUp( CMesh* pMesh )
 		 return;
 	if ( mEndX < mStartX ) swapFloat( mEndX, mStartX );
 	if ( mEndY < mStartY ) swapFloat( mEndY, mStartY );
-	std::cout << "test" <<std::endl;
+
 	Vector3 P[8];
 	Vector3 Normals[6];
 	getFrustum( Normals, P );

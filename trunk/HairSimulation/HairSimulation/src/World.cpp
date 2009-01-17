@@ -1,11 +1,17 @@
 
 #include "World.h"
+#include "AppUtilities.h"
+
+using namespace std;
+
+float World::TRI_AREA_THRESHOLD = 0.5;
 
 //-----------------------------------------------------------
 World::World(SceneManager* sceneMgr)
 : mSceneMgr(sceneMgr)
 {
 	mProcessState = PS_INITIAL;
+	mAllHairs = 0;
 
 	// Create a CollisionContext
 	//mCollisionContext = CollisionManager::getSingletonPtr()->createContext("mCollisionContext");
@@ -151,12 +157,133 @@ Vector3* World::getContactPoint(void)
 }
 
 //-------------------------------------------------------------------------
-void World::generateHairRoots(void)
+void World::generateHairRoots(CMesh *mesh)
 {
+	int fIndex, vIndex;
+	int fCount;
+	int* triFlags;
+	unsigned long* indices;
+	Vector3* vertices;
+	Vector3 *p1, *p2, *p3;
+	map<Vector3*, Vector3*> vertexMap;
+	typedef pair<Vector3*, Vector3*> VertexPair;
+	int rootCount = 0;
 
+	float curArea, maxArea = -1, minArea = 99999;
 
+	// Retrieve the mesh data
+	fCount = (int)mesh->getTriCount();
+	triFlags = mesh->getTriFlags();
+	indices = mesh->getIndices();
+	vertices = mesh->getVertices();
+
+	//	Calculate the number of hair roots
+	for (fIndex = 0; fIndex < fCount; fIndex++)
+	{
+		if ((triFlags[fIndex] & CMesh::TF_SELECTED) &&
+			!(triFlags[fIndex] & CMesh::TF_BACKFACING))
+		{
+			vIndex = fIndex*3;
+			p1 = &vertices[indices[vIndex]];
+			p2 = &vertices[indices[vIndex+1]];
+			p3 = &vertices[indices[vIndex+2]];
+		
+			vertexMap.insert(VertexPair(p1, p1));
+			vertexMap.insert(VertexPair(p2, p2));
+			vertexMap.insert(VertexPair(p3, p3));
+		}
+	}
+
+	Hair::cNumHairs = (int)vertexMap.size();
+	// Allocate mAllHairs
+	mAllHairs = new Hair[Hair::cNumHairs];
+
+	// Setup hair information
+	int hIndex = 0;
+	vertexMap.clear();
+	for (fIndex = 0; fIndex < fCount; fIndex++)
+	{
+		if ((triFlags[fIndex] & CMesh::TF_SELECTED) &&
+			!(triFlags[fIndex] & CMesh::TF_BACKFACING))
+		{
+			vIndex = fIndex*3;
+			p1 = &vertices[indices[vIndex]];
+			p2 = &vertices[indices[vIndex+1]];
+			p3 = &vertices[indices[vIndex+2]];
+		
+			// Set root position
+			if (vertexMap.insert(VertexPair(p1, p1)).second)
+			{
+				mAllHairs[hIndex].setRootPos(*p1);
+				hIndex++;
+			}
+			if (vertexMap.insert(VertexPair(p2, p2)).second)
+			{
+				mAllHairs[hIndex].setRootPos(*p2);
+				hIndex++;
+			}
+			if (vertexMap.insert(VertexPair(p3, p3)).second)
+			{
+				mAllHairs[hIndex].setRootPos(*p3);
+				hIndex++;
+			}
+			curArea = Utilities::getArea(*p1, *p2, *p3);
+
+			//if (curArea > TRI_AREA_THRESHOLD)
+			//	generateHairRootsInsideTri(*p1, *p2, *p3, vertexMap, curArea);
+			// Statistics of triangle area
+			if (curArea > maxArea)
+				maxArea = curArea;
+			if (curArea < minArea)
+				minArea = curArea;
+		}
+	}
+
+	cout << "minArea = " << minArea << ", maxArea = " << maxArea << endl;
+
+	//	Render hair roots
+	ManualObject* rootPoints = mSceneMgr->createManualObject("HairRoots");
+	rootPoints->begin("BaseWhiteNoLighting", RenderOperation::OT_POINT_LIST);
+
+	for (int i=0; i<Hair::cNumHairs; i++)
+	{
+		rootPoints->position(mAllHairs[i].getRootPos());
+	}
+	rootPoints->end();
+	mSceneMgr->getRootSceneNode()->createChildSceneNode()->attachObject(rootPoints);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------------------
+void World::generateHairRootsInsideTri(Ogre::Vector3 &p1, Ogre::Vector3 &p2, Ogre::Vector3 &p3, map<Vector3*, Vector3*>& vertexMap, float area)
+{
+	Vector3 midP1, midP2, midP3;
+	// Extend the size of mAllHairs
+	Hair *tempHairs = new Hair[Hair::cNumHairs+3];
+
+	for (int i = 0; i < Hair::cNumHairs; i++)
+	{
+		tempHairs[i] = mAllHairs[i];
+	}
+	delete[] mAllHairs;
+	mAllHairs = tempHairs;
+	Hair::cNumHairs += 3;
+
+	// Add 3 new roots
+	midP1 = p1.midPoint(p2);
+	midP2 = p2.midPoint(p3);
+	midP3 = p3.midPoint(p1);
+	mAllHairs[Hair::cNumHairs-3].setRootPos(midP1);
+	mAllHairs[Hair::cNumHairs-2].setRootPos(midP2);
+	mAllHairs[Hair::cNumHairs-1].setRootPos(midP3);
+
+	// Recursively call self if the area is big enough
+	if ((area / 4.0) > TRI_AREA_THRESHOLD)
+	{
+		//generateHairRootsInsideTri(p1, midP1, midP3
+	}
+}
+
+//-------------------------------------------------------------------------
 //	Setup CollisionManager
 void World::setupCollisionManager()
 {
@@ -168,3 +295,21 @@ void World::setupCollisionManager()
 	CollisionManager::getSingletonPtr()->addCollType("mCollClass", "mCollClass", COLLTYPE_EXACT);
 }
 
+//-------------------------------------------------------------------------
+void World::handleProcessState()
+{
+	switch(mProcessState)
+	{
+	case PS_INITIAL:
+		break;
+
+	case PS_SELECT_SCALP:
+		break;
+
+	case PS_GENERATION:
+		break;
+
+	case PS_SIMULATION:
+		break;
+	}
+}
