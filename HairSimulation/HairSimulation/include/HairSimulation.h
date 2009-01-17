@@ -99,11 +99,14 @@ public:
 		}
 		else if(ms.buttonDown(OIS::MB_Left))
 		{
-			CEGUI::Point cursorPos;
+			if (mWorld->getProcessState() == World::PS_SELECT_SCALP)
+			{
+				CEGUI::Point cursorPos;
 
-			cursorPos = CEGUI::MouseCursor::getSingleton().getPosition();
-			mMeshSelection->MouseMove(cursorPos.d_x, cursorPos.d_y);
-			mMeshSelection->render();
+				cursorPos = CEGUI::MouseCursor::getSingleton().getPosition();
+				mMeshSelection->MouseMove(cursorPos.d_x, cursorPos.d_y);
+				mMeshSelection->render();
+			}
 		}
 		//	Do camera rotation
 		mCamera->yaw(mRotX);
@@ -118,9 +121,10 @@ public:
 	{
 		CEGUI::System::getSingleton().injectMouseButtonDown(convertMouseButton(id));
 
-		if (mWorld->getProcessState() == World::PS_SELECT_SCALP)
+		
+		if (id == OIS::MB_Left)
 		{
-			if (id == OIS::MB_Left)
+			if (mWorld->getProcessState() == World::PS_SELECT_SCALP)
 			{
 				mMesh->markBackfacing(mCamera->getPosition());
 				mMeshSelection->ButtonDown(arg, mMesh);
@@ -130,6 +134,7 @@ public:
 			}
 		}
 
+
 		return true;
 	}
 
@@ -138,9 +143,10 @@ public:
 	{
 		CEGUI::System::getSingleton().injectMouseButtonUp(convertMouseButton(id));
 
-		if (mWorld->getProcessState() == World::PS_SELECT_SCALP)
+		
+		if (id == OIS::MB_Left)
 		{
-			if (id == OIS::MB_Left)
+			if (mWorld->getProcessState() == World::PS_SELECT_SCALP)
 			{
 				mMesh->markBackfacing(mCamera->getPosition());
 				mMeshSelection->ButtonUp(mMesh);
@@ -186,7 +192,7 @@ protected:
 	CEGUI::System *mGUISystem;
 	CEGUI::OgreCEGUIRenderer * mGUIRenderer;
 	//	GUI components
-	CEGUI::Window *mButtonQuit, *mButton1, *mButton2, *mButton3, *mButtonTest, *mButton1Finish;
+	CEGUI::Window *mButtonQuit, *mButton1, *mButton2, *mButton3, *mButtonTest;
 	
 
 	virtual void createCamera(void)
@@ -232,14 +238,14 @@ protected:
 	{
 		//	Create the world
 		mWorld = new World(mSceneMgr);
-		
+		/*
 		//	Create a sphere
 		mHead = mWorld->createBall("ball", 7);
 		mHead->getEntity()->setMaterialName("");	// Color white
-
+*/
 		
 		//	Creaete an ogre head
-		//mHead = mWorld->createOgreHead("OgreHead");
+		mHead = mWorld->createOgreHead("OgreHead");
 		
 		//	Creaete a man head
 		//mHead = mWorld->createManHead("ManHead");
@@ -286,7 +292,6 @@ protected:
 		mButton2 = win->createWindow("TaharezLook/Button", "HairSimulationApp/Button2");
 		mButton3 = win->createWindow("TaharezLook/Button", "HairSimulationApp/Button3");
 		mButtonTest = win->createWindow("TaharezLook/Button", "HairSimulationApp/ButtonTest");
-		mButton1Finish = win->createWindow("TaharezLook/Button", "HairSimulationApp/Button1Finish");
 
 		//	Button1
 		mButton1->setText("1. Select scalp range");
@@ -331,31 +336,31 @@ protected:
 		mButtonTest->subscribeEvent(CEGUI::PushButton::EventClicked,
 			CEGUI::Event::Subscriber(&HairSimulationApp::handleButtonTest, this));
 		sheet->addChildWindow(mButtonTest);
-
-		//	Button1Finish
-		mButton1Finish->setText("Finish");
-		mButton1Finish->setSize(CEGUI::UVector2(CEGUI::UDim(0.20, 0), CEGUI::UDim(0.05, 0)));
-		mButton1Finish->setPosition(CEGUI::UVector2(CEGUI::UDim(0.2, 0), CEGUI::UDim(0, 0)));
-		mButton1Finish->subscribeEvent(CEGUI::PushButton::EventClicked,
-			CEGUI::Event::Subscriber(&HairSimulationApp::handleButton1Finish, this));
-		sheet->addChildWindow(mButton1Finish);
        
 	}
 
 	//----------------------Handler functions for button events--------
+	/** Button "Select scalp" */
 	bool handleButton1(const CEGUI::EventArgs &e)
 	{
 		//	Let textured model to be invisible for triangle selection
 		mHead->getEntity()->setVisible(false);
 		mWorld->setProcessState(World::PS_SELECT_SCALP);
 		mButton1->setVisible(false);
-		mButton1Finish->setVisible(true);
+		mButton2->setVisible(true);
 
 		return true;
 	}
 	//-----------------------------------------------------------------
+	/** Button "Generate hairs" */
 	bool handleButton2(const CEGUI::EventArgs &e)
 	{
+		mWorld->generateHairRoots(mHead->getMesh());
+		// Clear selected triangles
+		mHead->getMesh()->clearSelection();
+		mHead->getMesh()->renderSelectedFaces();
+		
+
 		mWorld->setProcessState(World::PS_GENERATION);
 		mButton2->setVisible(false);
 		mButton3->setVisible(true);
@@ -363,6 +368,7 @@ protected:
 		return true;
 	}
 	//-----------------------------------------------------------------
+	/** Button "Simulate" */
 	bool handleButton3(const CEGUI::EventArgs &e)
 	{
 		mWorld->setProcessState(World::PS_SIMULATION);
@@ -380,15 +386,6 @@ protected:
 	bool handleButtonTest(const CEGUI::EventArgs &e)
 	{
 		cout << "Button test is pressed" << endl;
-		return true;
-	}
-	//------------------ Handle Button1Finish ------------------------
-	bool handleButton1Finish(const CEGUI::EventArgs &e)
-	{
-
-
-		mButton1Finish->setVisible(false);
-		mButton2->setVisible(true);
 		return true;
 	}
 	

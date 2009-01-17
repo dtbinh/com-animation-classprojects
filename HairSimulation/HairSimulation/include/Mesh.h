@@ -37,6 +37,7 @@ public:
 	size_t getIndexCount(void);
 	Vector3* getVertices(void);
 	unsigned long* getIndices(void);
+	int* getTriFlags(void);
 	size_t getTriCount(void);
 
 private:

@@ -119,3 +119,17 @@ void Utilities::getMeshInformation(const Ogre::MeshPtr mesh,
         current_offset = next_offset;
     }
 }
+
+//----------------------------------------------------------------------------------------------------
+float Utilities::getArea(Ogre::Vector3 &p1, Ogre::Vector3 &p2, Ogre::Vector3 &p3)
+{
+	float a, b, c;	//	side length
+	float s;
+
+	a = (float)p1.distance(p2);
+	b = (float)p2.distance(p3);
+	c = (float)p3.distance(p1);
+	s = (a + b + c)/2;
+
+	return sqrt(s * (s-a) * (s-b) * (s-c));
+}
