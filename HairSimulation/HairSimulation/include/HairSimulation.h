@@ -187,6 +187,7 @@ public:
 	}
 
 protected:
+	Light* mLight;
 	World* mWorld;
 	ApplicationObject* mHead;
 	//	GUI system and renderer
@@ -286,8 +287,9 @@ protected:
 		mSceneMgr->setAmbientLight(ColourValue(0.5, 0.5, 0.5));
 
 		// Create a light
-		Light* l = mSceneMgr->createLight("MainLight");
-		l->setPosition(20,80,50);
+		mLight = mSceneMgr->createLight("MainLight");
+
+		mLight->setPosition(20,80,50);
 
 		//	Setup GUI system
 		mGUIRenderer = new CEGUI::OgreCEGUIRenderer(mWindow, Ogre::RENDER_QUEUE_OVERLAY, false, 3000, mSceneMgr);
@@ -376,6 +378,7 @@ protected:
 	{
 		//	Let textured model to be invisible for triangle selection
 		mHead->getEntity()->setVisible(false);
+		mHead->getMesh()->getVisualMesh()->setVisible(true);
 		mWorld->setProcessState(World::PS_SELECT_SCALP);
 		mButton1->setVisible(false);
 		mButton2->setVisible(true);
@@ -394,7 +397,6 @@ protected:
 		//delete wireframed mesh and let textured one visible
 		mHead->deleteMesh();
 		mHead->getEntity()->setVisible(true);
-		
 
 		mWorld->setProcessState(World::PS_GENERATION);
 		mButton2->setVisible(false);

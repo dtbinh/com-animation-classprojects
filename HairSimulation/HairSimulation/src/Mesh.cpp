@@ -3,6 +3,8 @@
 #include "intersection.h"
 #include "World.h"
 
+int CMesh::cMeshCount = 0;
+
 //----------------------------------------------------------
 CMesh::CMesh(SceneNode* sceneNode, Entity* entity) 
 	: mSceneNode(sceneNode), mEntity(entity)
@@ -17,7 +19,7 @@ CMesh::CMesh(SceneNode* sceneNode, Entity* entity)
 	mSelectionMode = SELECT_ADD;
 	mVisualMesh = new DynamicLines(ColourValue(0.0f, .4f, .8f),
 		RenderOperation::OT_LINE_LIST);
-	mSelectedFaces = World::getSingleton().getSceneManager()->createManualObject("SelectedFaces");
+	mSelectedFaces = World::getSingleton().getSceneManager()->createManualObject("SelectedFaces"+StringConverter::toString(++cMeshCount));
 
 	mMeshSceneNode = World::getSingleton().getSceneManager()->getRootSceneNode()->createChildSceneNode();
 	mMeshSceneNode->attachObject(mVisualMesh);
@@ -269,6 +271,12 @@ Vector3* CMesh::getNormals(void)
 size_t CMesh::getTriCount()
 {
 	return mTriCount;
+}
+
+//-------------------------------------------------------------------------
+DynamicLines* CMesh::getVisualMesh()
+{
+	return mVisualMesh;
 }
 	
 	

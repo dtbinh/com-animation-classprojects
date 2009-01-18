@@ -71,6 +71,7 @@ void ApplicationObject::setupMesh(void)
 	mMesh = new CMesh(mSceneNode, mEntity);
 	mMesh->generateMeshInfo();
 	mMesh->renderAllMesh();
+	mMesh->getVisualMesh()->setVisible(false);
 }
 
 //-------------------------------------------------------------------------
