@@ -239,6 +239,7 @@ protected:
 		AppBox *box = new AppBox("AppBox" , 0.5, 0.5, 10);
 		box->setPosition(0, 0, 0);
 		box->setPositionByEnds(Vector3(0, 0, 0), Vector3(5, 5, 5));
+		cout << "!!!Material name = '" << box->getEntity()->getSubEntity(0)->getMaterialName() << "'" << endl;
 		String matName = "mat" ;
   MaterialPtr materialPtr = MaterialManager::getSingleton().create(matName,
               ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
@@ -385,10 +386,12 @@ protected:
 	/** Button "Generate hairs" */
 	bool handleButton2(const CEGUI::EventArgs &e)
 	{
-		mWorld->generateHairRoots(mHead->getMesh());
+		mWorld->generateHairs(mHead->getMesh());
+		mWorld->checkAll();
 		// Clear selected triangles
 		mHead->getMesh()->clearSelection();
 		mHead->getMesh()->renderSelectedFaces();
+		mWorld->updateHairs();
 		
 
 		mWorld->setProcessState(World::PS_GENERATION);

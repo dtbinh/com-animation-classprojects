@@ -20,19 +20,23 @@ protected:
 	
 	
 public:
-	static int cNumHairs; // Number of all hairs
-	static const int cNumParticles = 2; // Number of particles
+	static const float HAIR_THICKNESS, HAIR_EDGE_LENGTH;
+	static const int cNumParticles = 5; // Number of particles
 	static const int cNumHairEdges = cNumParticles-1;
+	static int cNumHairs; // Number of all hairs
 	static String cMaterialName;
 
 	Hair();
 
 	void setRootPos(Vector3& pos);
 	Vector3& getRootPos();
+	size_t getNumParticles();
 	Hair& operator = ( const Hair& rhs );
 
 	static void createHairMaterial();
 	void updateHairEdges();
+	/** Initialize mParticlePoses so that all particles are along a line with the direction */
+	void initParticlePoses(Vector3& normal);
 };
 
 

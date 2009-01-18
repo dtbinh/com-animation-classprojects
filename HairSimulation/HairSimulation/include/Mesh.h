@@ -36,6 +36,7 @@ public:
 	size_t getVertexCount(void);
 	size_t getIndexCount(void);
 	Vector3* getVertices(void);
+	Vector3* getNormals(void);
 	unsigned long* getIndices(void);
 	int* getTriFlags(void);
 	size_t getTriCount(void);
