@@ -2,6 +2,15 @@
 #include "World.h"
 #include "AppUtilities.h"
 
+
+//-------------------------------------------------------------------------
+ApplicationObject::ApplicationObject()
+{
+	mSceneNode = 0;
+	mEntity = 0;
+	mMesh = 0;
+}
+
 //-------------------------------------------------------------------------
 ApplicationObject::ApplicationObject(const String& name)
 {

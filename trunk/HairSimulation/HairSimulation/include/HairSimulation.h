@@ -25,7 +25,8 @@ LGPL like the rest of the OGRE engine.
 #include "World.h"
 #include "ApplicationObject.h"
 #include "AppSelection.h"
-#include "DynamicLines.h"	//	line
+#include "DynamicLines.h"
+#include "AppBox.h"
 
 #include <CEGUI/CEGUI.h>
 #include <OgreCEGUIRenderer.h>
@@ -232,7 +233,34 @@ protected:
             return false;
         }
     }
+	void testScene()
+	{
+		// test AppBox
+		AppBox *box = new AppBox("AppBox" , 0.5, 0.5, 10);
+		box->setPosition(0, 0, 0);
+		box->setPositionByEnds(Vector3(0, 0, 0), Vector3(5, 5, 5));
+		String matName = "mat" ;
+  MaterialPtr materialPtr = MaterialManager::getSingleton().create(matName,
+              ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+  materialPtr->setAmbient(ColourValue(0.65, 0.16, 0.16));	// Brown
+  materialPtr->setDiffuse(ColourValue(1, 0.84, 0));			// Gold
+  materialPtr->setSpecular(ColourValue(0.65, 0.16, 0.16));	// Brown
+  box->setMaterialName(matName);
 
+  // draw origin
+  ManualObject* origin = mSceneMgr->createManualObject("origin");
+	origin->begin("BaseWhiteNoLighting", RenderOperation::OT_POINT_LIST);
+	origin->position( 0, 0, 0);
+	origin->position( 5, 0, 0);
+	origin->position(-5, 0, 0);
+	origin->position( 0, 5, 0);
+	origin->position( 0,-5, 0);
+	origin->position( 0, 0, 5);
+	origin->position( 0, 0,-5);
+	origin->position( 5, 5, 5);
+	origin->end();
+	mSceneMgr->getRootSceneNode()->createChildSceneNode()->attachObject(origin);
+	}
 	// Just override the mandatory create scene method
 	virtual void createScene(void)
 	{
@@ -249,6 +277,8 @@ protected:
 		
 		//	Creaete a man head
 		//mHead = mWorld->createManHead("ManHead");
+
+		//testScene();
 
 
 		// Set ambient light
