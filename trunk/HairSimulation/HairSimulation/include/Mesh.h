@@ -14,7 +14,8 @@ class CMesh
 {
 public:
 	enum SelectionModes{ SELECT_ADD, SELECT_SUB };
-	enum TriFlags{ TF_SELECTED = 1, TF_BACKFACING = (1<<1) };	
+	enum TriFlags{ TF_SELECTED = 1, TF_BACKFACING = (1<<1) };
+	static int cMeshCount;
 
 	CMesh(SceneNode* sceneNode, Entity* entity);
 	~CMesh();
@@ -40,6 +41,7 @@ public:
 	unsigned long* getIndices(void);
 	int* getTriFlags(void);
 	size_t getTriCount(void);
+	DynamicLines* getVisualMesh();
 
 private:
 	

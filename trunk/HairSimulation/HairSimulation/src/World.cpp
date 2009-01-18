@@ -4,7 +4,7 @@
 
 using namespace std;
 
-float World::TRI_AREA_THRESHOLD = 5.0;
+float World::TRI_AREA_THRESHOLD = 9999.0;
 
 //-----------------------------------------------------------
 World::World(SceneManager* sceneMgr)
