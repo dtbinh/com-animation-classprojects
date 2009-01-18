@@ -200,7 +200,7 @@ void World::generateHairs(CMesh *mesh)
 
 	Hair::cNumHairs = (int)vertexMap.size();
 	// Set the hair material
-	Hair::createHairMaterial();
+	//Hair::createHairMaterial();
 	// Allocate mAllHairs
 	mAllHairs = new Hair[Hair::cNumHairs];
 

@@ -17,7 +17,7 @@ Hair::Hair()
 	
 	for (int i = 0; i < cNumHairEdges; i++)
 	{
-		mHairEdges[i].setMaterialName(cMaterialName);
+		mHairEdges[i].setMaterialName("1 - Default");
 	}
 }
 
