@@ -37,6 +37,7 @@ public:
         Entity* getEntity(void);
 
 		CMesh* getMesh(void);
+		void deleteMesh(void);
 
 		/** Setup mesh data */
 		void setupMesh(void);

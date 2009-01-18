@@ -72,3 +72,9 @@ void ApplicationObject::setupMesh(void)
 	mMesh->generateMeshInfo();
 	mMesh->renderAllMesh();
 }
+
+//-------------------------------------------------------------------------
+void ApplicationObject::deleteMesh(void)
+{
+	delete mMesh;
+}

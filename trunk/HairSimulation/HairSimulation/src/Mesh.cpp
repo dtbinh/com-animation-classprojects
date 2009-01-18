@@ -31,6 +31,9 @@ CMesh::~CMesh()
 	delete[] mIndices;
 	delete[] mNormals;
 	delete[] mTriFlags;
+	mMeshSceneNode->detachAllObjects();
+	delete mVisualMesh;
+	World::getSingletonPtr()->getSceneManager()->destroyManualObject("SelectedFaces");
 }
 
 //----------------------------------------------------------
