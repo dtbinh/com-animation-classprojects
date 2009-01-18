@@ -22,5 +22,8 @@ void getMeshInformation(const Ogre::MeshPtr mesh,
 													const Ogre::Vector3 &scale = Vector3::UNIT_SCALE);
 static
 float getArea(Vector3& p1, Vector3& p2, Vector3& p3);
+
+static
+bool isInList(Vector3& v, std::vector<Vector3> vertexList);
 };
 #endif

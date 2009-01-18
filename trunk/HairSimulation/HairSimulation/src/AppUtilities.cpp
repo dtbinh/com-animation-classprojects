@@ -133,3 +133,24 @@ float Utilities::getArea(Ogre::Vector3 &p1, Ogre::Vector3 &p2, Ogre::Vector3 &p3
 
 	return sqrt(s * (s-a) * (s-b) * (s-c));
 }
+
+//-------------------------------------------------------------------------------------
+bool Utilities::isInList(Ogre::Vector3 &v, std::vector<Vector3> vertexList)
+{
+	int size = (int)vertexList.size();
+	float x, y, z;
+	Vector3* curVertex;
+
+	x = v.x;
+	y = v.y;
+	z = v.z;
+	for (int i = 0; i < size; i++)
+	{
+		curVertex = &vertexList[i];
+		if (x == curVertex->x &&
+			y == curVertex->y &&
+			z == curVertex->z)
+			return true;
+	}
+	return false;
+}
