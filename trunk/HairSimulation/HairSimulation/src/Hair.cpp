@@ -2,6 +2,8 @@
 
 int Hair::cNumHairs = 0;
 String Hair::cMaterialName = "HairMaterial";
+const float Hair::HAIR_THICKNESS = 0.1;
+const float Hair::HAIR_EDGE_LENGTH = 5;
 
 Hair::Hair()
 {
@@ -34,7 +36,7 @@ Vector3& Hair::getRootPos()
 Hair& Hair::operator =(const Hair &rhs)
 {
 	mRootPos = rhs.mRootPos;
-
+	
 	return *this;
 }
 
@@ -54,6 +56,33 @@ void Hair::updateHairEdges()
 {
 	for (int i = 0; i < cNumHairEdges; i++)
 	{
+		if ((i+1) >= mParticlePoses.size())
+			std::cout << "i+1=" << i+1 << ", size = " << mParticlePoses.size() << std::endl;
 		mHairEdges[i].setPositionByEnds(mParticlePoses[i], mParticlePoses[i+1]);
 	}
+}
+
+//---------------------------------------------
+void Hair::initParticlePoses(Vector3& normal)
+{
+	Vector3 *previous;
+
+	mParticlePoses.push_back(mRootPos);
+	previous = &mParticlePoses[0];
+	for (int i = 1; i < cNumParticles; i++)
+	{
+		mParticlePoses.push_back( (*previous) + normal * HAIR_EDGE_LENGTH );
+		previous = &mParticlePoses[i];
+	}
+	if (mParticlePoses.size() != cNumParticles)
+	{
+		std::cout << "error in initParticlePoses()" << std::endl;
+		system("PAUSE");
+	}
+}
+
+//---------------------------------------------
+size_t Hair::getNumParticles()
+{
+	return mParticlePoses.size();
 }

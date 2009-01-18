@@ -257,6 +257,12 @@ int* CMesh::getTriFlags(void)
 }
 
 //-------------------------------------------------------------------------
+Vector3* CMesh::getNormals(void)
+{
+	return mNormals;
+}
+
+//-------------------------------------------------------------------------
 size_t CMesh::getTriCount()
 {
 	return mTriCount;

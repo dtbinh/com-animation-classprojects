@@ -1,11 +1,15 @@
 #include "AppBox.h"
 #include "World.h"
+#include "Hair.h"
 
 int AppBox::cNumAppBox = 0;
 
 //--------------------------------------------------------------------
 AppBox::AppBox() : ApplicationObject()
 {
+	mDimensions.x = Hair::HAIR_THICKNESS;
+	mDimensions.y = Hair::HAIR_THICKNESS;
+	mDimensions.z = Hair::HAIR_EDGE_LENGTH;
 	String name = "AppBox" + StringConverter::toString(cNumAppBox++);
 	setUp(name);
 }

@@ -157,7 +157,7 @@ Vector3* World::getContactPoint(void)
 }
 
 //-------------------------------------------------------------------------
-void World::generateHairRoots(CMesh *mesh)
+void World::generateHairs(CMesh *mesh)
 {
 	int fIndex, vIndex;
 	int fCount;
@@ -169,6 +169,8 @@ void World::generateHairRoots(CMesh *mesh)
 	vector<Vector3> inTriVertexList;
 	typedef pair<Vector3*, Vector3*> VertexPair;
 	int rootCount = 0;
+	Vector3* normals;
+	Vector3 fNormal;
 
 	float curArea, maxArea = -1, minArea = 99999;
 
@@ -177,6 +179,7 @@ void World::generateHairRoots(CMesh *mesh)
 	triFlags = mesh->getTriFlags();
 	indices = mesh->getIndices();
 	vertices = mesh->getVertices();
+	normals = mesh->getNormals();
 
 	//	Calculate the number of hair roots
 	for (fIndex = 0; fIndex < fCount; fIndex++)
@@ -213,27 +216,31 @@ void World::generateHairRoots(CMesh *mesh)
 			p1 = &vertices[indices[vIndex]];
 			p2 = &vertices[indices[vIndex+1]];
 			p3 = &vertices[indices[vIndex+2]];
+			fNormal = normals[fIndex];
 		
 			// Set root position
 			if (vertexMap.insert(VertexPair(p1, p1)).second)
 			{
 				mAllHairs[hIndex].setRootPos(*p1);
+				mAllHairs[hIndex].initParticlePoses(fNormal);
 				hIndex++;
 			}
 			if (vertexMap.insert(VertexPair(p2, p2)).second)
 			{
 				mAllHairs[hIndex].setRootPos(*p2);
+				mAllHairs[hIndex].initParticlePoses(fNormal);
 				hIndex++;
 			}
 			if (vertexMap.insert(VertexPair(p3, p3)).second)
 			{
 				mAllHairs[hIndex].setRootPos(*p3);
+				mAllHairs[hIndex].initParticlePoses(fNormal);
 				hIndex++;
 			}
 			curArea = Utilities::getArea(*p1, *p2, *p3);
-
+cout << "===============test========= : mAllHairs[0].getNumParticles()=" << mAllHairs[0].getNumParticles()  << endl;
 			if (curArea > TRI_AREA_THRESHOLD)
-				generateHairRootsInsideTri(*p1, *p2, *p3, inTriVertexList, curArea);
+				generateHairsInsideTri(*p1, *p2, *p3, inTriVertexList, curArea, fNormal);
 			// Statistics of triangle area
 			if (curArea > maxArea)
 				maxArea = curArea;
@@ -257,7 +264,7 @@ void World::generateHairRoots(CMesh *mesh)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------
-void World::generateHairRootsInsideTri(Ogre::Vector3 &p1, Ogre::Vector3 &p2, Ogre::Vector3 &p3, vector<Vector3>& vertexList, float area)
+void World::generateHairsInsideTri(Ogre::Vector3 &p1, Ogre::Vector3 &p2, Ogre::Vector3 &p3, vector<Vector3>& vertexList, float area, Vector3& normal)
 {
 	Vector3 midP1, midP2, midP3;
 	Hair *tempHairs;
@@ -305,6 +312,7 @@ void World::generateHairRootsInsideTri(Ogre::Vector3 &p1, Ogre::Vector3 &p2, Ogr
 		for (int i = 0; i <newVertexCount; i++)
 		{
 			mAllHairs[Hair::cNumHairs+i].setRootPos(newVertices[i]);
+			mAllHairs[Hair::cNumHairs+i].initParticlePoses(normal);
 		}
 
 		Hair::cNumHairs += newVertexCount;
@@ -314,10 +322,10 @@ void World::generateHairRootsInsideTri(Ogre::Vector3 &p1, Ogre::Vector3 &p2, Ogr
 	// Recursively call self if the area is big enough
 	if (oneQuarterArea > TRI_AREA_THRESHOLD)
 	{
-		generateHairRootsInsideTri(p1, midP1, midP3, vertexList, oneQuarterArea);
-		generateHairRootsInsideTri(midP1, p2, midP2, vertexList, oneQuarterArea);
-		generateHairRootsInsideTri(midP3, midP2, p3, vertexList, oneQuarterArea);
-		generateHairRootsInsideTri(midP1, midP2, midP3, vertexList, oneQuarterArea);
+		generateHairsInsideTri(p1, midP1, midP3, vertexList, oneQuarterArea, normal);
+		generateHairsInsideTri(midP1, p2, midP2, vertexList, oneQuarterArea, normal);
+		generateHairsInsideTri(midP3, midP2, p3, vertexList, oneQuarterArea, normal);
+		generateHairsInsideTri(midP1, midP2, midP3, vertexList, oneQuarterArea, normal);
 	}
 }
 
@@ -350,4 +358,28 @@ void World::handleProcessState()
 	case PS_SIMULATION:
 		break;
 	}
+}
+
+//-------------------------------------------------------------------------
+void World::updateHairs()
+{
+	for (int i = 0; i < Hair::cNumHairs; i++)
+	{
+		cout << "i = " << i << ", particle num = " << mAllHairs[i].getNumParticles()<<std::endl;
+		mAllHairs[i].updateHairEdges();
+	}
+}
+
+void World::checkAll()
+{
+	for (int i = 0; i < Hair::cNumHairs; i++)
+	{
+		if (mAllHairs[i].getNumParticles() != Hair::cNumParticles)
+		{
+			cout << "Error of Num particles : mAllHairs[" << i << "].getNumParticles()=" << mAllHairs[i].getNumParticles()  << endl;
+			system("PAUSE");
+			exit(1);
+		}
+	}
+	cout << "checkAll() passed" << endl;
 }
