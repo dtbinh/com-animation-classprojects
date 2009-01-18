@@ -93,7 +93,7 @@ public:
 //----------------- Methods to generate hair roots -----------------------------------------------------
 
 	void generateHairRoots(CMesh* mesh);
-	void generateHairRootsInsideTri(Vector3& p1, Vector3& p2, Vector3& p3, std::map<Vector3*, Vector3*>& vertexMap, float area);
+	void generateHairRootsInsideTri(Vector3& p1, Vector3& p2, Vector3& p3, std::vector<Vector3>& vertexList, float area);
 
 //---------------- Methods related to collision detection ------------------------------------------------
 	/** Add an entity to CollisionContext */

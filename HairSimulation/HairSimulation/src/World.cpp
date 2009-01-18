@@ -4,7 +4,7 @@
 
 using namespace std;
 
-float World::TRI_AREA_THRESHOLD = 0.5;
+float World::TRI_AREA_THRESHOLD = 5.0;
 
 //-----------------------------------------------------------
 World::World(SceneManager* sceneMgr)
@@ -166,6 +166,7 @@ void World::generateHairRoots(CMesh *mesh)
 	Vector3* vertices;
 	Vector3 *p1, *p2, *p3;
 	map<Vector3*, Vector3*> vertexMap;
+	vector<Vector3> inTriVertexList;
 	typedef pair<Vector3*, Vector3*> VertexPair;
 	int rootCount = 0;
 
@@ -229,8 +230,8 @@ void World::generateHairRoots(CMesh *mesh)
 			}
 			curArea = Utilities::getArea(*p1, *p2, *p3);
 
-			//if (curArea > TRI_AREA_THRESHOLD)
-			//	generateHairRootsInsideTri(*p1, *p2, *p3, vertexMap, curArea);
+			if (curArea > TRI_AREA_THRESHOLD)
+				generateHairRootsInsideTri(*p1, *p2, *p3, inTriVertexList, curArea);
 			// Statistics of triangle area
 			if (curArea > maxArea)
 				maxArea = curArea;
@@ -254,32 +255,67 @@ void World::generateHairRoots(CMesh *mesh)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------
-void World::generateHairRootsInsideTri(Ogre::Vector3 &p1, Ogre::Vector3 &p2, Ogre::Vector3 &p3, map<Vector3*, Vector3*>& vertexMap, float area)
+void World::generateHairRootsInsideTri(Ogre::Vector3 &p1, Ogre::Vector3 &p2, Ogre::Vector3 &p3, vector<Vector3>& vertexList, float area)
 {
 	Vector3 midP1, midP2, midP3;
-	// Extend the size of mAllHairs
-	Hair *tempHairs = new Hair[Hair::cNumHairs+3];
+	Hair *tempHairs;
+	int newVertexCount = 0;
+	Vector3 newVertices[3];
 
-	for (int i = 0; i < Hair::cNumHairs; i++)
-	{
-		tempHairs[i] = mAllHairs[i];
-	}
-	delete[] mAllHairs;
-	mAllHairs = tempHairs;
-	Hair::cNumHairs += 3;
-
-	// Add 3 new roots
+	// Get midpoints
 	midP1 = p1.midPoint(p2);
 	midP2 = p2.midPoint(p3);
 	midP3 = p3.midPoint(p1);
-	mAllHairs[Hair::cNumHairs-3].setRootPos(midP1);
-	mAllHairs[Hair::cNumHairs-2].setRootPos(midP2);
-	mAllHairs[Hair::cNumHairs-1].setRootPos(midP3);
 
-	// Recursively call self if the area is big enough
-	if ((area / 4.0) > TRI_AREA_THRESHOLD)
+	// Check if each midpoint is repeated
+	if (!Utilities::isInList(midP1, vertexList))
 	{
-		//generateHairRootsInsideTri(p1, midP1, midP3
+		vertexList.push_back(midP1);
+		newVertices[newVertexCount] = midP1;
+		newVertexCount++;
+	}
+	if (!Utilities::isInList(midP2, vertexList))
+	{
+		vertexList.push_back(midP2);
+		newVertices[newVertexCount] = midP2;
+		newVertexCount++;
+	}
+	if (!Utilities::isInList(midP3, vertexList))
+	{
+		vertexList.push_back(midP3);
+		newVertices[newVertexCount] = midP3;
+		newVertexCount++;
+	}
+//cout << "newVertexCount=" << newVertexCount << endl;
+
+	if (newVertexCount != 0)
+	{
+		// Extend the size of mAllHairs
+		tempHairs = new Hair[Hair::cNumHairs + newVertexCount];
+		for (int i = 0; i < Hair::cNumHairs; i++)
+		{
+			tempHairs[i] = mAllHairs[i];
+		}
+		delete[] mAllHairs;
+		mAllHairs = tempHairs;
+
+		// Set 3 new roots
+		for (int i = 0; i <newVertexCount; i++)
+		{
+			mAllHairs[Hair::cNumHairs+i].setRootPos(newVertices[i]);
+		}
+
+		Hair::cNumHairs += newVertexCount;
+	}
+
+	float oneQuarterArea = area/4.0;
+	// Recursively call self if the area is big enough
+	if (oneQuarterArea > TRI_AREA_THRESHOLD)
+	{
+		generateHairRootsInsideTri(p1, midP1, midP3, vertexList, oneQuarterArea);
+		generateHairRootsInsideTri(midP1, p2, midP2, vertexList, oneQuarterArea);
+		generateHairRootsInsideTri(midP3, midP2, p3, vertexList, oneQuarterArea);
+		generateHairRootsInsideTri(midP1, midP2, midP3, vertexList, oneQuarterArea);
 	}
 }
 
