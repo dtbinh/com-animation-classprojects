@@ -21,7 +21,7 @@ protected:
 	
 public:
 	static const float HAIR_THICKNESS, HAIR_EDGE_LENGTH;
-	static const int cNumParticles = 5; // Number of particles
+	static const int cNumParticles = 15; // Number of particles
 	static const int cNumHairEdges = cNumParticles-1;
 	static int cNumHairs; // Number of all hairs
 	static String cMaterialName;

@@ -3,7 +3,7 @@
 int Hair::cNumHairs = 0;
 String Hair::cMaterialName = "HairMaterial";
 const float Hair::HAIR_THICKNESS = 0.1;
-const float Hair::HAIR_EDGE_LENGTH = 5;
+const float Hair::HAIR_EDGE_LENGTH = 2;
 
 Hair::Hair()
 {
@@ -14,6 +14,7 @@ Hair::Hair()
 	
 
 	mHairEdges = new AppBox[cNumHairEdges];
+	
 	for (int i = 0; i < cNumHairEdges; i++)
 	{
 		mHairEdges[i].setMaterialName(cMaterialName);
@@ -53,9 +54,9 @@ void Hair::createHairMaterial()
 {
   MaterialPtr materialPtr = MaterialManager::getSingleton().create(cMaterialName,
               ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-  materialPtr->setAmbient(ColourValue(0.65, 0.16, 0.16));	// Brown
+  materialPtr->setAmbient(ColourValue(1, 0.84, 0));	// Brown
   materialPtr->setDiffuse(ColourValue(1, 0.84, 0));			// Gold
-  materialPtr->setSpecular(ColourValue(0.65, 0.16, 0.16));	// Brown
+  materialPtr->setSpecular(ColourValue(1, 0.84, 0));	// Brown
 
 }
 

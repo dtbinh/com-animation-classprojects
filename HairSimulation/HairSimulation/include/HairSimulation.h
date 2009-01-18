@@ -267,14 +267,14 @@ protected:
 	{
 		//	Create the world
 		mWorld = new World(mSceneMgr);
-		/*
+		
 		//	Create a sphere
 		mHead = mWorld->createBall("ball", 7);
 		mHead->getEntity()->setMaterialName("");	// Color white
-*/
+
 		
 		//	Creaete an ogre head
-		mHead = mWorld->createOgreHead("OgreHead");
+		//mHead = mWorld->createOgreHead("OgreHead");
 		
 		//	Creaete a man head
 		//mHead = mWorld->createManHead("ManHead");
@@ -391,6 +391,9 @@ protected:
 		mHead->getMesh()->clearSelection();
 		mHead->getMesh()->renderSelectedFaces();
 		mWorld->updateHairs();
+		//delete wireframed mesh and let textured one visible
+		mHead->deleteMesh();
+		mHead->getEntity()->setVisible(true);
 		
 
 		mWorld->setProcessState(World::PS_GENERATION);
