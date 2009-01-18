@@ -4,7 +4,7 @@
 
 using namespace std;
 
-float World::TRI_AREA_THRESHOLD = 5.0;
+float World::TRI_AREA_THRESHOLD = 9999.0;
 
 //-----------------------------------------------------------
 World::World(SceneManager* sceneMgr)
@@ -196,10 +196,12 @@ void World::generateHairRoots(CMesh *mesh)
 	}
 
 	Hair::cNumHairs = (int)vertexMap.size();
+	// Set the hair material
+	Hair::createHairMaterial();
 	// Allocate mAllHairs
 	mAllHairs = new Hair[Hair::cNumHairs];
 
-	// Setup hair information
+	// Setup hair information and insert new roots if too sparse
 	int hIndex = 0;
 	vertexMap.clear();
 	for (fIndex = 0; fIndex < fCount; fIndex++)

@@ -208,6 +208,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\AppBox.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\ApplicationObject.cpp"
 				>
 			</File>
@@ -263,6 +267,10 @@
 			>
 			<File
 				RelativePath=".\include\AppBall.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\AppBox.h"
 				>
 			</File>
 			<File

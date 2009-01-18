@@ -19,6 +19,7 @@ protected:
 	virtual void setUp(const String& name) = 0;
 
 public:
+		ApplicationObject();
 		ApplicationObject(const String& name);
 		virtual ~ApplicationObject();
 
