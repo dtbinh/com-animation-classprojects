@@ -21,6 +21,12 @@ Hair::Hair()
 }
 
 //---------------------------------------------
+Hair::~Hair()
+{
+	delete[] mHairEdges;
+}
+
+//---------------------------------------------
 void Hair::setRootPos(Vector3& pos)
 {
 	mRootPos = pos;
@@ -36,6 +42,8 @@ Vector3& Hair::getRootPos()
 Hair& Hair::operator =(const Hair &rhs)
 {
 	mRootPos = rhs.mRootPos;
+	mParticlePoses = rhs.mParticlePoses;
+
 	
 	return *this;
 }
@@ -56,8 +64,6 @@ void Hair::updateHairEdges()
 {
 	for (int i = 0; i < cNumHairEdges; i++)
 	{
-		if ((i+1) >= mParticlePoses.size())
-			std::cout << "i+1=" << i+1 << ", size = " << mParticlePoses.size() << std::endl;
 		mHairEdges[i].setPositionByEnds(mParticlePoses[i], mParticlePoses[i+1]);
 	}
 }
@@ -73,11 +79,6 @@ void Hair::initParticlePoses(Vector3& normal)
 	{
 		mParticlePoses.push_back( (*previous) + normal * HAIR_EDGE_LENGTH );
 		previous = &mParticlePoses[i];
-	}
-	if (mParticlePoses.size() != cNumParticles)
-	{
-		std::cout << "error in initParticlePoses()" << std::endl;
-		system("PAUSE");
 	}
 }
 

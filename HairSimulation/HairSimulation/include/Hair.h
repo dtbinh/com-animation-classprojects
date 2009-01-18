@@ -27,6 +27,7 @@ public:
 	static String cMaterialName;
 
 	Hair();
+	~Hair();
 
 	void setRootPos(Vector3& pos);
 	Vector3& getRootPos();

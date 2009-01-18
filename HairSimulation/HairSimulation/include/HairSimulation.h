@@ -387,7 +387,6 @@ protected:
 	bool handleButton2(const CEGUI::EventArgs &e)
 	{
 		mWorld->generateHairs(mHead->getMesh());
-		mWorld->checkAll();
 		// Clear selected triangles
 		mHead->getMesh()->clearSelection();
 		mHead->getMesh()->renderSelectedFaces();
