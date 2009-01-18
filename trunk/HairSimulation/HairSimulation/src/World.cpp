@@ -4,7 +4,7 @@
 
 using namespace std;
 
-float World::TRI_AREA_THRESHOLD = 9999.0;
+float World::TRI_AREA_THRESHOLD = 5.0;
 
 //-----------------------------------------------------------
 World::World(SceneManager* sceneMgr)
@@ -237,8 +237,8 @@ void World::generateHairs(CMesh *mesh)
 				mAllHairs[hIndex].initParticlePoses(fNormal);
 				hIndex++;
 			}
+			// If face area is larger than the threshold, create new roots
 			curArea = Utilities::getArea(*p1, *p2, *p3);
-cout << "===============test========= : mAllHairs[0].getNumParticles()=" << mAllHairs[0].getNumParticles()  << endl;
 			if (curArea > TRI_AREA_THRESHOLD)
 				generateHairsInsideTri(*p1, *p2, *p3, inTriVertexList, curArea, fNormal);
 			// Statistics of triangle area
@@ -365,7 +365,6 @@ void World::updateHairs()
 {
 	for (int i = 0; i < Hair::cNumHairs; i++)
 	{
-		cout << "i = " << i << ", particle num = " << mAllHairs[i].getNumParticles()<<std::endl;
 		mAllHairs[i].updateHairEdges();
 	}
 }
