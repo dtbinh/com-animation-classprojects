@@ -306,6 +306,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\include\Dynamics_box.h"
+				>
+			</File>
+			<File
 				RelativePath=".\include\Hair.h"
 				>
 			</File>
