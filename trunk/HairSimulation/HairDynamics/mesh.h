@@ -26,6 +26,7 @@ using namespace std;
 #include	"Vector3.h"		//Vector3
 #include	"mat_face.h"	// material face
 #include	"aabb.h"		// aabb bv-tree
+#include "AppMesh.h"
 // 光線設定參數
 class LightSource{
 public:
@@ -131,13 +132,15 @@ public:
 	int	vTotal, tTotal, nTotal, fTotal;
 
 	void	LoadMesh(string scene_file);
+	void	LoadMesh(CMesh* sourceMesh);
 	void	LoadTex(string tex_file);
 
-	mesh();
+	mesh(const CMesh* sourceMesh);
 	mesh(const char* obj_file);
 	virtual ~mesh();
 
 	void Init(const char* obj_file);
+	void Init(const CMesh* sourceMesh);
 	//自己修改的
 	void CalculateFn();			//算vertex的平均normal (每個相鄰的face的normal平均)
 	void buildMyFaceList();		//建myFaceList

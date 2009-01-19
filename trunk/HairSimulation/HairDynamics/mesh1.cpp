@@ -10,6 +10,7 @@
 #include <iostream>
 #include <cassert>
 #include <cmath>
+#include <Ogre.h>
 const char* obj_database = "";	// 定義 mesh 的預設目錄
 
 #pragma warning(disable:4786)	// microsoft stupid bug!!
@@ -28,12 +29,14 @@ mesh::mesh(const char* obj_file)
 	Init(obj_file);
 }
 
-mesh::mesh()
+mesh::mesh(const CMesh* sourceMesh)
 {
 	matTotal = 0;			
 	vTotal = tTotal = nTotal = fTotal = 0;
 	fnList = 0;
 	vAdjFList = 0;
+
+	Init(sourceMesh);
 }
 
 mesh::~mesh()
@@ -175,6 +178,21 @@ void mesh::LoadMesh(string obj_file)
 	printf("vetex: %d, normal: %d, texture: %d, triangles: %d\n",vTotal, nTotal, tTotal, fTotal);
 }
 
+void mesh::LoadMesh(CMesh* srcMesh)
+{
+	int srcVertexCount;
+	Ogre::Vector3* srcVertices;
+
+	srcVertexCount = (int)srcMesh->getVertexCount();
+	srcVertices = srcMesh->getVertices();
+
+	//Set vertex position
+	for (int i = 0; i < srcVertexCount; i++)
+	{
+		vList.push_back(srcVertices[i]);
+	}
+}
+
 void mesh::LoadTex(string tex_file)
 {
 	//char	token[100], buf[100], v1[100], v2[100], v3[100];
@@ -276,6 +294,22 @@ void mesh::Init(const char* obj_file)
 	CalculateFn();
 	//create myFaceList
 	buildMyFaceList();
+}
+
+void mesh::Init(const CMesh* sourceMesh)
+{
+	float default_value[3] = {1,1,1};
+
+	vList.push_back(AppVector3(default_value));	// 因為 *.obj 的 index 是從 1 開始
+	nList.push_back(AppVector3(default_value));	// 所以要先 push 一個 default value 到 vList[0],nList[0],tList[0]
+	tList.push_back(AppVector3(default_value));
+
+	// 定義 default meterial: mat[0]
+	mat[0].Ka[0] = 0.0f; mat[0].Ka[1] = 0.0f; mat[0].Ka[2] = 0.0f; mat[0].Ka[3] = 1.0f; 
+	mat[0].Kd[0] = 1.0f; mat[0].Kd[1] = 1.0f; mat[0].Kd[2] = 1.0f; mat[0].Kd[3] = 1.0f; 
+	mat[0].Ks[0] = 0.8f; mat[0].Ks[1] = 0.8f; mat[0].Ks[2] = 0.8f; mat[0].Ks[3] = 1.0f;
+	mat[0].Ns = 32;
+	matTotal++;
 }
 
 //建myFaceList
