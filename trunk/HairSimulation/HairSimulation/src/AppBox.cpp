@@ -64,3 +64,4 @@ void AppBox::setPositionByEnds(const Vector3 &a, const Vector3 &b)
 	
 	
 }
+#include "Dynamics_box.h"
