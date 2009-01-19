@@ -12,7 +12,9 @@ class World contains all objects required to simulate hair, such as a head and h
 #include "AppOgreHead.h"
 #include "AppManHead.h"
 #include "Hair.h"
-#include "Mesh.h"
+#include "AppMesh.h"
+#include "strandSystem.h"	//	For StrandSystem
+#include "mesh.h"					//	For mesh
 #include <Ogre.h>
 #include <OgreSingleton.h>
 #include <OgreOpcode.h>
@@ -57,6 +59,11 @@ protected:
 	CollisionManager*	mCollisionMgr;
 
 	Hair*	mAllHairs;
+	//----------------member data that is required to simulate hair dynamics-------------------------------
+	//	Strand system is responsible for hair dynamics
+	StrandSystem mD_StrandSys;	
+	//	Mesh information used in StrandSystem (different from that in Ogre, so transformation is necessary)
+	mesh *mD_Mesh;
 
 
 public:

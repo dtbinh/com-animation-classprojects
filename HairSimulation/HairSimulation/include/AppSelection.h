@@ -2,7 +2,7 @@
 #define _APP_SELECTION_H_
 
 #include "AppPrerequisites.h"
-#include "Mesh.h"
+#include "AppMesh.h"
 #include <OIS/OIS.h>
 #include <CEGUI/CEGUI.h>
 

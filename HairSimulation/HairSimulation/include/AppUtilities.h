@@ -25,5 +25,6 @@ float getArea(Vector3& p1, Vector3& p2, Vector3& p3);
 
 static
 bool isInList(Vector3& v, std::vector<Vector3> vertexList);
+
 };
 #endif
