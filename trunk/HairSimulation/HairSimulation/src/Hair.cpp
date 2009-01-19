@@ -69,6 +69,17 @@ void Hair::updateHairEdges()
 	}
 }
 
+//----------------------------------------------
+void Hair::updateHairEdgesImproved()
+{
+	for (int i = 0; i < cNumHairEdges; i++)
+	{
+		//mHairEdges[i].setPositionByEnds(mParticlePoses[i], mParticlePoses[i+1]);
+		//std::cout << "i=" << i << ", sizeof (*mParticles)=" << (*mParticles).size() << std::endl;
+		mHairEdges[i].setPositionByEnds((*mParticles)[i].x, (*mParticles)[i+1].x);
+	}
+}
+
 //---------------------------------------------
 void Hair::initParticlePoses(Vector3& normal)
 {

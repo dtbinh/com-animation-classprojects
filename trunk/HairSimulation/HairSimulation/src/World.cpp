@@ -386,6 +386,19 @@ void World::updateHairsSucks()
 	}
 }
 
+void World::updateHairsImproved()
+{
+	int i;
+	//std::vector<Strand>::const_iterator sPtr;
+	//std::vector<AppParticle>::const_iterator pPtr;
+	for (i = 0/*, sPtr = mD_StrandSys.m_strandList.begin()*/; 
+			i < Hair::cNumHairs;
+			i++/*, sPtr++*/)
+	{
+		mAllHairs[i].updateHairEdgesImproved();
+	}
+}
+
 void World::checkAll()
 {
 	for (int i = 0; i < Hair::cNumHairs; i++)
