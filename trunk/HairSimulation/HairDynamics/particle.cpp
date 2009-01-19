@@ -1,17 +1,17 @@
 #include	"particle.h"
 /****************************************************************************/
 /* Constructors */
-	Particle::Particle()
+	AppParticle::AppParticle()
 		:invM( 1.0f )
 	{
 		status = FREE;
-		x = Vector3( 0, 0, 0 );
-		v = Vector3( 0, 0, 0 );
-		a = Vector3( 0, 0, 0 );
+		x = AppVector3( 0, 0, 0 );
+		v = AppVector3( 0, 0, 0 );
+		a = AppVector3( 0, 0, 0 );
 		// @todo cState = Free
 	}
 
-	Particle::Particle( const Particle &p )
+	AppParticle::AppParticle( const AppParticle &p )
 		:x(p.x), v(p.v), a(p.a), invM(p.invM)
 	{
 		//x = p.x;
@@ -30,8 +30,8 @@
 		//~~~ 找出 Bounding Box 的 max, min ~~~~~~~~~~~~~~~~~~~~~
 		//跳過第一個 particle 因為第一個 particle 是黏在 mesh 上
 		
-		Vector3 max = pList[1].x;
-		Vector3 min = pList[1].x;
+		AppVector3 max = pList[1].x;
+		AppVector3 min = pList[1].x;
 		for( unsigned int i = 2; i < pList.size(); ++i ){
 			for( int j = 0; j < 3; ++j ){
 				if( pList[i].x[j] > max[j] ){
@@ -57,9 +57,9 @@
 	void Strand::updateBox()
 	{
 		//跳過第一個 particle 因為第一個 particle 是黏在 mesh 上
-		std::vector<Particle>::const_iterator pPtr = pList.begin() + 1;
-		Vector3 max = pPtr->x;
-		Vector3 min = pPtr->x;
+		std::vector<AppParticle>::const_iterator pPtr = pList.begin() + 1;
+		AppVector3 max = pPtr->x;
+		AppVector3 min = pPtr->x;
 		for( pPtr = pPtr + 1; pPtr != pList.end(); pPtr++ ){
 			for( int j = 0; j < 3; ++j ){
 				if( pPtr->x[j] > max[j] ){
@@ -100,10 +100,10 @@
 		this->pIndex[1] = spr.pIndex[1];
 	}
 
-	bool Spring::isOverStretched( const std::vector< Particle > &particleArray )
+	bool Spring::isOverStretched( const std::vector< AppParticle > &particleArray )
 	{
-		const Vector3 & x1 = particleArray[ pIndex[0] ].x;
-		const Vector3 & x2 = particleArray[ pIndex[1] ].x;
+		const AppVector3 & x1 = particleArray[ pIndex[0] ].x;
+		const AppVector3 & x2 = particleArray[ pIndex[1] ].x;
 		DP L = x1.distance( x2 );
 		DP ratio = (L - len0 )/len0;
 		if( ratio > MAX_STRETCH_RATIO ){
@@ -113,15 +113,15 @@
 	}
 
 	// apply force/accel to particles
-	void Spring::applyAccel2particle( std::vector< Particle> &particleArray )
+	void Spring::applyAccel2particle( std::vector< AppParticle> &particleArray )
 	{
-		Particle & p1 = particleArray[ pIndex[0] ];
-		Particle & p2 = particleArray[ pIndex[1] ];
+		AppParticle & p1 = particleArray[ pIndex[0] ];
+		AppParticle & p2 = particleArray[ pIndex[1] ];
 
-		Vector3 L = p2.x - p1.x;
+		AppVector3 L = p2.x - p1.x;
 		DP f = -k *( L.length() - len0 );	// f = -k * dL
 		L.normalize();
-		Vector3 dV = p2.v - p1.v;			// spring's damper term
+		AppVector3 dV = p2.v - p1.v;			// spring's damper term
 		f += -kd * dotProduct( dV, L );
 		L = L * f;		// L = F now
 		p2.a += L * p2.invM;
@@ -129,7 +129,7 @@
 	}
 
 #if 0
-	bool Spring::isOverStretched( const Vector3 p1, const Vector3 p2 )
+	bool Spring::isOverStretched( const AppVector3 p1, const AppVector3 p2 )
 	{
 		DP L = p1.distance( p2 );
 		DP ratio = (L - len0 )/len0;
@@ -140,11 +140,11 @@
 	}
 
 	//作用在 p2 上的 forec
-	Vector3 Spring::getForce( const Vector3 p1, const Vector3 p2 )
+	AppVector3 Spring::getForce( const AppVector3 p1, const AppVector3 p2 )
 	{
-		Vector3 L = p2 - p1;
+		AppVector3 L = p2 - p1;
 		DP f = k *( L.length() - len0 );
 		L.normalize();
-		return Vector3( f * L );
+		return AppVector3( f * L );
 	}
 #endif

@@ -6,7 +6,7 @@
 *	2008-12-06
 *   2008-12-08 發現內積寫錯了 operator*　-> 改正；
 *   2009-1-12 
-*		為了和 OGRE Vector3 match
+*		為了和 OGRE AppVector3 match
 *		cross() => crossProduct()
 *		dot() => dotProduct()
 *		拿掉 dot 內積的 overloaded operator
@@ -15,29 +15,29 @@
 #ifndef	VEC3_H
 #define	VEC3_H
 
-class Vector3
+class AppVector3
 
 {
-	friend Vector3 operator-( Vector3 &);				// -v;
-	friend Vector3 operator-( const Vector3 &, const Vector3 & );	// v - w
-	friend Vector3 operator+( const Vector3 &, const Vector3 & );	// v + w
-	//friend float operator*( const Vector3 &, const Vector3 & );	// v dot w
-	friend Vector3 operator*( float , const Vector3 & );	// s* v		s:scalar
-	friend Vector3 operator*( const Vector3 &, float );		// v * s	s:scalar
-	friend Vector3 operator/( const Vector3 &, float );		// v / s	s:scalar
-	friend void operator-=( Vector3 &v, const Vector3 &w);
-	friend void operator+=( Vector3 &v, const Vector3 &w);
-	friend void operator*=( Vector3 &v, const float& s);
-	friend void operator/=( Vector3 &v, const float &s);
+	friend AppVector3 operator-( AppVector3 &);				// -v;
+	friend AppVector3 operator-( const AppVector3 &, const AppVector3 & );	// v - w
+	friend AppVector3 operator+( const AppVector3 &, const AppVector3 & );	// v + w
+	//friend float operator*( const AppVector3 &, const AppVector3 & );	// v dot w
+	friend AppVector3 operator*( float , const AppVector3 & );	// s* v		s:scalar
+	friend AppVector3 operator*( const AppVector3 &, float );		// v * s	s:scalar
+	friend AppVector3 operator/( const AppVector3 &, float );		// v / s	s:scalar
+	friend void operator-=( AppVector3 &v, const AppVector3 &w);
+	friend void operator+=( AppVector3 &v, const AppVector3 &w);
+	friend void operator*=( AppVector3 &v, const float& s);
+	friend void operator/=( AppVector3 &v, const float &s);
 
-	friend Vector3 add( Vector3 &, Vector3 &);
-	friend Vector3 subtract( Vector3 &, Vector3 & );
-	friend float dotProduct( const Vector3 &, const Vector3 & );	// v dot w
-	friend Vector3 scale( float , Vector3 & );
-	friend Vector3 negate( Vector3 & );
-	friend Vector3 crossProduct(const Vector3 &, const Vector3 &);	// v cross w
-	friend Vector3 normalize( Vector3 &);
-	friend float length( Vector3 & );
+	friend AppVector3 add( AppVector3 &, AppVector3 &);
+	friend AppVector3 subtract( AppVector3 &, AppVector3 & );
+	friend float dotProduct( const AppVector3 &, const AppVector3 & );	// v dot w
+	friend AppVector3 scale( float , AppVector3 & );
+	friend AppVector3 negate( AppVector3 & );
+	friend AppVector3 crossProduct(const AppVector3 &, const AppVector3 &);	// v cross w
+	friend AppVector3 normalize( AppVector3 &);
+	friend float length( AppVector3 & );
 
 public:
 	union{
@@ -51,23 +51,23 @@ public:
 	};
 
 	/** constructors */
-	Vector3 (float *v) 
+	AppVector3 (float *v) 
 	{
 		for (int i=0;i<3;i++)
 			ptr[i] = v[i];
 	}
-	Vector3( float x, float y, float z )
+	AppVector3( float x, float y, float z )
 	{
 		ptr[0] = x;
 		ptr[1] = y;
 		ptr[2] = z;
 	}
-	Vector3()
+	AppVector3()
 	{
 		ptr[0] = ptr[1] = ptr[2] = 0;
 	}
 	// copy constructor: T( const T &)
-	Vector3( const Vector3 & copy )
+	AppVector3( const AppVector3 & copy )
 	{
 		x = copy.x;
 		y = copy.y;
@@ -95,26 +95,26 @@ public:
 	float length() const;
 	void normalize();
 
-	inline float distance(const Vector3& rhs) const
+	inline float distance(const AppVector3& rhs) const
 	{
 	    return (*this - rhs).length();
 	}
 
 	float squaredLength () const;
-	float squaredDistance(const Vector3& rhs) const;
+	float squaredDistance(const AppVector3& rhs) const;
 
 
 
 };
 
-void VecAdd( Vector3 &a, Vector3 &b, Vector3 &result );
-void VecSub( Vector3 &a, Vector3 &b, Vector3 &result );
-float VecDot( Vector3 &a, Vector3 &b );
-void VecCross( Vector3 &a, Vector3 &b, Vector3 &result );
-void VecScale( Vector3 &a, float s, Vector3 &result );
-float VecLength( Vector3 &a );
-void NormalizeVec( Vector3 &a );
-void NegateVec( Vector3 &a );
+void VecAdd( AppVector3 &a, AppVector3 &b, AppVector3 &result );
+void VecSub( AppVector3 &a, AppVector3 &b, AppVector3 &result );
+float VecDot( AppVector3 &a, AppVector3 &b );
+void VecCross( AppVector3 &a, AppVector3 &b, AppVector3 &result );
+void VecScale( AppVector3 &a, float s, AppVector3 &result );
+float VecLength( AppVector3 &a );
+void NormalizeVec( AppVector3 &a );
+void NegateVec( AppVector3 &a );
 
 class Vec4{
 public:

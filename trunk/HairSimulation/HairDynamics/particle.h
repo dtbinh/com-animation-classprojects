@@ -11,23 +11,24 @@
 
 //typedef double DP;	//double precision floating point 名稱學 C++數值方法食譜
 typedef float DP;
-class Particle;
+class AppParticle;
 class Spring;
 class Strand;
 
 enum Status { FREE, COLLIDE, CONTACT, PENENTRATE };
-class Particle{
+class AppParticle
+{
 public:
-	Vector3 x;
-	Vector3 v;
-	Vector3 a;
+	AppVector3 x;
+	AppVector3 v;
+	AppVector3 a;
 	DP invM;		// inverse Mass 縮寫
 	// @todo 加 collision state keeping
 	Status status;
 	Face *hitTri;
 public:
-	Particle();
-	Particle(const Particle & p);
+	AppParticle();
+	AppParticle(const AppParticle & p);
 	
 	/* Debug info */
 	inline void printInfo()
@@ -56,7 +57,7 @@ public:
 class Strand{
 public:
 	DP pieceLen;
-	std::vector< Particle > pList;	// particle list
+	std::vector< AppParticle > pList;	// particle list
 	std::vector< Spring > sList;	// spring list
 	BoundBox m_box;					// bounding box
 	int pTotal, sTotal;
@@ -72,11 +73,11 @@ public:
 		sList( s.sList ), sTotal( s.sTotal ), m_box( s.m_box )
 	{}
 	//subscript operator for non-const objects returns modifiable lvalue
-	Particle& operator[](int index)
+	AppParticle& operator[](int index)
 	{
 		return pList[index];	//reference
 	}
-	Particle operator[]( int index ) const
+	AppParticle operator[]( int index ) const
 	{
 		return pList[index];	//copy of this element
 	}
@@ -128,8 +129,8 @@ public:
 	//bool isOverStretched();
 	//void applyAccel2particle();
 	
-	bool isOverStretched( const std::vector< Particle > &particleArray );
-	void applyAccel2particle( std::vector< Particle> &particleArray );
+	bool isOverStretched( const std::vector< AppParticle > &particleArray );
+	void applyAccel2particle( std::vector< AppParticle> &particleArray );
 
 	/* Debug info */
 	void printInfo()
@@ -145,22 +146,22 @@ public:
 /****************************************************************************/
 class Gravity{
 private:
-	Vector3 G;
+	AppVector3 G;
 public:
 	Gravity()
 		:G( 0.0, -9.8f, 0.0 )
 	{
 	}
-	Vector3 getG() const
+	AppVector3 getG() const
 	{
 		return G;
 	}
-	void setG( const Vector3 &g )
+	void setG( const AppVector3 &g )
 	{
 		G = g;
 	}
 	//加上作用力的加速度
-	void applyAccel( Particle *pPtr )
+	void applyAccel( AppParticle *pPtr )
 	{
 		if( pPtr->invM != 0 ){
 			pPtr->a = G + pPtr->a;
@@ -186,7 +187,7 @@ public:
 	{
 		return k;
 	}
-	void applyAccel( Particle *pPtr )
+	void applyAccel( AppParticle *pPtr )
 	{
 		pPtr->a = pPtr->a + ( -k * pPtr->invM * pPtr->v );
 	}
@@ -195,19 +196,19 @@ public:
 // Wind
 class Wind{
 private:
-	Vector3 windF;
+	AppVector3 windF;
 public:
 	Wind()
 	{
-		windF = Vector3( 0, 0, 0.45 );
+		windF = AppVector3( 0, 0, 0.45 );
 	}
 
-	void setWind( const Vector3 &F )
+	void setWind( const AppVector3 &F )
 	{
 		windF = F;
 	}
 
-	void applyAccel( Particle *pPtr, float time )
+	void applyAccel( AppParticle *pPtr, float time )
 	{
 		//pPtr->a = pPtr->a + ( pPtr->invM * abs( sin( time )) * windF );
 		pPtr->a = pPtr->a + ( pPtr->invM * sin( time ) * windF );

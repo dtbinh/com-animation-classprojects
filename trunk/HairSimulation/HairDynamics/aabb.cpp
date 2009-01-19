@@ -7,14 +7,14 @@
 //~~~~~~~~~ AabbTree ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	// prototype
-bool sphereTri3D_v2( const Vector3 & A, const Vector3 & B, const Vector3 & C,
-		const Vector3 & N, const Vector3 & P, float R2 );
+bool sphereTri3D_v2( const AppVector3 & A, const AppVector3 & B, const AppVector3 & C,
+		const AppVector3 & N, const AppVector3 & P, float R2 );
 
-bool AabbTree::testBallTri( const Vector3 & C, float R2 ) const
+bool AabbTree::testBallTri( const AppVector3 & C, float R2 ) const
 {
 	return ballTriTester( root, C, R2 );
 }
-bool AabbTree::ballTriTester( TreeNode *tptr, const Vector3 &C, float R2 ) const
+bool AabbTree::ballTriTester( TreeNode *tptr, const AppVector3 &C, float R2 ) const
 {
 	if( tptr->box.BallBoxIntersect( C, R2 ) ){
 		if( tptr->left == NULL ){	// leaf node
@@ -28,11 +28,11 @@ bool AabbTree::ballTriTester( TreeNode *tptr, const Vector3 &C, float R2 ) const
 	return false;
 }
 // return which Tri
-Face* AabbTree::testBallTri_v2( const Vector3 & C, float R2 ) const
+Face* AabbTree::testBallTri_v2( const AppVector3 & C, float R2 ) const
 {
 	return ballTriTester_v2( root, C, R2 );
 }
-Face* AabbTree::ballTriTester_v2( TreeNode *tptr, const Vector3 &C, float R2 ) const
+Face* AabbTree::ballTriTester_v2( TreeNode *tptr, const AppVector3 &C, float R2 ) const
 {
 	if( tptr->box.BallBoxIntersect( C, R2 ) ){
 		if( tptr->left == NULL ){	// leaf node
@@ -56,21 +56,21 @@ Face* AabbTree::ballTriTester_v2( TreeNode *tptr, const Vector3 &C, float R2 ) c
 void AabbTree::display() const
 {	
 	// 粉紅 紅 橙 黃 亮綠 墨綠 藍綠 天藍 淺藍 深藍 紫 紫紅 
-	Vector3 colorTable[12] = { Vector3(1, 0.6, 0.8), Vector3(1, 0, 0), Vector3(1, 0.6, 0), Vector3(1, 1, 0.6),
-							Vector3(0.6, 1, 0.2), Vector3(0, 0.5, 0), Vector3(0, 1, 0.6),
-							Vector3(0, 0.8, 1), Vector3(0.6, 0.8, 1), Vector3(0.2, 0.2, 1),
-							Vector3(0.6, 0.2, 1), Vector3(1, 0.2, 0.8) };
+	AppVector3 colorTable[12] = { AppVector3(1, 0.6, 0.8), AppVector3(1, 0, 0), AppVector3(1, 0.6, 0), AppVector3(1, 1, 0.6),
+							AppVector3(0.6, 1, 0.2), AppVector3(0, 0.5, 0), AppVector3(0, 1, 0.6),
+							AppVector3(0, 0.8, 1), AppVector3(0.6, 0.8, 1), AppVector3(0.2, 0.2, 1),
+							AppVector3(0.6, 0.2, 1), AppVector3(1, 0.2, 0.8) };
 	int depth = 0;
 	postorderVisitor( root, depth, colorTable );
 }
 
-void AabbTree::postorderVisitor( TreeNode *tptr, int depth, Vector3 *colorTable ) const
+void AabbTree::postorderVisitor( TreeNode *tptr, int depth, AppVector3 *colorTable ) const
 {
 	if( tptr != NULL ){
 		
 		//visit node
 
-		Vector3 *c = colorTable + ( depth  );
+		AppVector3 *c = colorTable + ( depth  );
 		glColor3f( c->x, c->y, c->z );
 		
 		GLfloat Ks[] = { 0 , 0 , 0 };
@@ -140,7 +140,7 @@ void AabbTree::insertTreeNode( TreeNode ** nodePtr, Face **fArray, int start, in
 	// if subtree is empty, create new TreeNode containing value
 	assert( *nodePtr == 0 );
 
-	Vector3 max, min, center;
+	AppVector3 max, min, center;
 	// 算一群三角形的資訊
 	calcTriangleListInfo( fArray, start, end, max, min, center );
 
@@ -167,7 +167,7 @@ void AabbTree::insertTreeNode( TreeNode ** nodePtr, Face **fArray, int start, in
 		// j 去找 <= k 的值交換
 		int i = start - 1;
 		for( int j = start; j <= end; j++ ){
-			Vector3 c = calcTriangleCenter( fArray[j] );
+			AppVector3 c = calcTriangleCenter( fArray[j] );
 			if( c[longestAxis] <= box.center[longestAxis] ){
 				i++;
 				//swap A[i],A[j]
@@ -210,7 +210,7 @@ void AabbTree::postOrderUpdate( TreeNode *tPtr )
 	if( tPtr->left == 0 ){
 
 		// update bounding volume
-		Vector3 max, min;
+		AppVector3 max, min;
 		max = min = *(tPtr->facePtr->vPtr[0]);
 
 		for( int i = 1; i < 3; i++ ){
@@ -233,17 +233,17 @@ void AabbTree::postOrderUpdate( TreeNode *tPtr )
 		postOrderUpdate( tPtr->right );
 
 		//merge children's bounding volume
-		Vector3 min, max;
-		Vector3 minL, maxL;	//left box's min,max
-		Vector3 minR, maxR;	//right box's min,max
+		AppVector3 min, max;
+		AppVector3 minL, maxL;	//left box's min,max
+		AppVector3 minR, maxR;	//right box's min,max
 
 		BoundBox *b = &(tPtr->left->box);
-		minL = Vector3( b->center[0] -b->dim[0], b->center[1] -b->dim[1], b->center[2] -b->dim[2] );
-		maxL = Vector3( b->center[0] +b->dim[0], b->center[1] +b->dim[1], b->center[2] +b->dim[2] );
+		minL = AppVector3( b->center[0] -b->dim[0], b->center[1] -b->dim[1], b->center[2] -b->dim[2] );
+		maxL = AppVector3( b->center[0] +b->dim[0], b->center[1] +b->dim[1], b->center[2] +b->dim[2] );
 
 		b = &(tPtr->right->box);
-		minR = Vector3( b->center[0] -b->dim[0], b->center[1] -b->dim[1], b->center[2] -b->dim[2] );
-		maxR = Vector3( b->center[0] +b->dim[0], b->center[1] +b->dim[1], b->center[2] +b->dim[2] );
+		minR = AppVector3( b->center[0] -b->dim[0], b->center[1] -b->dim[1], b->center[2] -b->dim[2] );
+		maxR = AppVector3( b->center[0] +b->dim[0], b->center[1] +b->dim[1], b->center[2] +b->dim[2] );
 		
 		for( int j = 0; j < 3; ++j ){
 			max[j] = (maxL[j] > maxR[j] ? maxL[j] : maxR[j] );
@@ -268,10 +268,10 @@ void AabbTree::postOrderUpdate( TreeNode *tPtr )
 * 三角形資料存在 facePtrArray, (start,end) = Array 起始/結束 index
 * 回傳放在 max, min, center
 **********************************************************************************************/
-void AabbTree::calcTriangleListInfo( Face** facePtrArray, int start, int end, Vector3 &max, Vector3 &min, Vector3 &center )
+void AabbTree::calcTriangleListInfo( Face** facePtrArray, int start, int end, AppVector3 &max, AppVector3 &min, AppVector3 &center )
 {
 	//list< Face* >::iterator iter = faceList.begin();
-	center = Vector3(0, 0, 0);
+	center = AppVector3(0, 0, 0);
 	// foreach face, foreach vertex, for x,y,z
 
 	//max = min = m_meshData->vList[ (*iter)->v[0].v ];
@@ -321,9 +321,9 @@ void AabbTree::calcTriangleListInfo( Face** facePtrArray, int start, int end, Ve
 
 
 // calculate centroid/ geometry center/ barycenter of a triangle
-Vector3 AabbTree::calcTriangleCenter( Face* facePtr )
+AppVector3 AabbTree::calcTriangleCenter( Face* facePtr )
 {
-	Vector3 center( 0, 0, 0 );
+	AppVector3 center( 0, 0, 0 );
 	for( int j = 0; j < 3; j++ ){
 		center = center + *(facePtr->vPtr[j]) ;
 	}

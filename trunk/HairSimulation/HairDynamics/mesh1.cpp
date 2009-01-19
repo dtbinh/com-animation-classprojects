@@ -88,18 +88,18 @@ void mesh::LoadMesh(string obj_file)
 		else if (!strcmp(token,"v"))
 		{
 			fscanf(scene,"%f %f %f",&vec[0],&vec[1],&vec[2]);
-			vList.push_back(Vector3(vec));
+			vList.push_back(AppVector3(vec));
 		}
 
 		else if (!strcmp(token,"vn"))
 		{
 			fscanf(scene,"%f %f %f",&vec[0],&vec[1],&vec[2]);
-			nList.push_back(Vector3(vec));
+			nList.push_back(AppVector3(vec));
 		}
 		else if (!strcmp(token,"vt"))
 		{
 			fscanf(scene,"%f %f",&vec[0],&vec[1]);
-			tList.push_back(Vector3(vec));
+			tList.push_back(AppVector3(vec));
 		}
 
 		else if (!strcmp(token,"f"))
@@ -259,9 +259,9 @@ void mesh::Init(const char* obj_file)
 {
 	float default_value[3] = {1,1,1};
 
-	vList.push_back(Vector3(default_value));	// 因為 *.obj 的 index 是從 1 開始
-	nList.push_back(Vector3(default_value));	// 所以要先 push 一個 default value 到 vList[0],nList[0],tList[0]
-	tList.push_back(Vector3(default_value));
+	vList.push_back(AppVector3(default_value));	// 因為 *.obj 的 index 是從 1 開始
+	nList.push_back(AppVector3(default_value));	// 所以要先 push 一個 default value 到 vList[0],nList[0],tList[0]
+	tList.push_back(AppVector3(default_value));
 
 	// 定義 default meterial: mat[0]
 	mat[0].Ka[0] = 0.0f; mat[0].Ka[1] = 0.0f; mat[0].Ka[2] = 0.0f; mat[0].Ka[3] = 1.0f; 
@@ -321,16 +321,16 @@ void mesh::CalculateFn()
 	//	delete[] triCList;
 	//}
 	
-	//triCList = new Vector3[ fTotal ];
-	fnList = new Vector3[ fTotal ];
+	//triCList = new AppVector3[ fTotal ];
+	fnList = new AppVector3[ fTotal ];
 	assert( fnList );
 	//assert( triCList );
 	for( int f = 0; f < fTotal; f++ ){
 		
-		Vector3 a = vList[ faceList[f][1].v ] - vList[ faceList[f][0].v ];
-		Vector3 b = vList[ faceList[f][2].v ] - vList[ faceList[f][0].v ];
+		AppVector3 a = vList[ faceList[f][1].v ] - vList[ faceList[f][0].v ];
+		AppVector3 b = vList[ faceList[f][2].v ] - vList[ faceList[f][0].v ];
 		// 注意外積的方向要和平面相同
-		Vector3 n = crossProduct( a, b);
+		AppVector3 n = crossProduct( a, b);
 		n.normalize();
 		fnList[f] = n;
 
@@ -367,7 +367,7 @@ void mesh::CalculateFn()
 	}
 
 	
-	fnList = new Vector3[ vTotal ];
+	fnList = new AppVector3[ vTotal ];
 	vAdjFList = new vector<int> [ vTotal ];
 	// vList 編號從1開始
 	for( int i = 0; i < fTotal; i++ ){
@@ -386,9 +386,9 @@ void mesh::CalculateFn()
 	}
 #endif
 
-	Vector3 *faceNormal = new Vector3[ fTotal ];
+	AppVector3 *faceNormal = new AppVector3[ fTotal ];
 	for( int f = 0; f < fTotal; f++ ){
-		Vector3 a, b, n;
+		AppVector3 a, b, n;
 		VecSub( vList[ faceList[f][1].v ], vList[ faceList[f][0].v ], a );
 		VecSub( vList[ faceList[f][2].v ], vList[ faceList[f][0].v ], b );
 		// 注意外積的方向要和平面相同
@@ -417,7 +417,7 @@ void mesh::CalculateFn()
 	// calculate facet normal: average of all adjacent face's normal
 	for( int v = 1; v < vTotal; v++ ){
 
-		Vector3 n( 0.0, 0.0, 0.0 );
+		AppVector3 n( 0.0, 0.0, 0.0 );
 		for( unsigned int i = 0; i < vAdjFList[v].size(); i++ ){
 
 			VecAdd( n, faceNormal[ vAdjFList[v][i] ], n );

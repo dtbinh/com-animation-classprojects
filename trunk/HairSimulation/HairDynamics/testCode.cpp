@@ -15,8 +15,8 @@ int main( int argc, char **argv )
 {
 	cout << sqrt( 2.0 ) << endl;
 
-	Vector3 v( 0, 0, 0 ), v1( 50, 0, 0 ), v2( 50, 50, 0 ), C( 55, 10, 0 ), P( 50, 10, 0 );
-	Vector3 N( 0, 0, 1 );
+	AppVector3 v( 0, 0, 0 ), v1( 50, 0, 0 ), v2( 50, 50, 0 ), C( 55, 10, 0 ), P( 50, 10, 0 );
+	AppVector3 N( 0, 0, 1 );
 	float R = 5.0001;
 	double temp = 1;
 	//cout << (sphereEdge3D( v1, v2, C, R ) ? "Y":"N" ) << endl;
