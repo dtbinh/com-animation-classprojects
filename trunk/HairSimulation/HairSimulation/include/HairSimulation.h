@@ -20,7 +20,6 @@ LGPL like the rest of the OGRE engine.
 #ifndef __HairSimulation_h_
 #define __HairSimulation_h_
 
-
 #include "ExampleApplication.h"
 #include "World.h"
 #include "ApplicationObject.h"

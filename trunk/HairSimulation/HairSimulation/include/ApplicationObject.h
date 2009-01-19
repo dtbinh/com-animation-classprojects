@@ -1,7 +1,7 @@
 #ifndef _APPLICATIONOBJECT_H_
 #define _APPLICATIONOBJECT_H_
 
-#include "Mesh.h"
+#include "AppMesh.h"
 #include "DynamicLines.h"
 #include <Ogre.h>
 
