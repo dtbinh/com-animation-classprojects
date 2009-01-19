@@ -137,15 +137,16 @@ public:
 	void	LoadMesh(CMesh* sourceMesh);
 	void	LoadTex(string tex_file);
 
-	mesh(const CMesh* sourceMesh);
+	mesh(CMesh* sourceMesh);
 	mesh(const char* obj_file);
 	virtual ~mesh();
 
 	void Init(const char* obj_file);
-	void Init(const CMesh* sourceMesh);
+	void Init(CMesh* sourceMesh);
 	//自己修改的
 	void CalculateFn();			//算vertex的平均normal (每個相鄰的face的normal平均)
 	void buildMyFaceList();		//建myFaceList
+	void buildMyFaceList_simple();		//建myFaceList
 
 };
 

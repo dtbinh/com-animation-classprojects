@@ -5,6 +5,7 @@
 using namespace std;
 
 float World::TRI_AREA_THRESHOLD = 9999.0;
+float World::TIME_STEP = 0.001;
 
 //-----------------------------------------------------------
 World::World(SceneManager* sceneMgr)
@@ -36,6 +37,7 @@ void World::clear(void)
 		delete i->second;
 	}
 	mObjects.clear();
+	delete mD_Mesh;
 }
 //-------------------------------------------------------------------------
 template<> World* Ogre::Singleton<World>::ms_Singleton = 0;
@@ -369,6 +371,21 @@ void World::updateHairs()
 	}
 }
 
+void World::updateHairsSucks()
+{
+	int i, j;
+	std::vector<Strand>::const_iterator sPtr;
+	std::vector<AppParticle>::const_iterator pPtr;
+	for (i = 0, sPtr = mD_StrandSys.m_strandList.begin(); 
+			i < Hair::cNumHairs;
+			i++, sPtr++)
+	{
+		for (j = 0, pPtr = sPtr->pList.begin(); j < Hair::cNumParticles; j++, pPtr++)
+			mAllHairs[i].mParticlePoses[j] = pPtr->x;
+		mAllHairs[i].updateHairEdges();
+	}
+}
+
 void World::checkAll()
 {
 	for (int i = 0; i < Hair::cNumHairs; i++)
@@ -381,4 +398,19 @@ void World::checkAll()
 		}
 	}
 	cout << "checkAll() passed" << endl;
+}
+
+//-------------------------------------------------------------------------
+void World::setupStrandSystem(CMesh* srcMesh)
+{
+	mD_Mesh = new mesh(srcMesh);
+	mD_StrandSys.setup(mAllHairs, mD_Mesh);
+	cout << "strand system is set" << endl;
+}
+
+//-------------------------------------------------------------------------
+void World::stepStrandSystem()
+{
+	for (int i = 0; i < 10; i++)
+		mD_StrandSys.step(TIME_STEP);
 }

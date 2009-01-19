@@ -5,6 +5,7 @@
 #include	"particle.h"
 //#include	"strand.h"
 #include	"mesh.h"
+#include "Hair.h"
 
 
 /****************************************************************************/
@@ -24,8 +25,10 @@ public:
 	
 
 	void setup( vector<Line> &lineSet, mesh *meshPtr );
+	void setup( Hair* hairs, mesh *meshPtr );
 	//make many strands from a lineSet
 	void setupStrand( std::vector<Line> &lineSet );
+	void setupStrand( Hair* hairs);
 	void drawStrandBoxes();				// draw strand's bounding box
 
 	void setMeshObject( mesh *meshPtr )	// mesh object in the scene

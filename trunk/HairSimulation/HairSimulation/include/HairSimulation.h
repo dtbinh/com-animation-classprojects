@@ -84,6 +84,8 @@ public:
 	bool frameStarted(const FrameEvent& evt)
 	{
 		bool ret = ExampleFrameListener::frameStarted(evt);
+		mWorld->stepStrandSystem();
+		mWorld->updateHairsSucks();
 		return ret;
 	}
 
@@ -393,6 +395,10 @@ protected:
 		mHead->getMesh()->clearSelection();
 		mHead->getMesh()->renderSelectedFaces();
 		mWorld->updateHairs();
+
+		// Setup mesh for dynamics
+		mWorld->setupStrandSystem(mHead->getMesh());
+
 		//delete wireframed mesh and let textured one visible
 		mHead->deleteMesh();
 		mHead->getEntity()->setVisible(true);

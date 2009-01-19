@@ -33,6 +33,7 @@ public:
 		PS_SIMULATION
 	};
 	static float TRI_AREA_THRESHOLD;
+	static float TIME_STEP;
 
 protected:
 	// Pointer to OGRE's scene manager
@@ -87,6 +88,9 @@ public:
 	/** Override standard Singleton retrieval */
 	static World& getSingleton(void);
 	static World* getSingletonPtr(void);
+
+	void setupStrandSystem(CMesh* srcMesh);
+	void stepStrandSystem();
 	
 
 //----------------- Head creation methods ------------------------------------------------------------------
@@ -105,6 +109,8 @@ public:
 	void generateHairsInsideTri(Vector3& p1, Vector3& p2, Vector3& p3, std::vector<Vector3>& vertexList, float area, Vector3& normal);
 	// Update the hairs' state
 	void updateHairs(void);
+
+	void updateHairsSucks();
 
 //---------------- Methods related to collision detection ------------------------------------------------
 	/** Add an entity to CollisionContext */

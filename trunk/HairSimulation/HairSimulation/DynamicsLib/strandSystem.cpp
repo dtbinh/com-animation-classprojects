@@ -19,6 +19,23 @@ void StrandSystem::setup( vector<Line> &lineSet, mesh *meshPtr )
 		sptr->buildBox();
 	}
 }
+
+void StrandSystem::setup( Hair* hairs, mesh *meshPtr )
+{
+	setupStrand( hairs);
+	m_time = 0;
+	m_stepMethod = RUNGE_KUTTA;
+
+	setMeshObject( meshPtr );
+
+	// setup strand's bounding box
+	for( vector<Strand>::iterator sptr = m_strandList.begin();
+		sptr != m_strandList.end(); ++sptr )
+	{
+		sptr->buildBox();
+	}
+}
+
 void StrandSystem::updateStrandBoxes()
 {
 	for( vector<Strand>::iterator sptr = m_strandList.begin();
@@ -64,6 +81,42 @@ void StrandSystem::setupStrand( vector<Line> &lineSet )
 				spring.setParticleIndex( j, j+1 );
 				spring.setK( 500 );
 				spring.setLen0( lineSet[i].pts[j].distance(lineSet[i].pts[j+1]) );
+				aStrand.sList.push_back( spring );
+			}
+		}
+		m_strandList.push_back( aStrand );
+	}// close for-loop
+}
+
+void StrandSystem::setupStrand( Hair* hairs)
+{	// 加 particle
+	m_totalStrand = int(Hair::cNumHairs);
+	for( unsigned int i = 0; i < Hair::cNumHairs; ++i )
+	{
+		Strand aStrand;
+		aStrand.pTotal = int( Hair::cNumParticles);
+		aStrand.sTotal = aStrand.pTotal - 1;
+		DP inverseMass = 10;
+		for( unsigned int j = 0; j <Hair::cNumParticles; ++j )
+		{
+			//加上質點
+			AppParticle particle;
+			particle.x = hairs[i].mParticlePoses[j];
+			particle.invM = inverseMass;
+			//attach root of this strand to triangle surface
+			// m = infinite, 1/m = 0
+			if( j == 0 ){
+				particle.invM = 0.0f;
+			}
+			aStrand.pList.push_back( particle );
+
+			//加上彈簧
+			if( j != Hair::cNumParticles - 1 ){
+
+				Spring spring;
+				spring.setParticleIndex( j, j+1 );
+				spring.setK( 500 );
+				spring.setLen0( hairs[i].mParticlePoses[j].distance(hairs[i].mParticlePoses[j+1]) );
 				aStrand.sList.push_back( spring );
 			}
 		}

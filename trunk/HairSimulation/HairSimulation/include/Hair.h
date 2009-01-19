@@ -15,11 +15,13 @@ protected:
 	Vector3 mRootPos;						//	Root position
 	bool	mInterpolated;					//	Indicate this hair is interpolated from its neighbors
 	int		mNeighbors[3];					//	Neighbor hairs(Three at most)
-	std::vector<Vector3> mParticlePoses;	// Positions of particles
+	
 	AppBox* mHairEdges;						// Visual components of hair edges
 	
 	
 public:
+	std::vector<Vector3> mParticlePoses;	// Positions of particles
+
 	static const float HAIR_THICKNESS, HAIR_EDGE_LENGTH;
 	static const int cNumParticles = 15; // Number of particles
 	static const int cNumHairEdges = cNumParticles-1;

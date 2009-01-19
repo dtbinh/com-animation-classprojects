@@ -30,7 +30,7 @@ mesh::mesh(const char* obj_file)
 	Init(obj_file);
 }
 
-mesh::mesh(const CMesh* sourceMesh)
+mesh::mesh(CMesh* sourceMesh)
 {
 	matTotal = 0;			
 	vTotal = tTotal = nTotal = fTotal = 0;
@@ -181,17 +181,40 @@ void mesh::LoadMesh(string obj_file)
 
 void mesh::LoadMesh(CMesh* srcMesh)
 {
-	int srcVertexCount;
+	int srcVertexCount, srcFaceCount;
 	Ogre::Vector3* srcVertices;
+	unsigned long* srcIndices;
+	Vertex tmp_vertex[3];
+	int i, j;
+	int vIndex;
 
 	srcVertexCount = (int)srcMesh->getVertexCount();
 	srcVertices = srcMesh->getVertices();
+	srcFaceCount = (int)srcMesh->getTriCount();
+	srcIndices = srcMesh->getIndices();
+
 
 	//Set vertex position
-	for (int i = 0; i < srcVertexCount; i++)
+	for (i = 0; i < srcVertexCount; i++)
 	{
 		vList.push_back(srcVertices[i]);
 	}
+	
+	for (i = 0; i < srcFaceCount; i++)
+	{
+		vIndex = i*3;
+		for (j = 0; j < 3; j++)
+		{
+			tmp_vertex[j].v = (int)srcIndices[vIndex+j];
+		}
+		faceList.push_back(FACE(tmp_vertex[0], tmp_vertex[1], tmp_vertex[2]));
+	}
+
+	vTotal = (int)vList.size();
+	nTotal = (int)nList.size();
+	tTotal = (int)tList.size();
+	fTotal = (int)faceList.size();
+	printf("vetex: %d, normal: %d, texture: %d, triangles: %d\n",vTotal, nTotal, tTotal, fTotal);
 }
 
 void mesh::LoadTex(string tex_file)
@@ -297,7 +320,7 @@ void mesh::Init(const char* obj_file)
 	buildMyFaceList();
 }
 
-void mesh::Init(const CMesh* sourceMesh)
+void mesh::Init(CMesh* sourceMesh)
 {
 	float default_value[3] = {1,1,1};
 
@@ -311,6 +334,13 @@ void mesh::Init(const CMesh* sourceMesh)
 	mat[0].Ks[0] = 0.8f; mat[0].Ks[1] = 0.8f; mat[0].Ks[2] = 0.8f; mat[0].Ks[3] = 1.0f;
 	mat[0].Ns = 32;
 	matTotal++;
+
+	LoadMesh(sourceMesh);
+
+	//算vertex的平均normal	(facet normal)
+	CalculateFn();
+	//create myFaceList
+	buildMyFaceList_simple();
 }
 
 //建myFaceList
@@ -338,7 +368,30 @@ void mesh::buildMyFaceList()
 	m_bvTree.buildTree( myFaceList, fTotal );
 }
 
+//建myFaceList
+void mesh::buildMyFaceList_simple()
+{
+	assert( vTotal > 0 );
+	assert( fTotal > 0 );
+	assert( fnList != 0 );
 
+	for( int i = 0; i < fTotal; i++ ){
+		Face f;
+		//f.materialPtr = &mat[ faceList[i][0].m ];
+		for( int w = 0; w < 3; w++ ){
+			f.vPtr[w] = &vList[ faceList[i][w].v ];
+			//f.nPtr[w] = &nList[ faceList[i][w].n ];
+			//f.tPtr[w] = &tList[ faceList[i][w].t ];
+
+		}
+		f.fnPtr = &fnList[i];
+		//f.cPtr = &triCList[i];
+		myFaceList.push_back( f );
+	}
+	//build bv-tree
+	
+	m_bvTree.buildTree( myFaceList, fTotal );
+}
 
 /** 2009-01-12 另有用途 */
 void mesh::CalculateFn()
