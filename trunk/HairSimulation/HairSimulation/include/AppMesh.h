@@ -1,5 +1,5 @@
-#ifndef _MESH_H_
-#define _MESH_H_
+#ifndef _APP_MESH_H_
+#define _APP_MESH_H_
 
 /*
 	Simple mesh class
