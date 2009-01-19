@@ -6,12 +6,12 @@
 //~~~~~~~~~ Bounding Box ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class BoundBox{
 public:
-	Vector3 center;
-	Vector3 dim;		// dimension of this box. dim = (max - min)/2
-	Vector3 bounds[2];	// { min, max }
+	AppVector3 center;
+	AppVector3 dim;		// dimension of this box. dim = (max - min)/2
+	AppVector3 bounds[2];	// { min, max }
 	inline void display() const;
 	inline int longestAxis() const;
-	inline bool BallBoxIntersect( const Vector3 & C, float R2 ) const;
+	inline bool BallBoxIntersect( const AppVector3 & C, float R2 ) const;
 	inline bool boxBoxIntersect( const BoundBox & B ) const;
 };
 
@@ -49,7 +49,7 @@ bool BoundBox::boxBoxIntersect( const BoundBox & B ) const
 	return true;
 }
 
-bool BoundBox::BallBoxIntersect(const Vector3 &C, float R2) const
+bool BoundBox::BallBoxIntersect(const AppVector3 &C, float R2) const
 {
 	float D = 0;	// distance
 	for( int i = 0; i < 3; i++ ){

@@ -3,7 +3,7 @@
 
 //#include	<list>
 #include	<cassert>
-//#include	"vector3.h"
+//#include	"Vector3.h"
 #include	"mat_face.h"
 #include	"box.h"
 
@@ -37,12 +37,12 @@ public:
 	void preorder();
 	void preorderVisitor( TreeNode * );
 	void display() const;
-	void postorderVisitor( TreeNode *tptr, int depth, Vector3 *colorTable ) const;
+	void postorderVisitor( TreeNode *tptr, int depth, AppVector3 *colorTable ) const;
 	// test Ball-Tri overlap
-	bool testBallTri( const Vector3 & C, float R2 ) const;
-	bool ballTriTester( TreeNode *tptr, const Vector3 &C, float R2 ) const;
-	Face* testBallTri_v2( const Vector3 & C, float R2 ) const;
-	Face* ballTriTester_v2( TreeNode *tptr, const Vector3 &C, float R2 ) const;
+	bool testBallTri( const AppVector3 & C, float R2 ) const;
+	bool ballTriTester( TreeNode *tptr, const AppVector3 &C, float R2 ) const;
+	Face* testBallTri_v2( const AppVector3 & C, float R2 ) const;
+	Face* ballTriTester_v2( TreeNode *tptr, const AppVector3 &C, float R2 ) const;
 
 public:
 	//mesh * m_meshData;
@@ -52,10 +52,10 @@ public:
 	//void setup( std::vector<Face> &faceList );
 	//void setupFaceList();
 
-	void calcTriangleListInfo( Face** facePtrArray, int start, int end, Vector3 &max, Vector3 &min, Vector3 &center );
+	void calcTriangleListInfo( Face** facePtrArray, int start, int end, AppVector3 &max, AppVector3 &min, AppVector3 &center );
 	//void calcTriangleListInfo( std::list<Face*> &faceList, Vec3& max, Vec3 & min, Vec3 &center );
 	//void calculateTriangleSize( Face* facePtr, Vec3 & max, Vec3& min );
-	Vector3 calcTriangleCenter( Face* facePtr );
+	AppVector3 calcTriangleCenter( Face* facePtr );
 
 	//AabbTree(const AabbTree & );
 };

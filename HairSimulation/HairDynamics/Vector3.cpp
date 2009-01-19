@@ -3,7 +3,7 @@
 #include	<cmath>
 #include	<cassert>
 
-void Vector3::normalize()
+void AppVector3::normalize()
 {
 	float len2 = x*x + y*y + z*z;
 	if( len2 != 0.0 ){
@@ -14,7 +14,7 @@ void Vector3::normalize()
 	}
 }
 
-float Vector3::length() const
+float AppVector3::length() const
 {
 	float len2 = x*x + y*y + z*z;
 	if( len2 != 0.0 ){
@@ -26,118 +26,118 @@ float Vector3::length() const
 	}
 }
 
-float Vector3::squaredLength () const
+float AppVector3::squaredLength () const
 {
     return x * x + y * y + z * z;
 }
 
-float Vector3::squaredDistance(const Vector3& rhs) const
+float AppVector3::squaredDistance(const AppVector3& rhs) const
 {
     return (*this - rhs).squaredLength();
 }
 
 // operator overload
-Vector3 operator-( Vector3 &a)
+AppVector3 operator-( AppVector3 &a)
 {
-	Vector3 v( -a.x, -a.y, -a.z );
+	AppVector3 v( -a.x, -a.y, -a.z );
 	return v;
 }
-Vector3 operator-( const Vector3 &a, const Vector3 &b )
+AppVector3 operator-( const AppVector3 &a, const AppVector3 &b )
 {
-	Vector3 v( a.x - b.x, a.y - b.y, a.z - b.z );
+	AppVector3 v( a.x - b.x, a.y - b.y, a.z - b.z );
 	return v;
 }
-Vector3 operator+( const Vector3 & a, const Vector3 & b)
+AppVector3 operator+( const AppVector3 & a, const AppVector3 & b)
 {
-	Vector3 v( a.x + b.x, a.y + b.y, a.z + b.z );
+	AppVector3 v( a.x + b.x, a.y + b.y, a.z + b.z );
 	return v;
 }
 // dot product ¦³¼g¹ï
-float operator*( const Vector3 & a, const Vector3 & b)
+float operator*( const AppVector3 & a, const AppVector3 & b)
 {
 	return (a.x * b.x + a.y * b.y + a.z * b.z);
 }
 // w = s * v   s: scalar	w,v: vector
-Vector3 operator*( float k, const Vector3 & a)
+AppVector3 operator*( float k, const AppVector3 & a)
 {
-	Vector3 v( k * a.x, k * a.y, k * a.z );
+	AppVector3 v( k * a.x, k * a.y, k * a.z );
 	return v;
 }
-Vector3 operator*( const Vector3 & a, float k) 		// v * s	s:scalar
+AppVector3 operator*( const AppVector3 & a, float k) 		// v * s	s:scalar
 {
-	Vector3 v( a.x *k, a.y *k, a.z *k);
+	AppVector3 v( a.x *k, a.y *k, a.z *k);
 	return v;
 }
 // w = v / s   s: scalar   w,v: vector
-Vector3 operator/( const Vector3 & a, float k )
+AppVector3 operator/( const AppVector3 & a, float k )
 {
-	Vector3 v( a.x /k, a.y /k, a.z /k);
+	AppVector3 v( a.x /k, a.y /k, a.z /k);
 	return v;
 }
 // v -= w
-void operator-=( Vector3 &v, const Vector3 &w){				
+void operator-=( AppVector3 &v, const AppVector3 &w){				
 	v.x -= w.x;
 	v.y -= w.y;
 	v.z -= w.z;
 }
 // v += w
-void operator+=( Vector3 &v, const Vector3 &w){				
+void operator+=( AppVector3 &v, const AppVector3 &w){				
 	v.x += w.x;
 	v.y += w.y;
 	v.z += w.z;
 }
 // v = s*v
-void operator*=( Vector3 &v, const float& s){				
+void operator*=( AppVector3 &v, const float& s){				
 	v.x *= s;
 	v.y *= s;
 	v.z *= s;
 }
 // v = v / s
-void operator/=( Vector3 &v, const float &s){
+void operator/=( AppVector3 &v, const float &s){
 	v.x /= s;
 	v.y /= s;
 	v.z /= s;
 }
 
-Vector3 add( Vector3 & a, Vector3 & b)
+AppVector3 add( AppVector3 & a, AppVector3 & b)
 {
-	Vector3 v( a.x + b.x, a.y + b.y, a.z + b.z );
+	AppVector3 v( a.x + b.x, a.y + b.y, a.z + b.z );
 	return v;
 }
-Vector3 subtract( Vector3 & a, Vector3 & b)
+AppVector3 subtract( AppVector3 & a, AppVector3 & b)
 {	
-	Vector3 v( a.x - b.x, a.y - b.y, a.z - b.z );
+	AppVector3 v( a.x - b.x, a.y - b.y, a.z - b.z );
 	return v;
 }
-float dotProduct( const Vector3 & a, const Vector3 & b)
+float dotProduct( const AppVector3 & a, const AppVector3 & b)
 {
 	return (a.x * b.x + a.y * b.y + a.z * b.z);
 }
-Vector3 scale( float k, Vector3 & a)
+AppVector3 scale( float k, AppVector3 & a)
 {
-	Vector3 v( k * a.x, k * a.y, k * a.z );
+	AppVector3 v( k * a.x, k * a.y, k * a.z );
 	return v;
 }
-Vector3 negate( Vector3 & a)
+AppVector3 negate( AppVector3 & a)
 {
-	Vector3 v( -a.x, -a.y, -a.z );
+	AppVector3 v( -a.x, -a.y, -a.z );
 	return v;
 }
-Vector3 crossProduct(const Vector3 & a, const Vector3 & b)
+AppVector3 crossProduct(const AppVector3 & a, const AppVector3 & b)
 {
 //Vec3 v;
 //v[0] = a[1] * b[2] - a[2] * b[1];
 //v[1] = a[2] * b[0] - a[0] * b[2];
 //v[2] = a[0] * b[1] - a[1] * b[0];
 
-	Vector3 v( a[1] * b[2] - a[2] * b[1],
+	AppVector3 v( a[1] * b[2] - a[2] * b[1],
 			a[2] * b[0] - a[0] * b[2],
 			a[0] * b[1] - a[1] * b[0] );
 	return v;
 }
-Vector3 normalize( Vector3 & a)
+AppVector3 normalize( AppVector3 & a)
 {
-	Vector3 v = a;
+	AppVector3 v = a;
 
 	float len2 = a.x*a.x + a.y*a.y + a.z*a.z;
 	if( len2 != 0.0 ){
@@ -148,7 +148,7 @@ Vector3 normalize( Vector3 & a)
 	}
 	return v;
 }
-float length( Vector3 & a)
+float length( AppVector3 & a)
 {
 	float len2 = a.x*a.x + a.y*a.y + a.z*a.z;
 	if( len2 != 0.0 ){
@@ -162,24 +162,24 @@ float length( Vector3 & a)
 
 
 /* ÂÂª©¥» */
-void VecAdd( Vector3 &a, Vector3 &b, Vector3 &result )
+void VecAdd( AppVector3 &a, AppVector3 &b, AppVector3 &result )
 {
 	for( int i = 0; i < 3; i++ ){
 		result[i] = a[i] + b[i];
 	}
 }
-void VecSub( Vector3 &a, Vector3 &b, Vector3 &result )
+void VecSub( AppVector3 &a, AppVector3 &b, AppVector3 &result )
 {
 	for( int i = 0; i < 3; i++ ){
 		result[i] = a[i] - b[i];
 	}	
 }
-void VecScale( Vector3 &a, float s, Vector3 &result )
+void VecScale( AppVector3 &a, float s, AppVector3 &result )
 {
 	for( int i = 0; i < 3; i++ )
 		result[i] = a[i] * s;
 }
-float VecDot( Vector3 &a, Vector3 &b )
+float VecDot( AppVector3 &a, AppVector3 &b )
 {
 	float r = 0.0;
 	for(int i = 0; i<3; i++){
@@ -187,13 +187,13 @@ float VecDot( Vector3 &a, Vector3 &b )
 	}
 	return r;
 }
-void VecCross( Vector3 &a, Vector3 &b, Vector3 &result )
+void VecCross( AppVector3 &a, AppVector3 &b, AppVector3 &result )
 {
 	result[0] = a[1] * b[2] - a[2] * b[1];
 	result[1] = a[2] * b[0] - a[0] * b[2];
 	result[2] = a[0] * b[1] - a[1] * b[0];
 }
-float VecLength( Vector3 &a )
+float VecLength( AppVector3 &a )
 {
 	float len2 = a[0]*a[0] + a[1]*a[1] + a[2]*a[2];
 	if( len2 != 0.0 ){
@@ -201,7 +201,7 @@ float VecLength( Vector3 &a )
 	}
 	return len2;
 }
-void NormalizeVec( Vector3 &a )
+void NormalizeVec( AppVector3 &a )
 {
 	float len2 = a[0]*a[0] + a[1]*a[1] + a[2]*a[2];
 	if( len2 != 0.0 ){
@@ -214,7 +214,7 @@ void NormalizeVec( Vector3 &a )
 	}
 
 }
-void NegateVec( Vector3 &a )
+void NegateVec( AppVector3 &a )
 {
 	a[0] = -a[0];
 	a[1] = -a[1];

@@ -5,7 +5,7 @@
 class Line{
 
 public:
-	std::vector< Vector3 > pts;	//points 
+	std::vector< AppVector3 > pts;	//points 
 };
 
 #endif

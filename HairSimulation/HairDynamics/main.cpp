@@ -22,7 +22,7 @@ mesh *object;
 int winW, winH;		// 視窗的大小
 //舊的global變數:改上次作業剩下的
 // 旋轉和zoom in-out的變數
-Vector3 pos, oldPos;	// position, old position
+AppVector3 pos, oldPos;	// position, old position
 // 調整光線和材質設定的變數
 LightSource light;	//光源
 MaterialSetting material;
@@ -176,13 +176,13 @@ Line makeALine( const Face &face, float u, float v )
 	int totalPieces = 30;
 	float pieceLen = 3.0f / totalPieces;
 
-	Vector3 p = (1-u-v)* (*face.vPtr[0]) + u* (*face.vPtr[1]) + v* (*face.vPtr[2]);
-	Vector3 n = (1-u-v)* (*face.nPtr[0]) + u* (*face.nPtr[1]) + v* (*face.nPtr[2]);
+	AppVector3 p = (1-u-v)* (*face.vPtr[0]) + u* (*face.vPtr[1]) + v* (*face.vPtr[2]);
+	AppVector3 n = (1-u-v)* (*face.nPtr[0]) + u* (*face.nPtr[1]) + v* (*face.nPtr[2]);
 	n.normalize();
-	Vector3 piece = n *pieceLen;
+	AppVector3 piece = n *pieceLen;
 	Line aLine;
 
-	Vector3 pt = p;
+	AppVector3 pt = p;
 	for( int i = 0; i < totalPieces; ++i, pt += piece ){
 		aLine.pts.push_back( pt );
 	}
@@ -356,7 +356,7 @@ void display()
 		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, purple );
 		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT , purple );
 
-		for( std::vector<Particle>::const_iterator pptr = sptr->pList.begin();
+		for( std::vector<AppParticle>::const_iterator pptr = sptr->pList.begin();
 			pptr != sptr->pList.end(); ++pptr )
 		{
 			glVertex3fv(pptr->x.ptr);
@@ -365,7 +365,7 @@ void display()
 
 		if( drawPBall ){
 			// 畫 strand particle or Ball
-			for( std::vector<Particle>::const_iterator pptr = sptr->pList.begin();
+			for( std::vector<AppParticle>::const_iterator pptr = sptr->pList.begin();
 				pptr != sptr->pList.end(); ++pptr )
 			{
 				if( pptr->status == FREE ){
@@ -384,7 +384,7 @@ void display()
 		}
 		else if( drawParticle ){
 			// 畫 strand particle or Ball
-			for( std::vector<Particle>::const_iterator pptr = sptr->pList.begin();
+			for( std::vector<AppParticle>::const_iterator pptr = sptr->pList.begin();
 				pptr != sptr->pList.end(); ++pptr )
 			{
 				if( pptr->status == FREE ){
@@ -418,7 +418,7 @@ void display()
 		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, yKd );
 		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT , yKd );
 		
-		for( std::vector<Vector3>::const_iterator ptPtr = linePtr->pts.begin();
+		for( std::vector<AppVector3>::const_iterator ptPtr = linePtr->pts.begin();
 			ptPtr != linePtr->pts.end(); ptPtr++ )
 		{
 		//glColor3i( 1, 0, 0 );
@@ -446,7 +446,7 @@ void keyboard( unsigned char key, int x, int y )
 	static float m = 1;	// move camera how much
 	bool redraw = true;
 	static bool rayTraceMode = true;
-	Vector3 zoom;
+	AppVector3 zoom;
 	//printf( "key %c #%d pressed\n", key, key );
 
 	switch( key ){

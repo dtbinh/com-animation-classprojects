@@ -115,14 +115,14 @@ public:
 	map<string,int> matMap;		// matMap[material_name] = material_ID
 	material	mat[100];	// material ID (每個 mesh 最多有 100 種 material)	
 
-	vector<Vector3>	vList;		// Vertex List (Position) - world cord.
-	vector<Vector3>	nList;		// Normal List
-	vector<Vector3>	tList;		// Texture List
+	vector<AppVector3>	vList;		// Vertex List (Position) - world cord.
+	vector<AppVector3>	nList;		// Normal List
+	vector<AppVector3>	tList;		// Texture List
 	vector<FACE>	faceList;	// Face List
 	// vList, nList, tList 編號從1開始, 0號是不會用到的
 	// faceList 編號從 0 開始
-	Vector3 * fnList;			// facet normal list
-	Vector3 * triCList;			// triangle's cetroid list
+	AppVector3 * fnList;			// facet normal list
+	AppVector3 * triCList;			// triangle's cetroid list
 	vector<int> *vAdjFList;		// vertex's adjacent faces list
 	vector<Face> myFaceList;	// my face data-structure
 	LightingProperty lightingProperty;

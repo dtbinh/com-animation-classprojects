@@ -5,12 +5,12 @@
 
 class Camera{
 public:
-	Vector3 eyePos;	//gluLookAt( eye[3], center[3], up[3] );
-	Vector3 center;
-	Vector3 up;
-	Vector3 eyeDir;//鏡頭朝向的方向
-	Vector3 right;	//鏡頭平面右邊的方向
-	Vector3 top;	//鏡頭平面上面的方向
+	AppVector3 eyePos;	//gluLookAt( eye[3], center[3], up[3] );
+	AppVector3 center;
+	AppVector3 up;
+	AppVector3 eyeDir;//鏡頭朝向的方向
+	AppVector3 right;	//鏡頭平面右邊的方向
+	AppVector3 top;	//鏡頭平面上面的方向
 
 	Camera()
 		//:eyePos( 0.0f, 23.0f, 26.0f ), center( 0.0f, 20.0f, 10.0f ), up( 0.0f, 1.0f, 0.0f )
@@ -38,7 +38,7 @@ public:
 	}
 	//設定相機：pos 位置,aim_pos/center 朝向的位置, up 定義垂直平面的向量
 	//相機會自己算出:鏡頭/目光的方向,和鏡頭平面中,上下/左右的方向
-	void setup( const Vector3 &eyePos, const Vector3 &center, const Vector3 &up )
+	void setup( const AppVector3 &eyePos, const AppVector3 &center, const AppVector3 &up )
 	{
 		this->eyePos = eyePos;
 		this->center = center;

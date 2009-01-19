@@ -47,7 +47,7 @@ void StrandSystem::setupStrand( vector<Line> &lineSet )
 		for( unsigned int j = 0; j < lineSet[i].pts.size(); ++j )
 		{
 			//加上質點
-			Particle particle;
+			AppParticle particle;
 			particle.x = lineSet[i].pts[j];
 			particle.invM = inverseMass;
 			//attach root of this strand to triangle surface
@@ -122,14 +122,14 @@ void StrandSystem::step( DP timeStep )
 void traversal( TreeNode *tptr, Strand & strand )
 {
 	//~~~~~~~ function prototype ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	bool sphereTri3D_v2( const Vector3 & A, const Vector3 & B, const Vector3 & C, const Vector3 & N, const Vector3 & P, float R2 );
+	bool sphereTri3D_v2( const AppVector3 & A, const AppVector3 & B, const AppVector3 & C, const AppVector3 & N, const AppVector3 & P, float R2 );
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	if( tptr->box.boxBoxIntersect( strand.m_box ) ){
 		
 		if( tptr->left == NULL ){	// leaf node
 
 			// for each particle
-			for( vector<Particle>::iterator pPtr = strand.pList.begin() + 1; // 第一個 particle 不用測=>黏在mesh上
+			for( vector<AppParticle>::iterator pPtr = strand.pList.begin() + 1; // 第一個 particle 不用測=>黏在mesh上
 				pPtr != strand.pList.end(); ++pPtr )
 			{	
 				if( (pPtr->status == FREE) && ( tptr->box.BallBoxIntersect( pPtr->x, P_BALL_R2 ) ) ){
@@ -160,7 +160,7 @@ void StrandSystem::testP2TriCollision_box_bvTree( Strand & strand, mesh *meshPtr
 	// !!重要 upadet strand's bounding box
 	strand.updateBox();
 	// 初始化 status <= Free
-	for( vector<Particle>::iterator pPtr = strand.pList.begin() + 1; // 第一個 particle 不用測=>黏在mesh上
+	for( vector<AppParticle>::iterator pPtr = strand.pList.begin() + 1; // 第一個 particle 不用測=>黏在mesh上
 		pPtr != strand.pList.end(); ++pPtr )
 	{	
 		pPtr->status = FREE;
@@ -170,7 +170,7 @@ void StrandSystem::testP2TriCollision_box_bvTree( Strand & strand, mesh *meshPtr
 
 void StrandSystem::testP2TriCollision_bvTree( Strand & strand, mesh *meshPtr )		
 {
-	for( vector<Particle>::iterator pPtr = strand.pList.begin() + 1; // 第一個 particle 不用測=>黏在mesh上
+	for( vector<AppParticle>::iterator pPtr = strand.pList.begin() + 1; // 第一個 particle 不用測=>黏在mesh上
 		pPtr != strand.pList.end(); ++pPtr )
 	{	
 		pPtr->status = FREE;
@@ -192,12 +192,12 @@ void StrandSystem::testP2TriCollision_bvTree( Strand & strand, mesh *meshPtr )
 void StrandSystem::testP2TriCollision( Strand & strand, mesh *meshPtr )		
 {
 	//~~~~~~~ function prototype ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	bool sphereTri3D( const Vector3 & A, const Vector3 & B, const Vector3 & C, const Vector3 & N, 
-					 const Vector3 & P, float R );
-	bool pointInsideTri( const Vector3 & A, const Vector3 & B, const Vector3 &C, const Vector3 &P );
-	bool sphereEdge3D( const Vector3 & A, const Vector3 & B, const Vector3 &P, float R );
+	bool sphereTri3D( const AppVector3 & A, const AppVector3 & B, const AppVector3 & C, const AppVector3 & N, 
+					 const AppVector3 & P, float R );
+	bool pointInsideTri( const AppVector3 & A, const AppVector3 & B, const AppVector3 &C, const AppVector3 &P );
+	bool sphereEdge3D( const AppVector3 & A, const AppVector3 & B, const AppVector3 &P, float R );
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	for( vector<Particle>::iterator pPtr = strand.pList.begin() + 1; // 第一個 particle 不用測=>黏在mesh上
+	for( vector<AppParticle>::iterator pPtr = strand.pList.begin() + 1; // 第一個 particle 不用測=>黏在mesh上
 		pPtr != strand.pList.end(); ++pPtr )
 	{	
 		pPtr->status = FREE;
@@ -229,19 +229,19 @@ void StrandSystem::testP2TriCollision( Strand & strand, mesh *meshPtr )
 void updateVA( Strand & strand )
 {
 	//int fcnt = 0, ccnt = 0, tcnt =0;	// 第一個 particle 不用測=>黏在mesh上
-	for( vector<Particle>::iterator pPtr = strand.pList.begin() +1;
+	for( vector<AppParticle>::iterator pPtr = strand.pList.begin() +1;
 		pPtr != strand.pList.end(); ++pPtr )
 	{
 		if( pPtr->status == COLLIDE ){
-			Vector3 &N = *(pPtr->hitTri->fnPtr);
+			AppVector3 &N = *(pPtr->hitTri->fnPtr);
 			//DP vDir = dotProduct( pPtr->v, N );	//有要做反彈
 			//if( vDir < 0 ){
-			//	Vector3 Vn = vDir * N;
-			//	Vector3 Vt = pPtr->v - Vn;
+			//	AppVector3 Vn = vDir * N;
+			//	AppVector3 Vt = pPtr->v - Vn;
 			//	pPtr->v = -1e-4 * Vn + Vt;
 			//}
-			//Vector3 Vn = dotProduct( pPtr->v, N ) * N;	//沒有要反彈
-			//Vector3 Vt = pPtr->v - Vn;					//不用看 v 的方向,因為檢查Collide時就判斷過了
+			//AppVector3 Vn = dotProduct( pPtr->v, N ) * N;	//沒有要反彈
+			//AppVector3 Vt = pPtr->v - Vn;					//不用看 v 的方向,因為檢查Collide時就判斷過了
 			
 			pPtr->v = pPtr->v - (dotProduct( pPtr->v, N ) * N);
 
@@ -250,16 +250,16 @@ void updateVA( Strand & strand )
 				pPtr->a = pPtr->a - ( aDir * N );
 			}
 		}else if( pPtr->status == CONTACT ){
-			Vector3 &N = *(pPtr->hitTri->fnPtr);
+			AppVector3 &N = *(pPtr->hitTri->fnPtr);
 			DP vDir = dotProduct( pPtr->v, N );
 			if( vDir < 1e-5 ){					//看 v 的方向,消掉往內的 Vn
-				//Vector3 Vn = vDir * N;
-				//Vector3 Vt = pPtr->v - Vn;
+				//AppVector3 Vn = vDir * N;
+				//AppVector3 Vt = pPtr->v - Vn;
 				//pPtr->v = Vt;
 				pPtr->v = pPtr->v - (vDir * N);
 			}
-			//Vector3 Vn = dotProduct( pPtr->v, N ) * N;
-			//Vector3 Vt = pPtr->v - Vn;
+			//AppVector3 Vn = dotProduct( pPtr->v, N ) * N;
+			//AppVector3 Vt = pPtr->v - Vn;
 			//pPtr->v = Vt;
 
 			DP aDir =  dotProduct( pPtr->a, N );
@@ -297,8 +297,8 @@ void StrandSystem::addForceAccel( Strand & strand )
 	Gravity g;
 	AirViscousity vi;
 
-	Vector3 zero( 0, 0, 0 );
-	for( vector<Particle>::iterator pPtr = strand.pList.begin() + 1;	// 第一個 particle 不用測=>黏在mesh上
+	AppVector3 zero( 0, 0, 0 );
+	for( vector<AppParticle>::iterator pPtr = strand.pList.begin() + 1;	// 第一個 particle 不用測=>黏在mesh上
 		pPtr != strand.pList.end(); ++pPtr )
 	{
 		//clear
@@ -318,8 +318,8 @@ void StrandSystem::addForceAccel( Strand & strand )
 
 void StrandSystem::clearAccel( Strand & strand )
 {
-	Vector3 zero( 0, 0, 0 );
-	for( vector<Particle>::iterator pPtr = strand.pList.begin();
+	AppVector3 zero( 0, 0, 0 );
+	for( vector<AppParticle>::iterator pPtr = strand.pList.begin();
 		pPtr != strand.pList.end(); ++pPtr )
 	{
 		pPtr->a = zero;
@@ -345,8 +345,8 @@ void StrandSystem::setupTempStrand( Strand &temp, const Strand &s )
 	temp.sTotal = s.sTotal;
 	//設 particle 的質量/inverse Mass
 	//練習 STL 寫法
-	vector<Particle>::iterator tptr = temp.pList.begin();
-	vector<Particle>::const_iterator sptr = s.pList.begin();
+	vector<AppParticle>::iterator tptr = temp.pList.begin();
+	vector<AppParticle>::const_iterator sptr = s.pList.begin();
 	for( ; sptr != s.pList.end(); ++sptr, ++tptr ){
 		tptr->invM = sptr->invM;
 		tptr->status = sptr->status;
@@ -478,8 +478,8 @@ void StrandSystem::RungeKutta( Strand &strand, DP h )
 // y( t1 + h ) = y( t1 ) + h * f(y(t2) )
 void StrandSystem::takeEulerStep( Strand &Y, const Strand &Y0, const Strand &Fy , DP h )
 {
-	vector<Particle>::iterator yptr;
-	vector<Particle>::const_iterator y0ptr, fyptr;
+	vector<AppParticle>::iterator yptr;
+	vector<AppParticle>::const_iterator y0ptr, fyptr;
 	for( yptr = Y.pList.begin(), y0ptr = Y0.pList.begin(), fyptr = Fy.pList.begin(); yptr != Y.pList.end(); yptr++, y0ptr++, fyptr++ )
 	{
 		yptr->x = y0ptr->x + h * fyptr->v;

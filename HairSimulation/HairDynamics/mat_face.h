@@ -31,11 +31,11 @@ public:
 //	Face class:vertex,normal,tex-coord,material資料都放在pointer裡
 class Face{
 public:
-	Vector3 *vPtr[3];		//vertex data指標
-	Vector3 *nPtr[3];		//normal data指標
-	Vector3 *tPtr[3];		//貼圖data指標
-	Vector3 *fnPtr;		//face normal指標
-	Vector3 *cPtr;			// tri centroid ptr=>to be deleted
+	AppVector3 *vPtr[3];		//vertex data指標
+	AppVector3 *nPtr[3];		//normal data指標
+	AppVector3 *tPtr[3];		//貼圖data指標
+	AppVector3 *fnPtr;		//face normal指標
+	AppVector3 *cPtr;			// tri centroid ptr=>to be deleted
 	material *materialPtr;//material data 指標
 
 	Face();
