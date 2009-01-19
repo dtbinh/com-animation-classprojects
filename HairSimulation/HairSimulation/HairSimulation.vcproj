@@ -39,7 +39,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="include;&quot;$(OGRE_HOME)\include&quot;;&quot;$(OGRE_HOME)\samples\include&quot;;&quot;$(OGRE_HOME)\ogreopcode\include&quot;"
+				AdditionalIncludeDirectories="include;&quot;$(OGRE_HOME)\include&quot;;&quot;$(OGRE_HOME)\samples\include&quot;;&quot;$(OGRE_HOME)\ogreopcode\include&quot;;DynamicsLib"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="true"
 				ExceptionHandling="1"
@@ -67,7 +67,7 @@
 				AdditionalDependencies="OgreMain_d.lib OIS_d.lib CEGUIBase_d.lib OgreGUIRenderer_d.lib OgreOpcode_d.lib"
 				OutputFile="$(OutDir)\$(ProjectName).exe"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\ogreopcode\bin\debug&quot;"
+				AdditionalLibraryDirectories="&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\ogreopcode\bin\debug&quot;;..\HairDynamics\lib"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/HairSimulation.pdb"
 				SubSystem="2"
@@ -130,7 +130,7 @@
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="true"
-				AdditionalIncludeDirectories="include;&quot;$(OGRE_HOME)\include&quot;;&quot;$(OGRE_HOME)\samples\include&quot;;&quot;$(OGRE_HOME)\ogreopcode\include&quot;"
+				AdditionalIncludeDirectories="include;&quot;$(OGRE_HOME)\include&quot;;&quot;$(OGRE_HOME)\samples\include&quot;;&quot;$(OGRE_HOME)\ogreopcode\include&quot;;DynamicsLib"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				StringPooling="true"
 				MinimalRebuild="true"
@@ -220,6 +220,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\AppMesh.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\AppOgreHead.cpp"
 				>
 			</File>
@@ -240,10 +244,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\Dynamics_box.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\src\Hair.cpp"
 				>
 			</File>
@@ -253,10 +253,6 @@
 			</File>
 			<File
 				RelativePath=".\src\intersection.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\Mesh.cpp"
 				>
 			</File>
 			<File
@@ -283,6 +279,10 @@
 			</File>
 			<File
 				RelativePath=".\include\AppManHead.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\AppMesh.h"
 				>
 			</File>
 			<File
@@ -326,10 +326,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\include\Mesh.h"
-				>
-			</File>
-			<File
 				RelativePath=".\res\Resource.h"
 				>
 			</File>
@@ -349,6 +345,74 @@
 			</File>
 			<File
 				RelativePath=".\res\HairSimulation.rc"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="DynamicsLib"
+			>
+			<File
+				RelativePath=".\DynamicsLib\aabb.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DynamicsLib\aabb.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DynamicsLib\box.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DynamicsLib\line.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DynamicsLib\mat_face.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DynamicsLib\mesh.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DynamicsLib\mesh1.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DynamicsLib\particle.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DynamicsLib\particle.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DynamicsLib\sphereTri.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DynamicsLib\strand.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DynamicsLib\strand.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DynamicsLib\strandSystem.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DynamicsLib\strandSystem.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DynamicsLib\Vector3.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DynamicsLib\Vector3.h"
 				>
 			</File>
 		</Filter>

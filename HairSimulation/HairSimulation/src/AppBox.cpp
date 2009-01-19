@@ -54,13 +54,14 @@ void AppBox::setMaterialName(const String& matName)
 //--------------------------------------------------------------------
 void AppBox::setPositionByEnds(const Vector3 &a, const Vector3 &b)
 {
+
 	mSceneNode->setPosition(a.midPoint(b));
-	//mSceneNode->resetOrientation();
+	mSceneNode->resetOrientation();
 	mDimensions.z = a.distance(b);
 	mSceneNode->setScale(mDimensions.x / 100.0,
 						 mDimensions.y / 100.0,
 						 mDimensions.z / 100.0);
 	mSceneNode->setDirection(b-a);
-	
+
 	
 }
