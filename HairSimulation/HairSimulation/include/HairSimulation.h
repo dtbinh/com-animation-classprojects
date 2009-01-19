@@ -85,7 +85,8 @@ public:
 	{
 		bool ret = ExampleFrameListener::frameStarted(evt);
 		mWorld->stepStrandSystem();
-		mWorld->updateHairsSucks();
+		//mWorld->updateHairsSucks();
+		mWorld->updateHairsImproved();
 		return ret;
 	}
 

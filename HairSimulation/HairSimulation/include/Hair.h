@@ -2,6 +2,7 @@
 #define _HAIR_H_
 
 #include "AppBox.h"
+#include "particle.h"
 #include <Ogre.h>
 
 using namespace Ogre;
@@ -20,6 +21,7 @@ protected:
 	
 	
 public:
+	std::vector<AppParticle> *mParticles;
 	std::vector<Vector3> mParticlePoses;	// Positions of particles
 
 	static const float HAIR_THICKNESS, HAIR_EDGE_LENGTH;
@@ -38,6 +40,7 @@ public:
 
 	static void createHairMaterial();
 	void updateHairEdges();
+	void updateHairEdgesImproved();
 	/** Initialize mParticlePoses so that all particles are along a line with the direction */
 	void initParticlePoses(Vector3& normal);
 };

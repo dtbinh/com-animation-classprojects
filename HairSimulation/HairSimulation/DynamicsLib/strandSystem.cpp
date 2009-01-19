@@ -120,8 +120,14 @@ void StrandSystem::setupStrand( Hair* hairs)
 				aStrand.sList.push_back( spring );
 			}
 		}
+		
 		m_strandList.push_back( aStrand );
+		
 	}// close for-loop
+
+	for( unsigned int i = 0; i < Hair::cNumHairs; ++i )
+		for( unsigned int j = 0; j <Hair::cNumParticles; ++j )
+			hairs[i].mParticles = &(m_strandList[i].pList);	// Particle list can be accessed by hair
 }
 
 //³] ODE step ¤èªk

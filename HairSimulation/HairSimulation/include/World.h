@@ -111,6 +111,7 @@ public:
 	void updateHairs(void);
 
 	void updateHairsSucks();
+	void updateHairsImproved();
 
 //---------------- Methods related to collision detection ------------------------------------------------
 	/** Add an entity to CollisionContext */
