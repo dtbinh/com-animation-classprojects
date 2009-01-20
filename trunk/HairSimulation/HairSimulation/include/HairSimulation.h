@@ -84,9 +84,12 @@ public:
 	bool frameStarted(const FrameEvent& evt)
 	{
 		bool ret = ExampleFrameListener::frameStarted(evt);
-		mWorld->stepStrandSystem();
-		//mWorld->updateHairsSucks();
-		mWorld->updateHairsImproved();
+		if (mWorld->getProcessState()==World::PS_SIMULATION)
+		{
+			mWorld->stepStrandSystem();
+			//mWorld->updateHairsSucks();
+			mWorld->updateHairsImproved();
+		}
 		return ret;
 	}
 
@@ -270,17 +273,17 @@ protected:
 	{
 		//	Create the world
 		mWorld = new World(mSceneMgr);
-		
+		/*
 		//	Create a sphere
 		mHead = mWorld->createBall("ball", 7);
 		mHead->getEntity()->setMaterialName("");	// Color white
-
+*/
 		
 		//	Creaete an ogre head
 		//mHead = mWorld->createOgreHead("OgreHead");
 		
 		//	Creaete a man head
-		//mHead = mWorld->createManHead("ManHead");
+		mHead = mWorld->createManHead("ManHead");
 
 		//testScene();
 

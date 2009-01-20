@@ -112,12 +112,31 @@ void StrandSystem::setupStrand( Hair* hairs)
 
 			//¥[¤W¼uÂ®
 			if( j != Hair::cNumParticles - 1 ){
-
+				//	Edge spring
 				Spring spring;
 				spring.setParticleIndex( j, j+1 );
 				spring.setK( 500 );
 				spring.setLen0( hairs[i].mParticlePoses[j].distance(hairs[i].mParticlePoses[j+1]) );
 				aStrand.sList.push_back( spring );
+
+			}
+			// Bending spring
+			if (j < Hair::cNumHairEdges - 2)
+			{ 
+				Spring spring;
+				spring.setParticleIndex(j, j+2);
+				spring.setK(500);
+				spring.setLen0( hairs[i].mParticlePoses[j].distance(hairs[i].mParticlePoses[j+1]) );
+				aStrand.sList.push_back(spring);
+			}
+			// Torsion spring
+			if (j < Hair::cNumHairEdges - 3)
+			{
+				Spring spring;
+				spring.setParticleIndex(j, j+3);
+				spring.setK(500);
+				spring.setLen0( hairs[i].mParticlePoses[j].distance(hairs[i].mParticlePoses[j+2]) );
+				aStrand.sList.push_back(spring);
 			}
 		}
 		
